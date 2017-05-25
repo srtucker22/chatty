@@ -7,6 +7,9 @@
   "repository": "https://github.com/srtucker22/chatty.git",
   "author": "Simon Tucker <srtucker22@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "start": "nodemon --watch server --watch package.json server/index.js --exec babel-node --presets es2015,stage-2"
+  },
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-eslint": "^8.2.1",
