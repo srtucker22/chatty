@@ -28,6 +28,23 @@ export const Schema = [`
     text: String! # message text
     createdAt: Date! # when message was created
   }
+
+  # query for types
+  type Query {
+    # Return a user by their email or id
+    user(email: String, id: Int): User
+
+    # Return messages sent by a user via userId
+    # Return messages sent to a group via groupId
+    messages(groupId: Int, userId: Int): [Message]
+
+    # Return a group by its id
+    group(id: Int!): Group
+  }
+
+  schema {
+    query: Query
+  }
 `];
 
 export default Schema;
