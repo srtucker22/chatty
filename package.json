@@ -1,5 +1,10 @@
 {
   "name": "chatty",
-  "description": "A newly created Tortilla project",
-  "private": true
+  "description": "A WhatsApp clone with React Native and Apollo",
+  "private": true,
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/srtucker22/chatty.git",
+  "author": "Simon Tucker <srtucker22@gmail.com>",
+  "license": "MIT"
 }
