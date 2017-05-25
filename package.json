@@ -28,6 +28,9 @@
     "express": "^4.15.3",
     "faker": "^4.1.0",
     "graphql": "^0.12.3",
-    "graphql-tools": "^2.18.0"
+    "graphql-tools": "^2.18.0",
+    "lodash": "^4.17.4",
+    "sequelize": "^4.4.2",
+    "sqlite3": "^3.1.8"
   }
 }
