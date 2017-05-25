@@ -23,6 +23,7 @@
 		"react-apollo": "^2.0.4",
 		"react-native": "0.54.2",
 		"react-navigation": "^1.0.3",
+		"react-navigation-redux-helpers": "^1.0.1",
 		"react-redux": "^5.0.5",
 		"redux": "^3.7.2",
 		"redux-devtools-extension": "^2.13.2"
