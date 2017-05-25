@@ -27,6 +27,7 @@
     "express": "^4.15.3",
     "faker": "^4.1.0",
     "graphql": "^0.10.1",
+    "graphql-date": "^1.0.3",
     "graphql-server-express": "^1.1.0",
     "graphql-tools": "^1.0.0",
     "lodash": "^4.17.4",
