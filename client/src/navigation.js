@@ -5,6 +5,7 @@ import { Text, View, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 
 import Groups from './screens/groups.screen';
+import Messages from './screens/messages.screen';
 
 const styles = StyleSheet.create({
   container: {
@@ -39,6 +40,9 @@ const MainScreenNavigator = TabNavigator({
 
 const AppNavigator = StackNavigator({
   Main: { screen: MainScreenNavigator },
+  Messages: { screen: Messages },
+}, {
+  mode: 'modal',
 });
 
 // reducer initialization code
