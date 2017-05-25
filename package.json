@@ -25,6 +25,9 @@
   "dependencies": {
     "apollo-server": "^2.0.0",
     "faker": "^4.1.0",
-    "graphql": "^0.13.2"
+    "graphql": "^0.13.2",
+    "lodash": "^4.17.4",
+    "sequelize": "^4.4.2",
+    "sqlite3": "^4.0.1"
   }
 }
