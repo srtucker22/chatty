@@ -1,22 +1,34 @@
 {
-  "name": "chatty",
-  "version": "0.0.1",
-  "private": true,
-  "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
-  },
-  "dependencies": {
-    "react": "^16.3.0-alpha.1",
-    "react-native": "0.54.2"
-  },
-  "devDependencies": {
-    "babel-jest": "22.4.1",
-    "babel-preset-react-native": "4.0.0",
-    "jest": "22.4.2",
-    "react-test-renderer": "16.2.0"
-  },
-  "jest": {
-    "preset": "react-native"
-  }
+	"name": "chatty",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"start": "node node_modules/react-native/local-cli/cli.js start",
+		"test": "jest"
+	},
+	"dependencies": {
+		"apollo-cache-redux": "^0.1.0-alpha.7",
+		"apollo-client": "^2.2.5",
+		"apollo-link": "^1.1.0",
+		"apollo-link-error": "^1.0.7",
+		"apollo-link-http": "^1.3.3",
+		"apollo-link-redux": "^0.2.1",
+		"graphql": "^0.12.3",
+		"graphql-tag": "^2.4.2",
+		"react": "^16.3.0-alpha.1",
+		"react-apollo": "^2.0.4",
+		"react-native": "0.54.2",
+		"react-redux": "^5.0.5",
+		"redux": "^3.7.2",
+		"redux-devtools-extension": "^2.13.2"
+	},
+	"devDependencies": {
+		"babel-jest": "22.4.1",
+		"babel-preset-react-native": "4.0.0",
+		"jest": "22.4.2",
+		"react-test-renderer": "16.2.0"
+	},
+	"jest": {
+		"preset": "react-native"
+	}
 }
