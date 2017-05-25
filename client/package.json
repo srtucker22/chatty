@@ -7,8 +7,14 @@
 		"test": "jest"
 	},
 	"dependencies": {
+		"apollo-client": "^1.9.0",
+		"graphql-tag": "^2.4.2",
 		"react": "16.0.0-alpha.12",
-		"react-native": "0.47.1"
+		"react-apollo": "^1.4.10",
+		"react-native": "0.47.1",
+		"react-redux": "^5.0.5",
+		"redux": "^3.7.2",
+		"redux-devtools-extension": "^2.13.2"
 	},
 	"devDependencies": {
 		"babel-jest": "20.0.3",
