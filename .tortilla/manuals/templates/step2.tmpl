@@ -1,0 +1,154 @@
+This is the second blog in a multipart series where we will be building Chatty, a WhatsApp clone, using React Native and Apollo. You can view the code for this part of the series here.
+
+In this section, we will be designing [GraphQL Schemas](http://graphql.org/learn/schema/) and [Queries](http://graphql.org/learn/queries/) and connecting them to real data on our server.
+
+Here are the steps we will accomplish in this tutorial:
+1. Build **GraphQL Schemas** to model User, Group, and Message data types
+2. Design **GraphQL Queries** for fetching data from our server
+3. Create a basic SQL database with Users, Groups, and Messages
+4. Connect our database to our [`graphqlExpress`](https://www.npmjs.com/package/graphq%E2%80%A6) server using **Connectors** and **Resolvers**
+5. Test out our new Queries using [GraphIQL](https://github.com/graphql/graphiql)
+
+# Designing GraphQL Schemas
+[GraphQL Type Schemas](http://graphql.org/learn/schema/) define the shape of the data our client can expect. Chatty is going to need data models to represent **Messages**, **Users**, and **Groups** at the very least, so we can start by defining those. We’ll update `server/data/schema.js` to include some basic Schemas for these types:
+
+{{{diffStep 2.1}}}
+
+The GraphQL language for Schemas is pretty straightforward. Keys within a given type have values that are either [scalars](http://graphql.org/learn/schema/#scalar-types), like a `String`, or another type like `Group`.
+
+Field values can also be lists of types or scalars, like `messages` in `Group`.
+
+Any field with an exclamation mark is a **required field!**
+
+Some notes on the above code:
+* We need to declare the custom `Date` scalar as it’s not a default scalar in GraphQL. You can [learn more about scalar types here](http://graphql.org/learn/schema/#scalar-types).
+* In our model, all types have an id property of scalar type `Int!`. This will represent their unique id in our database.
+* `User` type will require a unique email address. We will get into more complex user features such as authentication in a later tutorial.
+* `User` type **does not include a password field.** Our client should *NEVER* need to query for a password, so we shouldn’t expose this field even if it is required on the server. This helps prevent passwords from falling into the wrong hands!
+* Message gets sent “from” a `User` “to” a `Group`.
+
+# Designing GraphQL Queries
+[GraphQL Queries](http://graphql.org/learn/schema/#the-query-and-mutation-types) specify how clients are allowed to query and retrieve defined types. For example, we can make a GraphQL Query that lets our client ask for a `User` by providing either the `User`’s unique id or email address:
+
+```
+type Query {
+  # Return a user by their email or id
+  user(email: String, id: Int): User
+}
+```
+
+We could also specify that an argument is required by including an exclamation mark:
+
+```
+type Query {
+  # Return a group by its id -- must supply an id to query
+  group(id: Int!): Group
+}
+```
+
+We can even return an array of results with a query, and mix and match all of the above. For example, we could define a `message` query that will return all the messages sent by a user if a `userId` is provided, or all the messages sent to a group if a `groupId` is provided:
+
+```
+type Query {
+  # Return messages sent by a user via userId
+  # ... or ...
+  # Return messages sent to a group via groupId
+  messages(groupId: Int, userId: Int): [Message]
+}
+```
+
+There are even more cool features available with advanced querying in GraphQL. However, these queries should serve us just fine for now:
+
+{{{diffStep 2.2}}}
+
+Note that we also need to define the `schema` at the end of our Schema string.
+
+# Connecting Mocked Data
+
+We have defined our Schema including queries, but it’s not connected to any sort of data. If we ran the current code as is, it would definitely fail.
+
+While we could start creating real data right away, it’s good practice to mock data first. Mocking will enable us to catch any obvious errors with our Schema before we start trying to connect real data, and it will also help us down the line with testing.
+Let’s modify our `server/data/mocks.js` code using `faker` (`yarn add faker`) to produce some fake data:
+
+{{{diffStep 2.3 files="server/data/mocks.js"}}}
+
+While the mocks for `User`, `Group`, and `Message` are pretty simple looking, they’re actually quite powerful. If we run a query in GraphIQL, we'll receive fully populated results with backfilled properties, including example list results. Also, by adding details to our mocks for the `user` query, we ensure that the `email` field for the `User` and `from` field for their `messages` match the query parameter for `email`: ![GraphIQL Image](https://s3-us-west-1.amazonaws.com/tortilla/chatty/step2-3.png)
+
+# Connecting Real Data
+Let’s connect our Schema to some real data now. We’re going to start small with a [SQLite](https://www.sqlite.org/) database and use the [`sequelize`](http://docs.sequelizejs.com/en/v3/) ORM to interact with our data.
+
+```
+yarn add sqlite3 sequelize
+yarn add lodash # top notch utility library for handling data
+yarn add graphql-date # graphql custom date scalar
+```
+
+First we will create tables to represent our models. Next, we’ll need to expose functions to connect our models to our Schema. These exposed functions are known as [**Connectors**](https://github.com/apollographql/graphql-tools/blob/master/designs/connectors.md). We’ll write this code in a new file `server/data/connectors.js`:
+
+{{{diffStep 2.4 files="server/data/connectors.js"}}}
+
+Let’s also add some seed data so we can test our setup right away. The code below will add 4 Groups, with 5 unique users per group, and 5 messages per user within that group:
+
+{{{diffStep 2.5}}}
+
+For the final step, we need to connect our Schema to our Connectors so our server resolves the right data based on the request. We accomplish this last step with the help of [**Resolvers**](http://dev.apollodata.com/tools/graphql-tools/resolvers.html).
+
+In `graphqlExpress`, we write Resolvers as a map that resolves each GraphQL Type defined in our Schema. For example, if we were just resolving `User`, our resolver code would look like this:
+
+```
+// server/data/resolvers.js
+import { User, Message } from './connectors';
+export const Resolvers = {
+  Query: {
+    user(_, {id, email}) {
+      return User.findOne({ where: {id, email}});
+    },
+  },
+  User: {
+    messages(user) {
+      return Message.findAll({
+        where: { userId: user.id },
+      });
+    },
+    groups(user) {
+      return user.getGroups();
+    },
+    friends(user) {
+      return user.getFriends();
+    },
+  },
+};
+export default Resolvers;
+```
+
+When the `user` query is executed, it will return the `User` in our SQL database that matches the query. But what’s *really cool* is that all fields associated with the `User` will also get resolved when they're requested, and those fields can recursively resolve using the same resolvers. For example, if we requested a `User`, her friends, and her friend’s friends, the query would run the `friends` resolver on the `User`, and then run `friends` again on each `User` returned by the first call:
+
+```
+user(id: 1) {
+  username # the user we queried
+  friends { # a list of their friends
+    username
+    friends { # a list of each friend's friends
+      username
+    }
+  }
+}
+```
+
+This is extremely cool and powerful code because it allows us to write resolvers for each type just once, and have it work anywhere and everywhere!
+
+So let’s put together resolvers for our full Schema in `server/data/resolvers.js`:
+
+{{{diffStep 2.6 files="server/data/resolvers.js"}}}
+
+Our resolvers are relatively straightforward. We’ve set our message resolvers to return in descending order by date created, so the most recent messages will return first.
+
+Notice we’ve also included a resolver for `Date` because it is a custom scalar. Instead of creating our own resolver, I’ve imported someone’s excellent [`GraphQLDate`](https://www.npmjs.com/package/graphql-date) package.
+
+Finally, we can pass our resolvers to `makeExecutableSchema` in `server/index.js` to replace our mocked data with real data:
+
+{{{diffStep 2.7 files="server/index.js"}}}
+
+Now if we run a Query on GraphiQL, we should get some real results straight from our database: ![GraphIQL Image](https://s3-us-west-1.amazonaws.com/tortilla/chatty/step2-7.png)
+
+We’ve got the data. We’ve designed the Schema with Queries. Now it’s time to put that data in our React Native app!
