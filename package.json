@@ -21,5 +21,9 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.5.1",
     "nodemon": "^1.11.0"
+  },
+  "dependencies": {
+    "apollo-server": "^2.0.0",
+    "graphql": "^0.13.2"
   }
 }
