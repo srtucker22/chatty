@@ -21,5 +21,8 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.5.1",
     "nodemon": "^1.11.0"
+  },
+  "dependencies": {
+    "express": "^4.15.3"
   }
 }
