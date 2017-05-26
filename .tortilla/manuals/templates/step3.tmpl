@@ -1,0 +1,224 @@
+This is the third blog in a multipart series where we will be building Chatty, a WhatsApp clone, using [React Native](https://facebook.github.io/react-native/) and [Apollo](http://dev.apollodata.com/).
+
+Here’s what we will accomplish in this tutorial:
+1. Create the basic layout for our React Native application
+2. Build GraphQL Queries using `react-apollo`
+
+First we’re going to need a few packages:
+
+```sh
+# make sure to add these packages to client folder!!!
+cd client
+npm i lodash moment graphql-tag prop-types randomcolor react-navigation
+```
+
+* [`lodash`](http://lodash.com/docs) is a top notch utility library for dealing with data in JS
+* [`moment`](http://momentjs.com/) is the goto package for dealing with Dates in JS
+* [`graphql-tag`](https://www.npmjs.com/package/graphql-tag) lets us parse GraphQL Queries from strings
+* [`prop-types`](https://www.npmjs.com/package/prop-types) is a runtime type checker for React props and similar objects
+* [`randomcolor`](https://www.npmjs.com/package/randomcolor) will let us generate random colors
+* [`react-navigation`](https://reactnavigation.org) is a collaboration between people from Facebook, Exponent and the React community to create the best navigation solution for the React ecosystem
+
+# Creating the Layout
+
+I’m a visual guy, so I like to first establish the general look and feel of the app before adding data.
+
+Using [`react-navigation`](https://reactnavigation.org), we can design routing for our application based on **Screens**. A Screen is essentially a full screen or collection of sub-screens within our application. It’s easiest to understand with a basic example.
+
+Let’s create a new file `client/src/navigation.js` where we will declare the navigation for our application:
+
+{{{diffStep 3.1}}}
+
+This setup will create a `StackNavigator` named `AppNavigator` that will hold all our Screens. A `StackNavigator` stacks Screens on top of each other like pancakes when we navigate to them.
+
+Within `AppNavigator`, we can add different Screens and other Navigators that can be pushed onto the stack.
+
+`MainScreenNavigator` is a `TabNavigator`, which means it organizes Screens in tabs. The Screens within MainScreenNavigator are just placeholders which display the title of the Screen for now. `MainScreenNavigator` will be our default view, so we've added it as the first Screen in `AppNavigator`.
+
+We also have created a basic reducer for our navigator (`navigatorReducer`) to track navigation actions in Redux. We use `connect` from `react-redux` to connect our AppNavigator to Redux.
+
+We can update `app.js` to use our new Redux connected `AppWithNavigationState` component and combine `navigationReducer` with our `apollo` reducer:
+
+{{{diffStep 3.2}}}
+
+Refresh the app to see some simple tabs: ![Tabs Image](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step3-2.gif)
+
+On the `Chats` tab, we want to show a list of the user’s groups. We’ll create a `Groups` screen component in a new file `client/src/screens/groups.screen.js`:
+
+{{{diffStep 3.3 files="client/src/screens/groups.screen.js"}}}
+
+And insert `Groups` into our `AppNavigator`:
+
+{{{diffStep 3.3 files="client/src/navigation.js"}}}
+
+When the user presses one of the rows in our `FlatList`, we want to push a new Screen with the message thread for the selected group. For this Screen, we’ll create a new `Messages` component which will hold a list of `Message` components:
+
+{{{diffStep 3.4}}}
+
+We’ll also write the code for the individual `Message` components that populate the `FlatList` in `Messages`:
+
+{{{diffStep 3.5}}}
+
+We add `Messages` to `AppNavigator` so it will stack on top of our `Main` screen when we navigate to it:
+
+{{{diffStep 3.6 files="client/src/navigation.js"}}}
+
+Finally, modify `Groups` to handle pressing a `Group`. We can use `props.navigation.navigate`, which is passed to our `Groups` component via React Navigation, to push the `Messages` Screen:
+
+{{{diffStep 3.6 files="client/src/screens/groups.screen.js"}}}
+
+Our app should now have simple layouts and routing for showing groups and pressing into a group to show that group’s message thread:
+
+![Messages Gif](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step3-6.gif)
+
+# GraphQL Queries with React-Apollo
+Time to connect our data!
+
+On our server, we created a `user` query which will give our client access to plenty of data for a given User. Let’s use this query in our `Groups` component to get the user’s list of groups. It’s good form to keep queries separate of components because queries can often be reused by multiple components. We will create a new folder `client/src/graphql` to house all our queries, and create `user.query.js` inside this folder:
+
+{{{diffStep 3.7}}}
+
+This query should look just like something we would insert into GraphQL Playground. We just use `graphql-tag` to parse the query so that our client will make the proper GraphQL request to the server.
+
+Inside `groups.screen.js`, we will import `USER_QUERY` and connect it to the `Groups` component via `react-apollo`. `react-apollo` exposes a `graphql` module which requires a query, and can be passed an Object with optional configuration parameters as its second argument. Using this second argument, we can declare variables that will be passed to the query:
+
+```js
+import { graphql, compose } from 'react-apollo';
+import { USER_QUERY } from '../graphql/user.query';
+
+// graphql() returns a func that can be applied to a React component
+// set the id variable for USER_QUERY using the component's existing props
+const userQuery = graphql(USER_QUERY, {
+  options: (ownProps) => ({ variables: { id: ownProps.id }}),
+});
+
+// Groups props will now have a 'data' paramater with the results from graphql (e.g. this.props.data.user)
+export default userQuery(Groups);
+```
+
+When we apply `userQuery` to the `Groups` component, Groups’ props will now also contain a `data` property with a loading parameter and the name of our Query (`user`):
+
+```js
+Groups.propTypes = {
+  ...
+  data: {
+    loading: PropTypes.bool,
+    user: PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      email: PropTypes.string.isRequired,
+      groups: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.number.isRequired,
+          name: PropTypes.string.isRequired,
+        }),
+      ),
+    }),
+  }
+};
+```
+
+When the Query is loading, `props.data.loading` will be true and `props.data.user` will be `undefined`. When data is returned, `props.data.loading` will be `false` and `props.data.user` will be populated. There is also a neat trick we can do using the `props` parameter of options we pass to `graphql`:
+
+```js
+const userQuery = graphql(USER_QUERY, {
+  options: (ownProps) => ({ variables: { id: ownProps.id } }),
+  props: ({ data: { loading, user } }) => ({
+    loading, user,
+  }),
+});
+```
+
+By using the `props` parameter in the `graphql` options, we can shape how we want the data to look on our component’s props. Here, we eliminate the `data` piece from `Groups.props` and directly place `loading` and `user` onto `Groups.props`.
+
+Finally, we’ll modify our Groups component to render a loading screen while we are loading, and a list of Groups once we receive the data:
+
+{{{diffStep 3.8}}}
+
+By passing in `{id: 1}` for our variables, we are pretending to be logged in as the User with id = 1. In Part 7 of these tutorials, we will add authentication to our application so we don’t have to fake it anymore.
+
+With our server running, if we refresh the application, we should see the groups displayed for User id = 1: ![User Groups Img](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step3-8.png)
+
+## A Few Different Ways to Connect GraphQL and React
+`react-apollo` actually gives us [multiple ways to connect data from a GraphQL Query to a React component](http://dev.apollodata.com/react/higher-order-components.html).
+
+1. The most straightforward way is to use the `graphql` module from `react-apollo`:
+
+```js
+import { graphql } from 'react-apollo';
+
+...
+
+// graqphql(QUERY, queryConfig)(Component)
+const componentWithData = graphql(USER_QUERY, {
+  options: () => ({ variables: { id: 1 } }),
+  props: ({ data: { loading, user } }) => ({
+    loading, user,
+  }),
+})(Groups);
+
+export default componentWithData;
+```
+
+2. `withApollo` gives direct access to your `ApolloClient` instance as a prop to your wrapped component. If you’re trying to do something fancy with custom logic like a one-off query, this module let’s you take charge of how your component gets its data:
+
+```js
+import { withApollo } from 'react-apollo';
+import ApolloClient from 'apollo-client';
+
+Groups.propTypes = {
+  client: React.PropTypes.instanceOf(ApolloClient),
+}
+
+// GroupsWithApollo now has props.client with ApolloClient
+const GroupsWithApollo = withApollo(Groups);
+```
+
+3. My personal favorite method is the `react-apollo` `compose` module, which makes it easy to elegantly attach multiple queries, mutations, subscriptions, and your Redux store to the component in a single assignment:
+
+```js
+import { graphql, compose } from 'react-apollo';
+import { connect } from 'react-redux';
+
+...
+
+const userQuery = graphql(USER_QUERY, {
+  options: () => ({ variables: { id: 1 } }),
+  props: ({ data: { loading, user } }) => ({
+    loading, user,
+  }),
+});
+const otherQuery = graphql(OTHER_QUERY, otherConfig);
+
+// this is fire!
+const componentWithData = compose(
+  userQuery,                                    // first query
+  otherQuery,                                   // second query
+  connect(mapStateToProps, mapDispatchToProps), // redux
+)(Groups);
+
+export default componentWithData;
+```
+
+# Getting Messages
+I think this might be a good moment to reflect on the coolness of GraphQL.
+
+In the olden days, to get data for the Screen for our Messages, we might start by consuming a REST API that gets Messages. But later down the line, we might also need to show details about the Group. In order to accomplish this, we would either have to make calls to different endpoints for Group details and Messages associated with the Group, or stuff the Messages into our Group endpoint. Womp.
+
+With GraphQL, we can run a single call for exactly what we need in whatever shape we want. We can think about getting data starting with a node and going down the graph. In this case, we can query for a Group, and within that Group, request the associated Messages in the amount we want, and modify that amount when we need.
+
+This time, let’s try using `compose`. Our process will be similar to the one we used before:
+
+1. Create a GraphQL Query for getting the Group
+2. Add configuration params for our Query (like a variable to identify which Group we need)
+3. Use the react-apollo graphql module to wrap the Messages component, passing in the Query and configuration params. We’ll also use compose just to get a feel for it.
+Let’s start by creating our query in `client/src/graphql/group.query.js`:
+
+{{{diffStep 3.9}}}
+
+So this Query is pretty cool. Given a `groupId`, we can get whatever features of the `Group` we need including the `Messages`. For now, we are asking for all the `Messages` in this `Group`. That’s a good starting point, but later we’ll modify this query to return a limited number of `Messages` at a time, and append more `Messages` as the user scrolls.
+
+Finally, let’s attach our `GROUP_QUERY` to the `Messages` component:
+
+{{{diffStep "3.10"}}}
+
+If we fire up the app, we should see our messages: ![Result Img](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step3-10.gif)
