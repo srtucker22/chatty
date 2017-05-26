@@ -1,17 +1,24 @@
-import { _ } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
   FlatList,
+  ActivityIndicator,
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
 } from 'react-native';
+import { graphql } from 'react-apollo';
+
+import { USER_QUERY } from '../graphql/user.query';
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
+    flex: 1,
+  },
+  loading: {
+    justifyContent: 'center',
     flex: 1,
   },
   groupContainer: {
@@ -29,12 +36,6 @@ const styles = StyleSheet.create({
     flex: 0.7,
   },
 });
-
-// create fake data to populate our ListView
-const fakeData = () => _.times(100, i => ({
-  id: i,
-  name: `Group ${i}`,
-}));
 
 class Group extends Component {
   constructor(props) {
@@ -86,11 +87,22 @@ class Groups extends Component {
   renderItem = ({ item }) => <Group group={item} goToMessages={this.goToMessages} />;
 
   render() {
+    const { loading, user } = this.props;
+
+    // render loading placeholder while we fetch messages
+    if (loading || !user) {
+      return (
+        <View style={[styles.loading, styles.container]}>
+          <ActivityIndicator />
+        </View>
+      );
+    }
+
     // render list of groups for user
     return (
       <View style={styles.container}>
         <FlatList
-          data={fakeData()}
+          data={user.groups}
           keyExtractor={this.keyExtractor}
           renderItem={this.renderItem}
         />
@@ -102,6 +114,24 @@ Groups.propTypes = {
   navigation: PropTypes.shape({
     navigate: PropTypes.func,
   }),
+  loading: PropTypes.bool,
+  user: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    email: PropTypes.string.isRequired,
+    groups: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+      }),
+    ),
+  }),
 };
 
-export default Groups;
+const userQuery = graphql(USER_QUERY, {
+  options: () => ({ variables: { id: 1 } }), // fake the user for now
+  props: ({ data: { loading, user } }) => ({
+    loading, user,
+  }),
+});
+
+export default userQuery(Groups);
