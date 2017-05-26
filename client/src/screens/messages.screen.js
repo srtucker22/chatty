@@ -1,5 +1,5 @@
-import { _ } from 'lodash';
 import {
+  ActivityIndicator,
   FlatList,
   StyleSheet,
   View,
@@ -7,8 +7,10 @@ import {
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import randomColor from 'randomcolor';
+import { graphql, compose } from 'react-apollo';
 
 import Message from '../components/message.component';
+import GROUP_QUERY from '../graphql/group.query';
 
 const styles = StyleSheet.create({
   container: {
@@ -17,22 +19,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
   },
-});
-
-const fakeData = () => _.times(100, i => ({
-  // every message will have a different color
-  color: randomColor(),
-  // every 5th message will look like it's from the current user
-  isCurrentUser: i % 5 === 0,
-  message: {
-    id: i,
-    createdAt: new Date().toISOString(),
-    from: {
-      username: `Username ${i}`,
-    },
-    text: `Message ${i}`,
+  loading: {
+    justifyContent: 'center',
   },
-}));
+});
 
 class Messages extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -42,22 +32,66 @@ class Messages extends Component {
     };
   };
 
-  keyExtractor = item => item.message.id.toString();
+  constructor(props) {
+    super(props);
+    const usernameColors = {};
+    if (props.group && props.group.users) {
+      props.group.users.forEach((user) => {
+        usernameColors[user.username] = randomColor();
+      });
+    }
 
-  renderItem = ({ item: { isCurrentUser, message, color } }) => (
+    this.state = {
+      usernameColors,
+    };
+
+    this.renderItem = this.renderItem.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const usernameColors = {};
+    // check for new messages
+    if (nextProps.group) {
+      if (nextProps.group.users) {
+        // apply a color to each user
+        nextProps.group.users.forEach((user) => {
+          usernameColors[user.username] = this.state.usernameColors[user.username] || randomColor();
+        });
+      }
+
+      this.setState({
+        usernameColors,
+      });
+    }
+  }
+
+  keyExtractor = item => item.id.toString();
+
+  renderItem = ({ item: message }) => (
     <Message
-      color={color}
-      isCurrentUser={isCurrentUser}
+      color={this.state.usernameColors[message.from.username]}
+      isCurrentUser={message.from.id === 1} // for now until we implement auth
       message={message}
     />
   )
 
   render() {
+    const { loading, group } = this.props;
+
+    // render loading placeholder while we fetch messages
+    if (loading && !group) {
+      return (
+        <View style={[styles.loading, styles.container]}>
+          <ActivityIndicator />
+        </View>
+      );
+    }
+
     // render list of messages for group
     return (
       <View style={styles.container}>
         <FlatList
-          data={fakeData()}
+          data={group.messages.slice().reverse()}
           keyExtractor={this.keyExtractor}
           renderItem={this.renderItem}
           ListEmptyComponent={<View />}
@@ -67,4 +101,25 @@ class Messages extends Component {
   }
 }
 
-export default Messages;
+Messages.propTypes = {
+  group: PropTypes.shape({
+    messages: PropTypes.array,
+    users: PropTypes.array,
+  }),
+  loading: PropTypes.bool,
+};
+
+const groupQuery = graphql(GROUP_QUERY, {
+  options: ownProps => ({
+    variables: {
+      groupId: ownProps.navigation.state.params.groupId,
+    },
+  }),
+  props: ({ data: { loading, group } }) => ({
+    loading, group,
+  }),
+});
+
+export default compose(
+  groupQuery,
+)(Messages);
