@@ -11,6 +11,10 @@ export const USER_QUERY = gql`
         id
         name
       }
+      friends {
+        id
+        username
+      }
     }
   }
 `;
