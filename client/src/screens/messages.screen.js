@@ -74,6 +74,8 @@ class Messages extends Component {
       groupId: this.props.navigation.state.params.groupId,
       userId: 1, // faking the user for now
       text,
+    }).then(() => {
+      this.flatList.scrollToEnd({ animated: true });
     });
   }
 
@@ -108,6 +110,7 @@ class Messages extends Component {
         style={styles.container}
       >
         <FlatList
+          ref={(ref) => { this.flatList = ref; }}
           data={group.messages.slice().reverse()}
           keyExtractor={this.keyExtractor}
           renderItem={this.renderItem}
