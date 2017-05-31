@@ -1,0 +1,199 @@
+This is the fourth blog in a multipart series where we will be building Chatty, a WhatsApp clone, using [React Native](https://facebook.github.io/react-native/) and [Apollo](http://dev.apollodata.com/).
+
+Here’s what we will accomplish in this tutorial:
+1. Design **GraphQL Mutations** and add them to the GraphQL Schemas on our server
+2. Modify the layout on our React Native client to let users send Messages
+3. Build GraphQL Mutations on our RN client and connect them to components using `react-apollo`
+4. Add **Optimistic UI** to our GraphQL Mutations so our RN client updates as soon as the Message is sent — even before the server sends a response!
+
+***YOUR CHALLENGE***
+1. Add GraphQL Mutations on our server for creating, modifying, and deleting Groups
+2. Add new Screens to our React Native app for creating, modifying, and deleting Groups
+3. Build GraphQL Queries and Mutations for our new Screens and connect them using `react-apollo`
+
+# Adding GraphQL Mutations on the Server
+While GraphQL Queries let us fetch data from our server, GraphQL Mutations allow us to modify our server held data.
+
+To add a mutation to our GraphQL endpoint, we start by defining the mutation in our GraphQL Schema much like we did with queries. We’ll define a `createMessage` mutation that will enable users to send a new message to a Group:
+
+```graphql
+type Mutation {
+  # create a new message
+  # text is the message text
+  # userId is the id of the user sending the message
+  # groupId is the id of the group receiving the message
+  createMessage(text: String!, userId: Int!, groupId: Int!): Message
+}
+```
+
+GraphQL Mutations are written nearly identically like GraphQL Queries. For now, we will require a `userId` parameter to identify who is creating the `Message`, but we won’t need this field once we implement authentication in a future tutorial.
+
+Let’s update our Schema in `server/data/schema.js` to include the mutation:
+
+{{{diffStep 4.1}}}
+
+We also need to modify our resolvers to handle our new mutation. We’ll modify `server/data/resolvers.js` as follows:
+
+{{{diffStep 4.2}}}
+
+That’s it! When a client uses `createMessage`, the resolver will use the `Message` model passed by our connector and call `Message.create` with arguments from the mutation. The `Message.create` function returns a Promise that will resolve with the newly created `Message`.
+
+We can easily test our newly minted `createMessage` mutation in GraphQL Playground to make sure everything works: ![Create Message Img](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step4-2.png)
+
+# Designing the Input
+Wow, that was way faster than when we added queries! All the heavy lifting we did in the first 3 parts of this series is starting to pay off….
+
+Now that our server allows clients to create messages, we can build that functionality into our React Native client. First, we’ll start by creating a new component `MessageInput` where our users will be able to input their messages.
+
+For this component, let's use **cool icons**. [`react-native-vector-icons`](https://github.com/oblador/react-native-vector-icons) is the goto package for adding icons to React Native. Please follow the instructions in the [`react-native-vector-icons` README](https://github.com/oblador/react-native-vector-icons) before moving onto the next step.
+
+```sh
+# make sure you're adding this package in the client folder!!!
+cd client
+
+npm i react-native-vector-icons
+react-native link
+# this is not enough to install icons!!! PLEASE FOLLOW THE INSTRUCTIONS IN THE README TO PROPERLY INSTALL ICONS!
+```
+
+After completing the steps in the README to install icons, we can start putting together the `MessageInput` component in a new file `client/src/components/message-input.component.js`:
+
+{{{diffStep 4.3 files="client/src/components/message-input.component.js"}}}
+
+Our `MessageInput` component is a `View` that wraps a controlled `TextInput` and an [`Icon.Button`](https://github.com/oblador/react-native-vector-icons#iconbutton-component). When the button is pressed, `props.send` will be called with the current state of the `TextInput` text and then the `TextInput` will clear. We’ve also added some styling to keep everything looking snazzy.
+
+Let’s add `MessageInput` to the bottom of the `Messages` screen and create a placeholder `send` function:
+
+{{{diffStep 4.4}}}
+
+It should look like this: ![Message Input Image](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step4-4.png)
+
+But **don’t be fooled by your simulator!** This UI will break on a phone because of the keyboard: ![Broken Input Image](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step4-4-2.png)
+
+You are not the first person to groan over this issue. For you and the many groaners out there, the wonderful devs at Facebook have your back. [`KeyboardAvoidingView`](https://facebook.github.io/react-native/docs/keyboardavoidingview.html) to the rescue!
+
+{{{diffStep 4.5}}}
+
+![Fixed Input Image](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step4-5.png)
+
+Our layout looks ready. Now let’s make it work!
+
+# Adding GraphQL Mutations on the Client
+Let’s start by defining our GraphQL Mutation like we would using GraphQL Playground:
+
+```graphql
+mutation createMessage($text: String!, $userId: Int!, $groupId: Int!) {
+  createMessage(text: $text, userId: $userId, groupId: $groupId) {
+    id
+    from {
+      id
+      username
+    }
+    createdAt
+    text
+  }
+}
+```
+
+That looks fine, but notice the `Message` fields we want to see returned look exactly like the `Message` fields we are using for `GROUP_QUERY`:
+
+```graphql
+query group($groupId: Int!) {
+  group(id: $groupId) {
+    id
+    name
+    users {
+      id
+      username
+    }
+    messages {
+      id
+      from {
+        id
+        username
+      }
+      createdAt
+      text
+    }
+  }
+}
+```
+
+GraphQL allows us to reuse pieces of queries and mutations with [**Fragments**](http://graphql.org/learn/queries/#fragments). We can factor out this common set of fields into a `MessageFragment` that looks like this:
+
+{{{diffStep 4.6}}}
+
+Now we can apply `MESSAGE_FRAGMENT` to `GROUP_QUERY` by changing our code as follows:
+
+{{{diffStep 4.7}}}
+
+Let’s also write our `createMessage` mutation using `messageFragment` in a new file `client/src/graphql/create-message.mutation.js`:
+
+{{{diffStep 4.8}}}
+
+Now all we have to do is plug our mutation into our `Messages` component using the `graphql` module from `react-apollo`. Before we connect everything, let’s see what a mutation call with the `graphql` module looks like:
+
+```js
+const createMessage = graphql(CREATE_MESSAGE_MUTATION, {
+  props: ({ ownProps, mutate }) => ({
+    createMessage: ({ text, userId, groupId }) =>
+      mutate({
+        variables: { text, userId, groupId },
+      }),
+  }),
+});
+```
+
+Just like with a GraphQL Query, we first pass our mutation to `graphql`, followed by an Object with configuration params. The `props` param accepts a function with named arguments including `ownProps` (the components current props) and `mutate`. This function should return an Object with the name of the function that we plan to call inside our component, which executes `mutate` with the variables we wish to pass. If that sounds complicated, it’s because it is. Kudos to the Meteor team for putting it together though, because it’s actually some very clever code.
+
+At the end of the day, once you write your first mutation, it’s really mostly a matter of copy/paste and changing the names of the variables.
+
+Okay, so let’s put it all together in `messages.screen.js`:
+
+{{{diffStep 4.9}}}
+
+By attaching `createMessage` with `compose`, we attach a `createMessage` function to the component’s `props`. We call `props.createMessage` in `send` with the required variables (we’ll keep faking the user for now). When the user presses the send button, this method will get called and the mutation should execute.
+
+Let’s run the app and see what happens: ![Send Fail Gif](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step4-9.gif)
+
+What went wrong? Well technically nothing went wrong. Our mutation successfully executed, but we’re not seeing our message pop up. Why? **Running a mutation doesn’t automatically update our queries with new data!** If we were to refresh the page, we’d actually see our message. This issue only arrises when we are adding or removing data with our mutation.
+
+To overcome this challenge, `react-apollo` lets us declare a property `update` within the argument we pass to mutate. In `update`, we specify which queries should update after the mutation executes and how the data will transform.
+
+Our modified `createMessage` should look like this:
+
+{{{diffStep "4.10"}}}
+
+In `update`, we first retrieve the existing data for the query we want to update (`GROUP_QUERY`) along with the specific variables we passed to that query. This data comes to us from our Redux store of Apollo data. We check to see if the new `Message` returned from `createMessage` already exists (in case of race conditions down the line), and then update the previous query result by sticking the new message in front. We then use this modified data object and rewrite the results to the Apollo store with `store.writeQuery`, being sure to pass all the variables associated with our query. This will force `props` to change reference and the component to rerender. ![Fixed Send Gif](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step4-10.gif)
+
+# Optimistic UI
+### But wait! There’s more!
+`update` will currently only update the query after the mutation succeeds and a response is sent back on the server. But we don’t want to wait till the server returns data  —  we crave instant gratification! If a user with shoddy internet tried to send a message and it didn’t show up right away, they’d probably try and send the message again and again and end up sending the message multiple times… and then they’d yell at customer support!
+
+**Optimistic UI** is our weapon for protecting customer support. We know the shape of the data we expect to receive from the server, so why not fake it until we get a response? `react-apollo` lets us accomplish this by adding an `optimisticResponse` parameter to mutate. In our case it looks like this:
+
+{{{diffStep 4.11}}}
+
+The Object returned from `optimisticResponse` is what the data should look like from our server when the mutation succeeds. We need to specify the `__typename` for all  values in our optimistic response just like our server would. Even though we don’t know all values for all fields, we know enough to populate the ones that will show up in the UI, like the text, user, and message creation time. This will essentially be a placeholder until the server responds.
+
+Let’s also modify our UI a bit so that our `FlatList` scrolls to the bottom when we send a message as soon as we receive new data:
+
+{{{diffStep 4.12}}}
+
+![Scroll to Bottom Gif](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step4-12.gif)
+
+### 🔥🔥🔥!!!
+
+# **YOUR CHALLENGE**
+First, let’s take a break. We’ve definitely earned it.
+
+Now that we’re comfortable using GraphQL Queries and Mutations and some tricky stuff in React Native, we can do most of the things we need to do for most basic applications. In fact, there are a number of Chatty features that we can already implement without knowing much else. This post is already plenty long, but there are features left to be built. So with that said, I like to suggest that you try to complete the following features on your own before we move on:
+
+1. Add GraphQL Mutations on our server for creating, modifying, and deleting `Groups`
+2. Add new Screens to our React Native app for creating, modifying, and deleting `Groups`
+3. Build GraphQL Queries and Mutations for our new Screens and connect them using `react-apollo`
+4. Include `update` for these new mutations where necessary
+
+If you want to see some UI or you want a hint or you don’t wanna write any code, that’s cool too! Below is some code with these features added. ![Groups Gif](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step4-13.gif)
+
+{{{diffStep 4.13}}}
