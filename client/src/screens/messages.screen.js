@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   FlatList,
+  KeyboardAvoidingView,
   StyleSheet,
   View,
 } from 'react-native';
@@ -96,7 +97,12 @@ class Messages extends Component {
 
     // render list of messages for group
     return (
-      <View style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={'position'}
+        contentContainerStyle={styles.container}
+        keyboardVerticalOffset={64}
+        style={styles.container}
+      >
         <FlatList
           data={group.messages.slice().reverse()}
           keyExtractor={this.keyExtractor}
@@ -104,7 +110,7 @@ class Messages extends Component {
           ListEmptyComponent={<View />}
         />
         <MessageInput send={this.send} />
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 }
