@@ -84,10 +84,12 @@ class Messages extends Component {
 
     this.state = {
       usernameColors,
+      refreshing: false,
     };
 
     this.renderItem = this.renderItem.bind(this);
     this.send = this.send.bind(this);
+    this.onEndReached = this.onEndReached.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -107,13 +109,17 @@ class Messages extends Component {
     }
   }
 
+  onEndReached() {
+    console.log('TODO: onEndReached');
+  }
+
   send(text) {
     this.props.createMessage({
       groupId: this.props.navigation.state.params.groupId,
       userId: 1, // faking the user for now
       text,
     }).then(() => {
-      this.flatList.scrollToEnd({ animated: true });
+      this.flatList.scrollToIndex({ index: 0, animated: true });
     });
   }
 
@@ -131,7 +137,7 @@ class Messages extends Component {
     const { loading, group } = this.props;
 
     // render loading placeholder while we fetch messages
-    if (loading && !group) {
+    if (loading || !group) {
       return (
         <View style={[styles.loading, styles.container]}>
           <ActivityIndicator />
@@ -149,10 +155,12 @@ class Messages extends Component {
       >
         <FlatList
           ref={(ref) => { this.flatList = ref; }}
-          data={group.messages.slice().reverse()}
+          inverted
+          data={group.messages}
           keyExtractor={this.keyExtractor}
           renderItem={this.renderItem}
           ListEmptyComponent={<View />}
+          onEndReached={this.onEndReached}
         />
         <MessageInput send={this.send} />
       </KeyboardAvoidingView>
