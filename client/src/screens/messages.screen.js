@@ -151,7 +151,29 @@ const createMessageMutation = graphql(CREATE_MESSAGE_MUTATION, {
     createMessage: ({ text, userId, groupId }) =>
       mutate({
         variables: { text, userId, groupId },
+        update: (store, { data: { createMessage } }) => {
+          // Read the data from our cache for this query.
+          const groupData = store.readQuery({
+            query: GROUP_QUERY,
+            variables: {
+              groupId,
+            },
+          });
+
+          // Add our message from the mutation to the end.
+          groupData.group.messages.unshift(createMessage);
+
+          // Write our data back to the cache.
+          store.writeQuery({
+            query: GROUP_QUERY,
+            variables: {
+              groupId,
+            },
+            data: groupData,
+          });
+        },
       }),
+
   }),
 });
 
