@@ -111,7 +111,17 @@ class Messages extends Component {
   }
 
   onEndReached() {
-    console.log('TODO: onEndReached');
+    if (!this.state.loadingMoreEntries &&
+      this.props.group.messages.pageInfo.hasNextPage) {
+      this.setState({
+        loadingMoreEntries: true,
+      });
+      this.props.loadMoreEntries().then(() => {
+        this.setState({
+          loadingMoreEntries: false,
+        });
+      });
+    }
   }
 
   send(text) {
