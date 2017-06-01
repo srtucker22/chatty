@@ -74,6 +74,7 @@ export const typeDefs = gql`
     # Subscription fires on every message added
     # for any of the groups with one of these groupIds
     messageAdded(userId: Int, groupIds: [Int]): Message
+    groupAdded(userId: Int): Group
   }
   
   schema {
