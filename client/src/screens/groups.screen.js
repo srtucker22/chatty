@@ -191,7 +191,7 @@ class Groups extends Component {
     const { loading, user, networkStatus } = this.props;
 
     // render loading placeholder while we fetch messages
-    if (loading) {
+    if (loading || !user) {
       return (
         <View style={[styles.loading, styles.container]}>
           <ActivityIndicator />
