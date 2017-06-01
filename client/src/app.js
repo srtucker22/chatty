@@ -16,6 +16,21 @@ import auth from './reducers/auth.reducer';
 
 const networkInterface = createNetworkInterface({ uri: 'http://localhost:8080/graphql' });
 
+// middleware for requests
+networkInterface.use([{
+  applyMiddleware(req, next) {
+    if (!req.options.headers) {
+      req.options.headers = {};
+    }
+    // get the authentication token from local storage if it exists
+    const jwt = store.getState().auth.jwt;
+    if (jwt) {
+      req.options.headers.authorization = `Bearer ${jwt}`;
+    }
+    next();
+  },
+}]);
+
 // Create WebSocket client
 export const wsClient = new SubscriptionClient('ws://localhost:8080/subscriptions', {
   reconnect: true,
