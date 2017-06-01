@@ -102,9 +102,11 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 
 // Create WebSocket client
 export const wsClient = new SubscriptionClient(`ws://${URL}/subscriptions`, {
+  lazy: true,
   reconnect: true,
-  connectionParams: {
-    // Pass any arguments you want for initialization
+  connectionParams() {
+    // get the authentication token from local storage if it exists
+    return { jwt: store.getState().auth.jwt };
   },
 });
 
