@@ -10,6 +10,9 @@ import { Provider } from 'react-redux';
 import { ReduxCache, apolloReducer } from 'apollo-cache-redux';
 import ReduxLink from 'apollo-link-redux';
 import { onError } from 'apollo-link-error';
+import { WebSocketLink } from 'apollo-link-ws';
+import { getMainDefinition } from 'apollo-utilities';
+import { SubscriptionClient } from 'subscriptions-transport-ws';
 
 import AppWithNavigationState, {
   navigationReducer,
@@ -39,10 +42,33 @@ const errorLink = onError((errors) => {
 
 const httpLink = createHttpLink({ uri: `http://${URL}` });
 
+// Create WebSocket client
+export const wsClient = new SubscriptionClient(`ws://${URL}/graphql`, {
+  reconnect: true,
+  connectionParams: {
+    // Pass any arguments you want for initialization
+  },
+});
+
+const webSocketLink = new WebSocketLink(wsClient);
+
+const requestLink = ({ queryOrMutationLink, subscriptionLink }) =>
+  ApolloLink.split(
+    ({ query }) => {
+      const { kind, operation } = getMainDefinition(query);
+      return kind === 'OperationDefinition' && operation === 'subscription';
+    },
+    subscriptionLink,
+    queryOrMutationLink,
+  );
+
 const link = ApolloLink.from([
   reduxLink,
   errorLink,
-  httpLink,
+  requestLink({
+    queryOrMutationLink: httpLink,
+    subscriptionLink: webSocketLink,
+  }),
 ]);
 
 export const client = new ApolloClient({
