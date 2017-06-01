@@ -11,6 +11,7 @@ import { graphql, compose } from 'react-apollo';
 import update from 'immutability-helper';
 import { map } from 'lodash';
 import { Buffer } from 'buffer';
+import { REHYDRATE } from 'redux-persist';
 
 import Groups from './screens/groups.screen';
 import Messages from './screens/messages.screen';
@@ -18,6 +19,7 @@ import FinalizeGroup from './screens/finalize-group.screen';
 import GroupDetails from './screens/group-details.screen';
 import NewGroup from './screens/new-group.screen';
 import Signin from './screens/signin.screen';
+import Settings from './screens/settings.screen';
 
 import { USER_QUERY } from './graphql/user.query';
 import MESSAGE_ADDED_SUBSCRIPTION from './graphql/message-added.subscription';
@@ -25,35 +27,12 @@ import GROUP_ADDED_SUBSCRIPTION from './graphql/group-added.subscription';
 
 import { wsClient } from './app';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
-  },
-  tabText: {
-    color: '#777',
-    fontSize: 10,
-    justifyContent: 'center',
-  },
-  selected: {
-    color: 'blue',
-  },
-});
-
-const TestScreen = title => () => (
-  <View style={styles.container}>
-    <Text>
-      {title}
-    </Text>
-  </View>
-);
+import { LOGOUT } from './constants/constants';
 
 // tabs in main screen
 const MainScreenNavigator = TabNavigator({
   Chats: { screen: Groups },
-  Settings: { screen: TestScreen('Settings') },
+  Settings: { screen: Settings },
 }, {
   initialRouteName: 'Chats',
 });
@@ -79,8 +58,35 @@ const initialState=AppNavigator.router.getStateForAction(NavigationActions.reset
 	],
 }));
 
+// reducer code
 export const navigationReducer = (state = initialState, action) => {
-  const nextState = AppNavigator.router.getStateForAction(action, state);
+  let nextState = AppNavigator.router.getStateForAction(action, state);
+  switch (action.type) {
+    case REHYDRATE:
+      // convert persisted data to Immutable and confirm rehydration
+      if (!action.payload.auth || !action.payload.auth.jwt) {
+        const { routes, index } = state;
+        if (routes[index].routeName !== 'Signin') {
+          nextState = AppNavigator.router.getStateForAction(
+            NavigationActions.navigate({ routeName: 'Signin' }),
+            state,
+          );
+        }
+      }
+      break;
+    case LOGOUT:
+      const { routes, index } = state;
+      if (routes[index].routeName !== 'Signin') {
+        nextState = AppNavigator.router.getStateForAction(
+          NavigationActions.navigate({ routeName: 'Signin' }),
+          state,
+        );
+      }
+      break;
+    default:
+      nextState = AppNavigator.router.getStateForAction(action, state);
+      break;
+  }
 
   // Simply return the original `state` if `nextState` is null or undefined.
   return nextState || state;
