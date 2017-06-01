@@ -23,7 +23,8 @@
 		"react-navigation": "^1.0.0-beta.11",
 		"react-redux": "^5.0.5",
 		"redux": "^3.7.2",
-		"redux-devtools-extension": "^2.13.2"
+		"redux-devtools-extension": "^2.13.2",
+		"subscriptions-transport-ws": "^0.8.2"
 	},
 	"devDependencies": {
 		"babel-jest": "20.0.3",
