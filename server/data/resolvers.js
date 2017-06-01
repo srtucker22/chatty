@@ -1,4 +1,6 @@
 import GraphQLDate from 'graphql-date';
+import { withFilter } from 'apollo-server';
+
 import { Group, Message, User } from './connectors';
 import { pubsub } from '../subscriptions';
 
@@ -82,8 +84,16 @@ export const resolvers = {
   },
   Subscription: {
     messageAdded: {
-      // the subscription payload is the message.
-      subscribe: () => pubsub.asyncIterator(MESSAGE_ADDED_TOPIC),
+      subscribe: withFilter(
+        () => pubsub.asyncIterator(MESSAGE_ADDED_TOPIC),
+        (payload, args) => {
+          return Boolean(
+            args.groupIds &&
+            ~args.groupIds.indexOf(payload.messageAdded.groupId) &&
+            args.userId !== payload.messageAdded.userId, // don't send to user creating message
+          );
+        },
+      ),
     },
   },
   Group: {
