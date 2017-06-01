@@ -24,7 +24,8 @@ app.use('/graphql', bodyParser.json(), jwt({
   schema: executableSchema,
   context: {
     user: req.user ?
-      User.findOne({ where: { id: req.user.id } }) : Promise.resolve(null),
+      User.findOne({ where: { id: req.user.id, version: req.user.version } }) :
+      Promise.resolve(null),
   },
 })));
 
