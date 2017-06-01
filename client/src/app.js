@@ -10,9 +10,11 @@ import ApolloClient, { createNetworkInterface } from 'apollo-client';
 import { SubscriptionClient, addGraphQLSubscriptions } from 'subscriptions-transport-ws';
 import { persistStore, autoRehydrate } from 'redux-persist';
 import thunk from 'redux-thunk';
+import _ from 'lodash';
 
 import AppWithNavigationState, { navigationReducer } from './navigation';
 import auth from './reducers/auth.reducer';
+import { logout } from './actions/auth.actions';
 
 const networkInterface = createNetworkInterface({ uri: 'http://localhost:8080/graphql' });
 
@@ -28,6 +30,33 @@ networkInterface.use([{
       req.options.headers.authorization = `Bearer ${jwt}`;
     }
     next();
+  },
+}]);
+
+// afterware for responses
+networkInterface.useAfter([{
+  applyAfterware({ response }, next) {
+    if (!response.ok) {
+      response.clone().text().then((bodyText) => {
+        console.log(`Network Error: ${response.status} (${response.statusText}) - ${bodyText}`);
+        next();
+      });
+    } else {
+      let isUnauthorized = false;
+      response.clone().json().then(({ errors }) => {
+        if (errors) {
+          console.log('GraphQL Errors:', errors);
+          if (_.some(errors, { message: 'Unauthorized' })) {
+            isUnauthorized = true;
+          }
+        }
+      }).then(() => {
+        if (isUnauthorized) {
+          store.dispatch(logout());
+        }
+        next();
+      });
+    }
   },
 }]);
 
