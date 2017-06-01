@@ -10,9 +10,10 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import { graphql } from 'react-apollo';
+import { graphql, compose } from 'react-apollo';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { connect } from 'react-redux';
 
 import { USER_QUERY } from '../graphql/user.query';
 
@@ -95,9 +96,6 @@ Header.propTypes = {
   onPress: PropTypes.func.isRequired,
 };
 
-// we'll fake signin for now
-let IS_SIGNED_IN = false;
-
 class Group extends Component {
   constructor(props) {
     super(props);
@@ -170,16 +168,6 @@ class Groups extends Component {
     this.goToMessages = this.goToMessages.bind(this);
     this.goToNewGroup = this.goToNewGroup.bind(this);
     this.onRefresh = this.onRefresh.bind(this);
-  }
-
-  componentDidMount() {
-    if (!IS_SIGNED_IN) {
-      IS_SIGNED_IN = true;
-
-      const { navigate } = this.props.navigation;
-
-      navigate('Signin');
-    }
   }
 
   onRefresh() {
@@ -257,11 +245,18 @@ Groups.propTypes = {
 };
 
 const userQuery = graphql(USER_QUERY, {
-  skip: ownProps => true, // fake it -- we'll use ownProps with auth
-  options: () => ({ variables: { id: 1 } }), // fake the user for now
+  skip: ownProps => !ownProps.auth || !ownProps.auth.jwt,
+  options: ownProps => ({ variables: { id: ownProps.auth.id } }),
   props: ({ data: { loading, networkStatus, refetch, user } }) => ({
     loading, networkStatus, refetch, user,
   }),
 });
 
-export default userQuery(Groups);
+const mapStateToProps = ({ auth }) => ({
+  auth,
+});
+
+export default compose(
+  connect(mapStateToProps),
+  userQuery,
+)(Groups);
