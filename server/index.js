@@ -4,7 +4,10 @@ import bodyParser from 'body-parser';
 import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
+import jwt from 'express-jwt';
 
+import { JWT_SECRET } from './config';
+import { User } from './data/connectors';
 import { executableSchema } from './data/schema';
 
 const GRAPHQL_PORT = 8080;
@@ -14,10 +17,16 @@ const SUBSCRIPTIONS_PATH = '/subscriptions';
 const app = express();
 
 // `context` must be an object and can't be undefined when using connectors
-app.use('/graphql', bodyParser.json(), graphqlExpress({
+app.use('/graphql', bodyParser.json(), jwt({
+  secret: JWT_SECRET,
+  credentialsRequired: false,
+}), graphqlExpress(req => ({
   schema: executableSchema,
-  context: {}, // at least(!) an empty object
-}));
+  context: {
+    user: req.user ?
+      User.findOne({ where: { id: req.user.id } }) : Promise.resolve(null),
+  },
+})));
 
 app.use('/graphiql', graphiqlExpress({
   endpointURL: GRAPHQL_PATH,
