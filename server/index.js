@@ -5,10 +5,13 @@ import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
 import jwt from 'express-jwt';
+import jsonwebtoken from 'jsonwebtoken';
 
 import { JWT_SECRET } from './config';
 import { User } from './data/connectors';
+import { getSubscriptionDetails } from './subscriptions'; // make sure this imports before executableSchema!
 import { executableSchema } from './data/schema';
+import { subscriptionLogic } from './data/logic';
 
 const GRAPHQL_PORT = 8080;
 const GRAPHQL_PATH = '/graphql';
@@ -46,6 +49,40 @@ const subscriptionServer = SubscriptionServer.create({
   schema: executableSchema,
   execute,
   subscribe,
+  onConnect(connectionParams, webSocket) {
+    const userPromise = new Promise((res, rej) => {
+      if (connectionParams.jwt) {
+        jsonwebtoken.verify(connectionParams.jwt, JWT_SECRET,
+        (err, decoded) => {
+          if (err) {
+            rej('Invalid Token');
+          }
+
+          res(User.findOne({ where: { id: decoded.id, version: decoded.version } }));
+        });
+      } else {
+        rej('No Token');
+      }
+    });
+
+    return userPromise.then((user) => {
+      if (user) {
+        return { user: Promise.resolve(user) };
+      }
+
+      return Promise.reject('No User');
+    });
+  },
+  onOperation(parsedMessage, baseParams) {
+    // we need to implement this!!!
+    const { subscriptionName, args } = getSubscriptionDetails({
+      baseParams,
+      schema: executableSchema,
+    });
+
+    // we need to implement this too!!!
+    return subscriptionLogic[subscriptionName](baseParams, args, baseParams.context);
+  },
 }, {
   server: graphQLServer,
   path: SUBSCRIPTIONS_PATH,
