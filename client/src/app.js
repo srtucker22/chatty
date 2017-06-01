@@ -7,6 +7,7 @@ import ApolloClient, { createNetworkInterface } from 'apollo-client';
 import { SubscriptionClient, addGraphQLSubscriptions } from 'subscriptions-transport-ws';
 
 import AppWithNavigationState, { navigationReducer } from './navigation';
+import auth from './reducers/auth.reducer';
 
 const networkInterface = createNetworkInterface({ uri: 'http://localhost:8080/graphql' });
 
@@ -32,6 +33,7 @@ const store = createStore(
   combineReducers({
     apollo: client.reducer(),
     nav: navigationReducer,
+    auth,
   }),
   {}, // initial state
   composeWithDevTools(
