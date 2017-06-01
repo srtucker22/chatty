@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import { Group, Message, User } from './connectors';
 import { pubsub } from '../subscriptions';
 import { JWT_SECRET } from '../config';
-import { groupLogic, messageLogic, userLogic } from './logic';
+import { groupLogic, messageLogic, userLogic, subscriptionLogic } from './logic';
 
 const MESSAGE_ADDED_TOPIC = 'messageAdded';
 const GROUP_ADDED_TOPIC = 'groupAdded';
@@ -106,7 +106,10 @@ export const resolvers = {
   Subscription: {
     messageAdded: {
       subscribe: withFilter(
-        () => pubsub.asyncIterator(MESSAGE_ADDED_TOPIC),
+        (payload, args, ctx) => pubsub.asyncAuthIterator(
+          MESSAGE_ADDED_TOPIC,
+          subscriptionLogic.messageAdded(payload, args, ctx),
+        ),
         (payload, args, ctx) => {
           return ctx.user.then((user) => {
             return Boolean(
@@ -120,7 +123,10 @@ export const resolvers = {
     },
     groupAdded: {
       subscribe: withFilter(
-        () => pubsub.asyncIterator(GROUP_ADDED_TOPIC),
+        (payload, args, ctx) => pubsub.asyncAuthIterator(
+          GROUP_ADDED_TOPIC,
+          subscriptionLogic.groupAdded(payload, args, ctx),
+        ),
         (payload, args, ctx) => {
           return ctx.user.then((user) => {
             return Boolean(
