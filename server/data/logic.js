@@ -20,16 +20,16 @@ export const messageLogic = {
   createMessage(_, { text, groupId }, ctx) {
     return getAuthenticatedUser(ctx)
       .then(user => user.getGroups({ where: { id: groupId }, attributes: ['id'] })
-      .then((group) => {
-        if (group.length) {
-          return Message.create({
-            userId: user.id,
-            text,
-            groupId,
-          });
-        }
-        return Promise.reject('Unauthorized');
-      }));
+        .then((group) => {
+          if (group.length) {
+            return Message.create({
+              userId: user.id,
+              text,
+              groupId,
+            });
+          }
+          return Promise.reject('Unauthorized');
+        }));
   },
 };
 
@@ -37,12 +37,62 @@ export const groupLogic = {
   users(group) {
     return group.getUsers({ attributes: ['id', 'username'] });
   },
-  messages(group, args) {
+  messages(group, { first, last, before, after }) {
+    // base query -- get messages from the right group
+    const where = { groupId: group.id };
+
+    // because we return messages from newest -> oldest
+    // before actually means newer (date > cursor)
+    // after actually means older (date < cursor)
+
+    if (before) {
+      // convert base-64 to utf8 iso date and use in Date constructor
+      where.id = { $gt: Buffer.from(before, 'base64').toString() };
+    }
+
+    if (after) {
+      where.id = { $lt: Buffer.from(after, 'base64').toString() };
+    }
+
     return Message.findAll({
-      where: { groupId: group.id },
-      order: [['createdAt', 'DESC']],
-      limit: args.limit,
-      offset: args.offset,
+      where,
+      order: [['id', 'DESC']],
+      limit: first || last,
+    }).then((messages) => {
+      const edges = messages.map(message => ({
+        cursor: Buffer.from(message.id.toString()).toString('base64'), // convert createdAt to cursor
+        node: message, // the node is the message itself
+      }));
+
+      return {
+        edges,
+        pageInfo: {
+          hasNextPage() {
+            if (messages.length < (last || first)) {
+              return Promise.resolve(false);
+            }
+
+            return Message.findOne({
+              where: {
+                groupId: group.id,
+                id: {
+                  [before ? '$gt' : '$lt']: messages[messages.length - 1].id,
+                },
+              },
+              order: [['id', 'DESC']],
+            }).then(message => !!message);
+          },
+          hasPreviousPage() {
+            return Message.findOne({
+              where: {
+                groupId: group.id,
+                id: where.id,
+              },
+              order: [['id']],
+            }).then(message => !!message);
+          },
+        },
+      };
     });
   },
   query(_, { id }, ctx) {
@@ -57,16 +107,16 @@ export const groupLogic = {
   createGroup(_, { name, userIds }, ctx) {
     return getAuthenticatedUser(ctx)
       .then(user => user.getFriends({ where: { id: { $in: userIds } } })
-      .then((friends) => {  // eslint-disable-line arrow-body-style
-        return Group.create({
-          name,
-        }).then((group) => {  // eslint-disable-line arrow-body-style
-          return group.addUsers([user, ...friends]).then(() => {
-            group.users = [user, ...friends];
-            return group;
+        .then((friends) => { // eslint-disable-line arrow-body-style
+          return Group.create({
+            name,
+          }).then((group) => { // eslint-disable-line arrow-body-style
+            return group.addUsers([user, ...friends]).then(() => {
+              group.users = [user, ...friends];
+              return group;
+            });
           });
-        });
-      }));
+        }));
   },
   deleteGroup(_, { id }, ctx) {
     return getAuthenticatedUser(ctx).then((user) => { // eslint-disable-line arrow-body-style
@@ -99,13 +149,20 @@ export const groupLogic = {
           Promise.reject('No group found');
         }
 
-        group.removeUser(user.id);
-        return Promise.resolve({ id });
+        return group.removeUser(user.id)
+          .then(() => group.getUsers())
+          .then((users) => {
+            // if the last user is leaving, remove the group
+            if (!users.length) {
+              group.destroy();
+            }
+            return { id };
+          });
       });
     });
   },
   updateGroup(_, { id, name }, ctx) {
-    return getAuthenticatedUser(ctx).then((user) => {  // eslint-disable-line arrow-body-style
+    return getAuthenticatedUser(ctx).then((user) => { // eslint-disable-line arrow-body-style
       return Group.findOne({
         where: { id },
         include: [{
