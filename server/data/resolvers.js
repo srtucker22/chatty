@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import { Group, Message, User } from './connectors';
 import { pubsub } from '../subscriptions';
 import { JWT_SECRET } from '../config';
-import { messageLogic } from './logic';
+import { groupLogic, messageLogic, userLogic } from './logic';
 
 const MESSAGE_ADDED_TOPIC = 'messageAdded';
 const GROUP_ADDED_TOPIC = 'groupAdded';
@@ -24,17 +24,11 @@ export const resolvers = {
     },
   },
   Query: {
-    group(_, args) {
-      return Group.find({ where: args });
+    group(_, args, ctx) {
+      return groupLogic.query(_, args, ctx);
     },
-    messages(_, args) {
-      return Message.findAll({
-        where: args,
-        order: [['createdAt', 'DESC']],
-      });
-    },
-    user(_, args) {
-      return User.findOne({ where: args });
+    user(_, args, ctx) {
+      return userLogic.query(_, args, ctx);
     },
   },
   Mutation: {
@@ -46,48 +40,20 @@ export const resolvers = {
           return message;
         });
     },
-    createGroup(_, { name, userIds, userId }) {
-      return User.findOne({ where: { id: userId } })
-        .then(user => user.getFriends({ where: { id: { $in: userIds } } })
-          .then(friends => Group.create({
-            name,
-            users: [user, ...friends],
-          })
-            .then(group => group.addUsers([user, ...friends])
-              .then((res) => {
-                // append the user list to the group object
-                // to pass to pubsub so we can check members
-                group.users = [user, ...friends];
-                pubsub.publish(GROUP_ADDED_TOPIC, { [GROUP_ADDED_TOPIC]: group });
-                return group;
-              })),
-          ),
-        );
+    createGroup(_, args, ctx) {
+      return groupLogic.createGroup(_, args, ctx).then((group) => {
+        pubsub.publish(GROUP_ADDED_TOPIC, { [GROUP_ADDED_TOPIC]: group });
+        return group;
+      });
     },
-    deleteGroup(_, { id }) {
-      return Group.find({ where: id })
-        .then(group => group.getUsers()
-          .then(users => group.removeUsers(users))
-          .then(() => Message.destroy({ where: { groupId: group.id } }))
-          .then(() => group.destroy()),
-        );
+    deleteGroup(_, args, ctx) {
+      return groupLogic.deleteGroup(_, args, ctx);
     },
-    leaveGroup(_, { id, userId }) {
-      return Group.findOne({ where: { id } })
-        .then(group => group.removeUser(userId)
-          .then(() => group.getUsers())
-          .then((users) => {
-            // if the last user is leaving, remove the group
-            if (!users.length) {
-              group.destroy();
-            }
-            return { id };
-          }),
-        );
+    leaveGroup(_, args, ctx) {
+      return groupLogic.leaveGroup(_, args, ctx);
     },
-    updateGroup(_, { id, name }) {
-      return Group.findOne({ where: { id } })
-        .then(group => group.update({ name }));
+    updateGroup(_, args, ctx) {
+      return groupLogic.updateGroup(_, args, ctx);
     },
     login(_, { email, password }, ctx) {
       // find user by email
@@ -162,88 +128,36 @@ export const resolvers = {
     },
   },
   Group: {
-    users(group) {
-      return group.getUsers();
+    users(group, args, ctx) {
+      return groupLogic.users(group, args, ctx);
     },
-    messages(group, { first, last, before, after }) {
-      // base query -- get messages from the right group
-      const where = { groupId: group.id };
-
-      // because we return messages from newest -> oldest
-      // before actually means newer (id > cursor)
-      // after actually means older (id < cursor)
-
-      if (before) {
-        // convert base-64 to utf8 id
-        where.id = { $gt: Buffer.from(before, 'base64').toString() };
-      }
-
-      if (after) {
-        where.id = { $lt: Buffer.from(after, 'base64').toString() };
-      }
-
-      return Message.findAll({
-        where,
-        order: [['id', 'DESC']],
-        limit: first || last,
-      }).then((messages) => {
-        const edges = messages.map(message => ({
-          cursor: Buffer.from(message.id.toString()).toString('base64'), // convert id to cursor
-          node: message, // the node is the message itself
-        }));
-
-        return {
-          edges,
-          pageInfo: {
-            hasNextPage() {
-              if (messages.length < (last || first)) {
-                return Promise.resolve(false);
-              }
-
-              return Message.findOne({
-                where: {
-                  groupId: group.id,
-                  id: {
-                    [before ? '$gt' : '$lt']: messages[messages.length - 1].id,
-                  },
-                },
-                order: [['id', 'DESC']],
-              }).then(message => !!message);
-            },
-            hasPreviousPage() {
-              return Message.findOne({
-                where: {
-                  groupId: group.id,
-                  id: where.id,
-                },
-                order: [['id']],
-              }).then(message => !!message);
-            },
-          },
-        };
-      });
+    messages(group, args, ctx) {
+      return groupLogic.messages(group, args, ctx);
     },
   },
   Message: {
-    to(message) {
-      return message.getGroup();
+    to(message, args, ctx) {
+      return messageLogic.to(message, args, ctx);
     },
-    from(message) {
-      return message.getUser();
+    from(message, args, ctx) {
+      return messageLogic.from(message, args, ctx);
     },
   },
   User: {
-    messages(user) {
-      return Message.findAll({
-        where: { userId: user.id },
-        order: [['createdAt', 'DESC']],
-      });
+    email(user, args, ctx) {
+      return userLogic.email(user, args, ctx);
     },
-    groups(user) {
-      return user.getGroups();
+    friends(user, args, ctx) {
+      return userLogic.friends(user, args, ctx);
     },
-    friends(user) {
-      return user.getFriends();
+    groups(user, args, ctx) {
+      return userLogic.groups(user, args, ctx);
+    },
+    jwt(user, args, ctx) {
+      return userLogic.jwt(user, args, ctx);
+    },
+    messages(user, args, ctx) {
+      return userLogic.messages(user, args, ctx);
     },
   },
 };
