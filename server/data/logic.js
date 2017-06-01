@@ -224,3 +224,28 @@ export const userLogic = {
     });
   },
 };
+
+export const subscriptionLogic = {
+  groupAdded(params, args, ctx) {
+    return getAuthenticatedUser(ctx)
+      .then((user) => {
+        if (user.id !== args.userId) {
+          throw new ForbiddenError('Unauthorized');
+        }
+
+        return Promise.resolve();
+      });
+  },
+  messageAdded(params, args, ctx) {
+    return getAuthenticatedUser(ctx)
+      .then(user => user.getGroups({ where: { id: { $in: args.groupIds } }, attributes: ['id'] })
+        .then((groups) => {
+          // user attempted to subscribe to some groups without access
+          if (args.groupIds.length > groups.length) {
+            throw new ForbiddenError('Unauthorized');
+          }
+
+          return Promise.resolve();
+        }));
+  },
+};
