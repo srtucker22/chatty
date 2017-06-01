@@ -95,6 +95,9 @@ Header.propTypes = {
   onPress: PropTypes.func.isRequired,
 };
 
+// we'll fake signin for now
+let IS_SIGNED_IN = false;
+
 class Group extends Component {
   constructor(props) {
     super(props);
@@ -169,8 +172,19 @@ class Groups extends Component {
     this.onRefresh = this.onRefresh.bind(this);
   }
 
+  componentDidMount() {
+    if (!IS_SIGNED_IN) {
+      IS_SIGNED_IN = true;
+
+      const { navigate } = this.props.navigation;
+
+      navigate('Signin');
+    }
+  }
+
   onRefresh() {
     this.props.refetch();
+    // faking unauthorized status
   }
 
   keyExtractor = item => item.id.toString();
@@ -243,6 +257,7 @@ Groups.propTypes = {
 };
 
 const userQuery = graphql(USER_QUERY, {
+  skip: ownProps => true, // fake it -- we'll use ownProps with auth
   options: () => ({ variables: { id: 1 } }), // fake the user for now
   props: ({ data: { loading, networkStatus, refetch, user } }) => ({
     loading, networkStatus, refetch, user,
