@@ -1,5 +1,6 @@
-import { ApolloServer } from 'apollo-server';
+import { ApolloServer, AuthenticationError } from 'apollo-server';
 import jwt from 'express-jwt';
+import jsonwebtoken from 'jsonwebtoken';
 
 import { typeDefs } from './data/schema';
 import { mocks } from './data/mocks';
@@ -17,7 +18,7 @@ const server = new ApolloServer({
     // web socket subscriptions will return a connection
     if (connection) {
       // check connection for metadata
-      return {};
+      return connection.context;
     }
 
     const user = new Promise((resolve, reject) => {
@@ -35,6 +36,34 @@ const server = new ApolloServer({
     return {
       user,
     };
+  },
+  subscriptions: {
+    onConnect(connectionParams, websocket, wsContext) {
+      const userPromise = new Promise((res, rej) => {
+        if (connectionParams.jwt) {
+          jsonwebtoken.verify(
+            connectionParams.jwt, JWT_SECRET,
+            (err, decoded) => {
+              if (err) {
+                rej(new AuthenticationError('No token'));
+              }
+
+              res(User.findOne({ where: { id: decoded.id, version: decoded.version } }));
+            },
+          );
+        } else {
+          rej(new AuthenticationError('No token'));
+        }
+      });
+
+      return userPromise.then((user) => {
+        if (user) {
+          return { user: Promise.resolve(user) };
+        }
+
+        return Promise.reject(new AuthenticationError('No user'));
+      });
+    },
   },
 });
 
