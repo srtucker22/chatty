@@ -5,6 +5,7 @@ import { Group, Message, User } from './connectors';
 import { pubsub } from '../subscriptions';
 
 const MESSAGE_ADDED_TOPIC = 'messageAdded';
+const GROUP_ADDED_TOPIC = 'groupAdded';
 
 export const resolvers = {
   Date: GraphQLDate,
@@ -51,8 +52,13 @@ export const resolvers = {
             users: [user, ...friends],
           })
             .then(group => group.addUsers([user, ...friends])
-              .then(() => group),
-            ),
+              .then((res) => {
+                // append the user list to the group object
+                // to pass to pubsub so we can check members
+                group.users = [user, ...friends];
+                pubsub.publish(GROUP_ADDED_TOPIC, { [GROUP_ADDED_TOPIC]: group });
+                return group;
+              })),
           ),
         );
     },
@@ -94,6 +100,9 @@ export const resolvers = {
           );
         },
       ),
+    },
+    groupAdded: {
+      subscribe: () => pubsub.asyncIterator(GROUP_ADDED_TOPIC),
     },
   },
   Group: {
