@@ -26,7 +26,7 @@ const server = new ApolloServer({
         credentialsRequired: false,
       })(req, res, (e) => {
         if (req.user) {
-          resolve(User.findOne({ where: { id: req.user.id } }));
+          resolve(User.findOne({ where: { id: req.user.id, version: req.user.version } }));
         } else {
           resolve(null);
         }

@@ -66,6 +66,7 @@ export const resolvers = {
               const token = jwt.sign({
                 id: user.id,
                 email: user.email,
+                version: user.version,
               }, JWT_SECRET);
               user.jwt = token;
               ctx.user = Promise.resolve(user);
@@ -88,9 +89,10 @@ export const resolvers = {
             email,
             password: hash,
             username: username || email,
+            version: 1,
           })).then((user) => {
             const { id } = user;
-            const token = jwt.sign({ id, email }, JWT_SECRET);
+            const token = jwt.sign({ id, email, version: 1 }, JWT_SECRET);
             user.jwt = token;
             ctx.user = Promise.resolve(user);
             return user;
