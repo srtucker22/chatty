@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
+import {
+  AsyncStorage,
+} from 'react-native';
 
 import { ApolloProvider } from 'react-apollo';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import ApolloClient, { createNetworkInterface } from 'apollo-client';
 import { SubscriptionClient, addGraphQLSubscriptions } from 'subscriptions-transport-ws';
+import { persistStore, autoRehydrate } from 'redux-persist';
+import thunk from 'redux-thunk';
 
 import AppWithNavigationState, { navigationReducer } from './navigation';
 import auth from './reducers/auth.reducer';
@@ -37,9 +42,16 @@ const store = createStore(
   }),
   {}, // initial state
   composeWithDevTools(
-    applyMiddleware(client.middleware()),
+    applyMiddleware(client.middleware(), thunk),
+    autoRehydrate(),
   ),
 );
+
+// persistent storage
+persistStore(store, {
+  storage: AsyncStorage,
+  blacklist: ['apollo', 'nav'], // don't persist apollo or nav for now
+});
 
 export default class App extends Component {
   render() {
