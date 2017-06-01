@@ -143,13 +143,14 @@ AppWithNavigationState.propTypes = {
   }),
 };
 
-const mapStateToProps = state => ({
-  nav: state.nav,
+const mapStateToProps = ({ auth, nav }) => ({
+  auth,
+  nav,
 });
 
 const userQuery = graphql(USER_QUERY, {
-  skip: ownProps => true, // fake it -- we'll use ownProps with auth
-  options: () => ({ variables: { id: 1 } }), // fake the user for now
+  skip: ownProps => !ownProps.auth || !ownProps.auth.jwt,
+  options: ownProps => ({ variables: { id: ownProps.auth.id } }),
   props: ({ data: { loading, user, refetch, subscribeToMore } }) => ({
     loading,
     user,
