@@ -1,5 +1,6 @@
 import GraphQLDate from 'graphql-date';
 import { withFilter } from 'graphql-subscriptions';
+import { map } from 'lodash';
 
 import { Group, Message, User } from './connectors';
 import { pubsub } from '../subscriptions';
@@ -102,7 +103,16 @@ export const Resolvers = {
       ),
     },
     groupAdded: {
-      subscribe: () => pubsub.asyncIterator(GROUP_ADDED_TOPIC),
+      subscribe: withFilter(
+        () => pubsub.asyncIterator(GROUP_ADDED_TOPIC),
+        (payload, args) => {
+          return Boolean(
+            args.userId &&
+            ~map(payload.groupAdded.users, 'id').indexOf(args.userId) &&
+            args.userId !== payload.groupAdded.users[0].id, // don't send to user creating group
+          );
+        },
+      ),
     },
   },
   Group: {
