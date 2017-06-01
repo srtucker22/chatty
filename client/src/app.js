@@ -19,12 +19,15 @@ import { SubscriptionClient } from 'subscriptions-transport-ws';
 import { PersistGate } from 'redux-persist/lib/integration/react';
 import { persistStore, persistCombineReducers } from 'redux-persist';
 import thunk from 'redux-thunk';
+import { setContext } from 'apollo-link-context';
+import _ from 'lodash';
 
 import AppWithNavigationState, {
   navigationReducer,
   navigationMiddleware,
 } from './navigation';
 import auth from './reducers/auth.reducer';
+import { logout } from './actions/auth.actions';
 
 const URL = 'localhost:8080'; // set your comp's url here
 
@@ -61,6 +64,21 @@ const errorLink = onError((errors) => {
 
 const httpLink = createHttpLink({ uri: `http://${URL}` });
 
+// middleware for requests
+const middlewareLink = setContext((req, previousContext) => {
+  // get the authentication token from local storage if it exists
+  const { jwt } = store.getState().auth;
+  if (jwt) {
+    return {
+      headers: {
+        authorization: `Bearer ${jwt}`,
+      },
+    };
+  }
+
+  return previousContext;
+});
+
 // Create WebSocket client
 export const wsClient = new SubscriptionClient(`ws://${URL}/graphql`, {
   reconnect: true,
@@ -85,7 +103,7 @@ const link = ApolloLink.from([
   reduxLink,
   errorLink,
   requestLink({
-    queryOrMutationLink: httpLink,
+    queryOrMutationLink: middlewareLink.concat(httpLink),
     subscriptionLink: webSocketLink,
   }),
 ]);
