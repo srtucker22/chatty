@@ -1,9 +1,12 @@
 import GraphQLDate from 'graphql-date';
 import { withFilter } from 'apollo-server';
 import { map } from 'lodash';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 import { Group, Message, User } from './connectors';
 import { pubsub } from '../subscriptions';
+import { JWT_SECRET } from '../config';
 
 const MESSAGE_ADDED_TOPIC = 'messageAdded';
 const GROUP_ADDED_TOPIC = 'groupAdded';
@@ -87,6 +90,51 @@ export const resolvers = {
     updateGroup(_, { id, name }) {
       return Group.findOne({ where: { id } })
         .then(group => group.update({ name }));
+    },
+    login(_, { email, password }, ctx) {
+      // find user by email
+      return User.findOne({ where: { email } }).then((user) => {
+        if (user) {
+          // validate password
+          return bcrypt.compare(password, user.password).then((res) => {
+            if (res) {
+              // create jwt
+              const token = jwt.sign({
+                id: user.id,
+                email: user.email,
+              }, JWT_SECRET);
+              user.jwt = token;
+              ctx.user = Promise.resolve(user);
+              return user;
+            }
+
+            return Promise.reject('password incorrect');
+          });
+        }
+
+        return Promise.reject('email not found');
+      });
+    },
+    signup(_, { email, password, username }, ctx) {
+      // find user by email
+      return User.findOne({ where: { email } }).then((existing) => {
+        if (!existing) {
+          // hash password and create user
+          return bcrypt.hash(password, 10).then(hash => User.create({
+            email,
+            password: hash,
+            username: username || email,
+          })).then((user) => {
+            const { id } = user;
+            const token = jwt.sign({ id, email }, JWT_SECRET);
+            user.jwt = token;
+            ctx.user = Promise.resolve(user);
+            return user;
+          });
+        }
+
+        return Promise.reject('email already exists'); // email already exists
+      });
     },
   },
   Subscription: {
