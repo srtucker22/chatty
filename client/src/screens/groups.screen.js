@@ -166,6 +166,11 @@ class Groups extends Component {
     super(props);
     this.goToMessages = this.goToMessages.bind(this);
     this.goToNewGroup = this.goToNewGroup.bind(this);
+    this.onRefresh = this.onRefresh.bind(this);
+  }
+
+  onRefresh() {
+    this.props.refetch();
   }
 
   keyExtractor = item => item.id;
@@ -183,7 +188,7 @@ class Groups extends Component {
   renderItem = ({ item }) => <Group group={item} goToMessages={this.goToMessages} />;
 
   render() {
-    const { loading, user } = this.props;
+    const { loading, user, networkStatus } = this.props;
 
     // render loading placeholder while we fetch messages
     if (loading) {
@@ -211,6 +216,8 @@ class Groups extends Component {
           keyExtractor={this.keyExtractor}
           renderItem={this.renderItem}
           ListHeaderComponent={() => <Header onPress={this.goToNewGroup} />}
+          onRefresh={this.onRefresh}
+          refreshing={networkStatus === 4}
         />
       </View>
     );
@@ -221,6 +228,8 @@ Groups.propTypes = {
     navigate: PropTypes.func,
   }),
   loading: PropTypes.bool,
+  networkStatus: PropTypes.number,
+  refetch: PropTypes.func,
   user: PropTypes.shape({
     id: PropTypes.number.isRequired,
     email: PropTypes.string.isRequired,
@@ -235,8 +244,8 @@ Groups.propTypes = {
 
 const userQuery = graphql(USER_QUERY, {
   options: () => ({ variables: { id: 1 } }), // fake the user for now
-  props: ({ data: { loading, user } }) => ({
-    loading, user,
+  props: ({ data: { loading, networkStatus, refetch, user } }) => ({
+    loading, networkStatus, refetch, user,
   }),
 });
 
