@@ -1138,7 +1138,7 @@ If we fire up the app, we should see our messages: ![Result Img](https://s3-us-w
 
 [{]: <helper> (navStep)
 
-| [< Previous Step](step2.md) | [Next Step >](step4.md) |
-|:--------------------------------|--------------------------------:|
+| [< Previous Step](step6.md) |
+|:----------------------|
 
 [}]: #
