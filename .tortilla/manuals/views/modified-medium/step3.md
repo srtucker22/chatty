@@ -1094,7 +1094,7 @@ class Messages extends Component {
 If we fire up the app, we should see our messages: ![Result Img](https://s3-us-west-1.amazonaws.com/tortilla/chatty/step3-10.gif)
 [{]: <helper> (navStep)
 
-| [< Previous Step](step2.md) | [Next Step >](step4.md) |
-|:--------------------------------|--------------------------------:|
+| [< Previous Step](step6.md) |
+|:----------------------|
 
 [}]: #
