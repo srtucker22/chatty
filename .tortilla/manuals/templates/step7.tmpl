@@ -1,0 +1,352 @@
+This is the seventh blog in a multipart series where we will be building Chatty, a WhatsApp clone, using [React Native](https://facebook.github.io/react-native/) and [Apollo](http://dev.apollodata.com/).
+
+In this tutorial, we’ll be adding authentication (auth) to Chatty, solidifying Chatty as a full-fledged MVP messaging app!
+
+Here’s what we will accomplish in this tutorial:
+1. Introduce [**JSON Web Tokens (JWT)**](https://jwt.io/introduction/)
+2. Build server-side infrastructure for JWT auth with Queries and Mutations
+3. Refactor Schemas and Resolvers with auth
+4. Build server-side infrastructure for JWT auth with Subscriptions
+5. Design login/signup layout in our React Native client
+6. Build client-side infrastructure for JWT auth with Queries and Mutations
+7. Build client-side infrastructure for JWT auth with Subscriptions
+8. Refactor Components, Queries, Mutations, and Subscriptions with auth
+9. Reflect on all we’ve accomplished!
+
+Yeah, this one’s gonna be BIG….
+
+# JSON Web Tokens (JWT)
+[JSON Web Token (JWT)](http://jwt.io) is an open standard ([RFC 7519](https://tools.ietf.org/html/rfc7519)) for securely sending digitally signed JSONs between parties. JWTs are incredibly cool for authentication because they let us implement reliable Single Sign-On (SSO) and persisted auth with low overhead on any platform (native, web, VR, whatever…) and across domains. JWTs are a strong alternative to pure cookie or session based auth with simple tokens or SAML, which can fail miserably in native app implementations. We can even use cookies with JWTs if we really want.
+
+Without getting into technical details, a JWT is basically just a JSON message that gets all kinds of encoded, hashed, and signed to keep it super secure. Feel free to dig into the details [here](https://jwt.io/introduction/).
+
+For our purposes, we just need to know how to use JWTs within our authentication workflow. When a user logs into our app, the server will check their email and password against the database. If the user exists, we’ll take their `{email: <your-email>, password: <your-pw>}` combination, turn it into a lovely JWT, and send it back to the client. The client can store the JWT forever or until we set it to expire.
+
+Whenever the client wants to ask the server for data, it’ll pass the JWT in the request’s Authorization Header (`Authorization: Bearer <token>`). The server will decode the Authorization Header before executing every request, and the decoded JWT should contain `{email: <your-email>, password: <your-pw>}`. With that data, the server can retrieve the user again via the database or a cache to determine whether the user is allowed to execute the request.
+
+Let’s make it happen!
+
+# JWT Authentication for Queries and Mutations
+We can use the excellent [`express-jwt`](https://www.npmjs.com/package/express-jwt) and [`jsonwebtoken`](https://github.com/auth0/node-jsonwebtoken) packages for all our JWT encoding/decoding needs. We’re also going to use [`bcrypt`](https://www.npmjs.com/package/bcrypt) for hashing passwords and [`dotenv`](https://www.npmjs.com/package/dotenv) to set our JWT secret key as an environment variable:
+
+```sh
+npm i express-jwt jsonwebtoken bcrypt dotenv
+```
+
+In a new `.env` file on the root directory, let’s add a `JWT_SECRET` environment variable:
+
+{{{diffStep 7.1 files=".env"}}}
+
+We’ll process the `JWT_SECRET` inside a new file `server/config.js`:
+
+{{{diffStep 7.1 files="server/config.js"}}}
+
+Now, let’s update our express server in `server/index.js` to use `express-jwt ` middleware. Even though our app isn't a pure `express` app, we can still use express-style middleware on requests passing through our `ApolloServer`:
+
+{{{diffStep 7.2}}}
+
+The `express-jwt` middleware checks our Authorization Header for a `Bearer` token, decodes the token using the `JWT_SECRET` into a JSON object, and then attaches that Object to the request as `req.user`. We can use `req.user` to find the associated `User` in our database  —  we pretty much only need to use the `id` parameter to retrieve the `User` because we can be confident the JWT is secure (more on this later). Lastly, we return the found `User` in this `context` function. By doing this, every one of our Resolvers will get passed a `context` parameter with the `User`, which we will use to validate credentials before touching any data.
+
+Note that by setting `credentialsRequired: false`, we allow non-authenticated requests to pass through the middleware. This is required so we can allow signup and login requests (and others) through the endpoint.
+
+## Refactoring Schemas
+Time to focus on our Schema. We need to perform 3 changes to `server/data/schema.js`:
+1. Add new GraphQL Mutations for logging in and signing up
+2. Add the JWT to the `User` type
+3. Since the User will get passed into all the Resolvers automatically via context, we no longer need to pass a `userId` to any queries or mutations, so let’s simplify their inputs!
+
+{{{diffStep 7.3}}}
+
+Because our server is stateless, **we don’t need to create a logout mutation!** The server will test for authorization on every request and login state will solely be kept on the client.
+
+## Refactoring Resolvers
+We need to update our Resolvers to handle our new `login` and `signup` Mutations. We can update `server/data/resolvers.js` as follows:
+
+{{{diffStep 7.4}}}
+
+Let’s break this code down a bit. First let’s look at `login`:
+1. We search our database for the `User` with the supplied `email`
+2. If the `User` exists, we use `bcrypt` to compare the `User`’s password (we store a hashed version of the password in the database for security) with the supplied password
+3. If the passwords match, we create a JWT with the `User`’s `id` and `email`
+4. We return the `User` with the JWT attached and also attach a `User` Promise to `context` to pass down to other resolvers.
+
+The code for `signup` is very similar:
+1. We search our database for the `User` with the supplied `email`
+2. If no `User` with that `email` exists yet, we hash the supplied password and create a new `User` with the email, hashed password, and username (which defaults to email if no username is supplied)
+3. We return the new `User` with the JWT attached and also attach a `User` Promise to context to pass down to other resolvers.
+
+We need to also change our fake data generator in `server/data/connectors.js` to hash passwords before they’re stored in the database:
+
+{{{diffStep 7.5}}}
+
+Sweet! Now let’s refactor our Type, Query, and Mutation resolvers to use authentication to protect our data. Our earlier changes to `ApolloServer` will attach a `context` parameter with the authenticated `User` to every request on our GraphQL endpoint. We consume `context` (`ctx`) in the Resolvers to build security around our data. For example, we might change `createMessage` to look something like this:
+
+```js
+// this isn't good enough!!!
+createMessage(_, { groupId, text }, ctx) {
+  if (!ctx.user) {
+    throw new ForbiddenError('Unauthorized');
+  }
+  return ctx.user.then((user)=> {
+    if(!user) {
+      throw new ForbiddenError('Unauthorized');
+    }
+    return Message.create({
+      userId: user.id,
+      text,
+      groupId,
+    }).then((message) => {
+      // Publish subscription notification with the whole message
+      pubsub.publish('messageAdded', message);
+      return message;
+    });
+  });
+},
+```
+
+This is a start, but it doesn’t give us the security we really need. Users would be able to create messages for *any group*, not just their own groups. We could build this logic into the resolver, but we’re likely going to need to reuse logic for other Queries and Mutations. Our best move is to create a [**business logic layer**](http://graphql.org/learn/thinking-in-graphs/#business-logic-layer) in between our Connectors and Resolvers that will perform authorization checks. By putting this business logic layer in between our Connectors and Resolvers, we can incrementally add business logic to our application one Type/Query/Mutation at a time without breaking others.
+
+In the Apollo docs, this layer is occasionally referred to as the `models` layer, but that name [can be confusing](https://github.com/apollographql/graphql-server/issues/118), so let’s just call it `logic`.
+
+Let’s create a new file `server/data/logic.js` where we’ll start compiling our business logic:
+
+{{{diffStep 7.6}}}
+
+We’ve separated out the function `getAuthenticatedUser` to check whether a `User` is making a request. We’ll be able to reuse this function across our logic for other requests.
+
+Now we can start injecting this logic into our Resolvers:
+
+{{{diffStep 7.7}}}
+
+`createMessage` will return the result of the logic in `messageLogic`,  which returns a Promise that either successfully resolves to the new `Message` or rejects due to failed authorization.
+
+Let’s fill out our logic in `server/data/logic.js` to cover all GraphQL Types, Queries and Mutations:
+
+{{{diffStep 7.8}}}
+
+And now let’s apply that logic to the Resolvers in `server/data/resolvers.js`:
+
+{{{diffStep 7.9}}}
+
+We also need to update our subscription filters with the user context. Fortunately, `withFilter` can return a `Boolean` or `Promise<Boolean>`.
+
+{{{diffStep "7.10"}}}
+
+So much cleaner and **WAY** more secure!
+
+## The Expired Password Problem
+We still have one last thing that needs modifying in our authorization setup. When a user changes their password, we issue a new JWT, but the old JWT will still pass verification! This can become a serious problem if a hacker gets ahold of a user’s password. To close the loop on this issue, we can make a clever little adjustment to our `UserModel` database model to include a `version` parameter, which will be a counter that increments with each new password for the user. We’ll incorporate `version` into our JWT so only the newest JWT will pass our security. Let’s update `ApolloServer` and our Connectors and Resolvers accordingly:
+
+{{{diffStep "7.11"}}}
+
+# Testing
+It can’t be understated just how vital testing is to securing our code. Yet, like with most tutorials, testing is noticeably absent from this one. We’re not going to cover proper testing here because it really belongs in its own post and would make this already egregiously long post even longer.
+
+For now, we’ll just use GraphQL Playground to make sure our code is performing as expected.
+
+Here are the steps to test our protected GraphQL endpoint in GraphQL Playground:
+
+1. Use the `signup` or `login` mutation to receive a JWT ![Login Image](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step7-11-1.png)
+2. Apply the JWT to the Authorization Header for future requests and make whatever authorized `query` or `mutation` requests we want
+![Query Image Success](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step7-11-2.png)
+![Query Image Fail](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step7-11-3.png)
+![Query Image Partial](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step7-11-4.png)
+
+# JWT Authentication for Subscriptions
+Our Queries and Mutations are secure, but our Subscriptions are wide open. Right now, any user could subscribe to new messages for all groups, or track when any group is created. The security we’ve already implemented limits the `Message` and `Group` fields a hacker could view, but that’s not good enough! Secure all the things!
+
+In this workflow, we will only allow WebSocket connections once the user is authenticated. Whenever the user is logged off, we terminate the connection, and then reinitiate a new connection the next time they log in. This workflow is suitable for applications that don't require subscriptions while the user isn't logged in and makes it easier to defend against DOS attacks.
+
+Just like with Queries and Mutations, we can pass a `context` parameter to our Subscriptions every time a user connects over WebSockets! When constructing `ApolloServer`, we can pass an `onConnect` parameter, which is a function that runs before every WebSocket connection. The `onConnect` function offers 2 parameters —  `connectionParams` and `webSocket` —  and should return a Promise that resolves the `context`.
+
+`connectionParams` is where we will receive the JWT from the client. Inside `onConnect`, we will extract the `User` Promise from the JWT and replace return the `User` Promise as the context.
+
+Let’s first update `ApolloServer` in `server/index.js` to use `onConnect` to validate the JWT and return a `context` with the `User` for subscriptions:
+
+{{{diffStep 7.12}}}
+
+First, `onConnect` will use `jsonwebtoken` to verify and decode `connectionParams.jwt` to extract a `User` from the database. It will do this work within a new Promise called `user`.
+
+Second, we need to write our `subscriptionLogic` to validate whether this `User` is allowed to subscribe to this particular subscription:
+
+{{{diffStep 7.13 files="server/data/logic.js"}}}
+
+Finally, we need a way to run this logic when the subscription will attempt to be initiated. This happens inside our resolvers when we run `pubsub.asyncIterator`, returning the `AsyncIterator` that will listen for events and trigger our server to send WebSocket emittions. We'll need to update this `AsyncIterator` generator to first validate through our `subscriptionLogic` and throw an error if the request is unauthorized. We can create a `pubsub.asyncAuthIterator` function that looks like `pubsub.asyncIterator`, but takes an extra `authPromise` argument that will need to resolve before any data gets passed from the `AsyncIterator` this function creates.
+
+{{{diffStep 7.13 files="server/subscriptions.js"}}}
+
+We can stick this `pubsub.asyncAuthIterator` in our resolvers like so:
+
+{{{diffStep 7.13 files="server/data/resolvers.js"}}}
+
+Unfortunately, there’s no easy way to currently test subscription context with GraphQL Playground, so let’s just hope the code does what it’s supposed to do and move on for now ¯\_(ツ)_/¯
+
+## Now would be a good time to take a break!
+
+# GraphQL Authentication in React Native
+Our server is now only serving authenticated GraphQL, and our React Native client needs to catch up!
+
+## Designing the Layout
+First, let’s design the basic authentication UI/UX for our users.
+
+If a user isn’t authenticated, we want to push a modal Screen asking them to login or sign up and then pop the Screen when they sign in.
+
+Let’s start by creating a Signin screen (`client/src/screens/signin.screen.js`) to display our `login`/`signup` modal:
+
+{{{diffStep 7.14}}}
+
+Next, we’ll add `Signin` to our Navigation. We'll also make sure the `USER_QUERY` attached to `AppWithNavigationState` gets skipped and doesn't query for anything for now. We don’t want to run any queries until a user officially signs in. Right now, we’re just testing the layout, so we don’t want queries to run at all no matter what. `graphql` let’s us pass a `skip` function as an optional parameter to our queries to skip their execution. We can update the code in `client/src/navigation.js` as follows:
+
+{{{diffStep 7.15 files="client/src/navigation.js"}}}
+
+Lastly, we need to modify the `Groups` screen to push the `Signin` modal and skip querying for anything:
+
+{{{diffStep 7.15 files="client/src/screens/groups.screen.js"}}}
+
+Let’s test out our layout: ![Fake Signin Gif](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step7-15.gif)
+
+# Persisted authentication with React Native and Redux
+Time to add authentication infrastructure to our React Native client! When a user signs up or logs in, the server is going to return a JWT. Whenever the client makes a GraphQL HTTP request to the server, it needs to pass the JWT in the Authorization Header to verify the request is being sent by the user.
+
+Once we have a JWT, we can use it forever or until we set it to expire. Therefore, we want to store the JWT in our app’s storage so users don’t have to log in every time they restart the app . We’re also going to want quick access to the JWT for any GraphQL request while the user is active. We can use a combination of [`redux`](http://redux.js.org/), [`redux-persist`](https://github.com/rt2zz/redux-persist), and [`AsyncStorage`](https://facebook.github.io/react-native/docs/asyncstorage.html) to efficiently meet all our demands!
+
+```sh
+# make sure you add this package to the client!!!
+cd client
+npm i redux redux-persist redux-thunk seamless-immutable
+```
+
+[`redux`](http://redux.js.org/) is the **BOMB**. If you don’t know Redux, [**learn Redux!**](https://egghead.io/courses/getting-started-with-redux)
+
+[`redux-persist`](https://github.com/rt2zz/redux-persist) is an incredible package which let’s us store Redux state in a bunch of different storage engines and rehydrate our Redux store when we restart our app.
+
+[`redux-thunk`](https://github.com/gaearon/redux-thunk) will let us return functions and use Promises to dispatch Redux actions.
+
+[`seamless-immutable`](https://github.com/rtfeldman/seamless-immutable) will help us use Immutable JS data structures within Redux that are backwards-compatible with normal Arrays and Objects.
+
+First, let’s create a reducer for our auth data. We’ll create a new folder `client/src/reducers` for our reducer files to live and create a new file `client/src/reducers/auth.reducer.js` for the auth reducer:
+
+{{{diffStep 7.16 files="client/src/reducers/auth.reducer.js"}}}
+
+The initial state for store.auth will be `{ loading: true }`. We can combine the auth reducer into our store in `client/src/app.js`:
+
+{{{diffStep 7.17}}}
+
+Now let’s add `thunk` middleware and persistence with `redux-persist` and `AsyncStorage` to our store in `client/src/app.js`:
+
+{{{diffStep 7.18}}}
+
+We have set our store data (excluding `apollo`) to persist via React Native’s `AsyncStorage` and to automatically rehydrate the store when the client restarts the app. When the app restarts, a `REHYDRATE` action will execute asyncronously with all the data persisted from the last session. We need to handle that action and properly update our store in our `auth` reducer:
+
+{{{diffStep 7.19}}}
+
+The `auth` state will be `{ loading: true }` until we rehydrate our persisted state.
+
+When the user successfully signs up or logs in, we need to store the user’s id and their JWT within auth. We also need to clear this information when they log out. Let’s create a constants folder `client/src/constants` and file `client/src/constants/constants.js` where we can start declaring Redux action types and write two for setting the current user and logging out:
+
+{{{diffStep "7.20"}}}
+
+We can add these constants to our `auth` reducer now:
+
+{{{diffStep 7.21}}}
+
+The `SET_CURRENT_USER` and `LOGOUT` action types will need to get triggered by `ActionCreators`. Let’s put those in a new folder `client/src/actions` and a new file `client/src/actions/auth.actions.js`:
+
+{{{diffStep 7.22}}}
+
+When `logout` is called, we’ll clear all auth data by dispatching `LOGOUT` and also all data in the apollo store by calling [`client.resetStore`](http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.resetStore).
+
+Let’s tie everything together. We’ll update the `Signin` screen to use our login and signup mutations, and dispatch `setCurrentUser` with the mutation results (the JWT and user’s id).
+
+First we’ll create files for our `login` and `signup` mutations:
+
+{{{diffStep 7.23}}}
+
+We connect these mutations and our Redux store to the `Signin` component with `compose` and `connect`:
+
+{{{diffStep 7.24}}}
+
+We attached `auth` from our Redux store to `Signin` via `connect(mapStateToProps)`. When we sign up or log in, we call the associated mutation (`signup` or `login`), receive the JWT and id, and dispatch the data with `setCurrentUser`. In `componentWillReceiveProps`, once `auth.jwt` exists, we are logged in and pop the Screen. We’ve also included some simple error messages if things go wrong.
+
+Let’s check it out! ![Signin Gif](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step7-24.gif)
+
+# Apollo-Client Authentication Middleware
+We need to add Authorization Headers to our GraphQL requests from React Native before we can resume retrieving data from our auth protected server. We accomplish this by using middleware that will attach the headers to every request before they are sent out. Middleware works very elegantly within the `apollo-link` ecosystem. We just need to add a couple new links! Fortunately, `apollo-link-context` and `apollo-link-error` are perfect for our requirements and work really nicely with our Redux setup. We can simply add the following in `client/src/app.js`:
+
+```sh
+npm i apollo-link-context apollo-link-error
+```
+
+{{{diffStep 7.25}}}
+
+Before every request, we get the JWT from `auth` and stick it in the header. We can also run middleware *after* receiving responses to check for auth errors and log out the user if necessary (afterware?):
+
+{{{diffStep 7.26}}}
+
+We simply parse the error and dispatch `logout()` if we receive an `Unauthorized` response message.
+
+# Subscriptions-Transport-WS Authentication
+Luckily for us, `SubscriptionClient` has a nifty little feature that lets us lazily (on-demand) connect to our WebSocket by setting `lazy: true`. This flag means we will only try to connect the WebSocket when we make our first subscription call, which only happens in our app once the user is authenticated. When we make our connection call, we can pass the JWT credentials via `connectionParams`. When the user logs out, we’ll close the connection and lazily reconnect when a user log back in and resubscribes.
+
+We can update `client/src/app.js` and `client/actions/auth.actions.js` as follows:
+
+{{{diffStep 7.27}}}
+
+KaBLaM! We’re ready to start using auth across our app!
+
+# Refactoring the Client for Authentication
+Our final major hurdle is going to be refactoring all our client code to use the Queries and Mutations we modified for auth and to handle auth UI.
+
+## Logout
+To get our feet wet, let’s start by creating a new Screen instead of fixing up an existing one. Let’s create a new Screen for the Settings tab where we will show the current user’s details and give users the option to log out!
+
+We’ll put our new Settings Screen in a new file `client/src/screens/settings.screen.js`:
+
+{{{diffStep 7.28}}}
+
+The most important pieces of this code we need to focus on is any `auth` related code:
+1. We connect `auth` from our Redux store to the component via `connect(mapStateToProps)`
+2. We `skip` the `userQuery` unless we have a JWT (`ownProps.auth.jwt`)
+3. We show a loading spinner until we’re done loading the user
+
+Let’s add the `Settings` screen to our settings tab in `client/src/navigation.js`. We will also use `navigationReducer` to handle pushing the `Signin` Screen whenever the user logs out or starts the application without being authenticated:
+
+{{{diffStep 7.29}}}
+
+Though it’s typically best practice to keep reducers pure (not triggering actions directly), we’ve made an exception with `NavigationActions` in our `navigationReducer` to keep the code a little simpler in this particular case.
+
+Let’s run it!
+
+![Logout Gif](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step7-29.gif)
+
+## Refactoring Queries and Mutations
+We need to update all our client-side Queries and Mutations to match our modified Schema. We also need to update the variables we pass to these Queries and Mutations through `graphql` and attach to components.
+
+Let’s look at the `USER_QUERY` in `Groups` and `AppWithNavigationState` for a full example:
+
+{{{diffStep "7.30"}}}
+
+1. We use `connect(mapStateToProps)` to attach `auth` from Redux to our component
+2. We modify the `userQuery` options to pass `ownProps.auth.id` instead of the `1` placeholder
+3. We change `skip` to use `ownProps.auth.jwt` to determine whether to run `userQuery`
+
+We'll also have to make similar changes in `Messages`:
+
+{{{diffStep 7.31}}}
+
+We need to make similar changes in every other one of our components before we’re bug free. Here are all the major changes:
+
+{{{diffStep 7.32}}}
+
+{{{diffStep 7.33}}}
+
+When everything is said and done, we should have a beautifully running Chatty app 📱‼️‼️
+
+![Chatty Gif](https://raw.githubusercontent.com/srtucker22/chatty/master/.tortilla/media/step7-32.gif)
+
+# 🎉 CONGRATULATIONS!!! 🎉
+We made it! We made a secure, real-time chat app with React Native and GraphQL. How cool is that?! More importantly, we now have the skills and knowhow to make pretty much anything we want with some of the best tools out there.
+
+I hope this series has been at least a little helpful in furthering your growth as a developer. I’m really stoked and humbled at the reception it has been getting, and I want to continue to do everything I can to make it the best it can be.
+
+With that in mind, if you have any suggestions for making this series better, please leave your feedback!
