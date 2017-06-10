@@ -1,0 +1,209 @@
+This is the eigth blog in a multipart series building Chatty, a WhatsApp clone, using [React Native](https://facebook.github.io/react-native/) and [Apollo](http://dev.apollodata.com/).
+
+In this tutorial, we’ll focus on adding [GraphQL Input Types](http://graphql.org/learn/schema/#input-types), which will help us clean up our queries and streamline future GraphQL development in our app.
+
+Here’s what we'll accomplish in this tutorial:
+1. Discuss writing more flexible GraphQL requests
+2. Add GraphQL Input Types to our Schema
+3. Update resolvers and business logic to handle Input Types
+4. Update client-side GraphQL requests to use Input Types
+
+# Writing flexible GraphQL
+So far in our journey, writing GraphQL queries has been a breeze. We've been able to get all the data we need in a single request in exactly the shape we want with very little code. But APIs inevitably get more complex as apps mature. We need to ensure our GraphQL infrastructure adapts gracefully as we expand the functionality of our app.
+
+Let's do an audit of the GraphQL queries that currently power our React Native client to look for opportunities to improve our querying....
+
+You may notice the queries, mutations, and subscriptions that return `Group` types have a similar shape, but don't share any code. If we modify or add a field to the `Group` type later on, we would need to individually update every query and mutation that returns a `Group` type -- not good. 
+
+```
+import gql from 'graphql-tag';
+
+import MESSAGE_FRAGMENT from './message.fragment';
+
+// this is our primary group query
+const GROUP_QUERY = gql`
+  query group($groupId: Int!, $first: Int, $after: String, $last: Int, $before: String) {
+    group(id: $groupId) {
+      id
+      name
+      users {
+        id
+        username
+      }
+      messages(first: $first, after: $after, last: $last, before: $before) {
+        edges {
+          cursor
+          node {
+            ... MessageFragment
+          }
+        }
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+        }
+      }
+    }
+  }
+  ${MESSAGE_FRAGMENT}
+`;
+
+// creating a group returns a similar shape for the new group
+const CREATE_GROUP_MUTATION = gql`
+  mutation createGroup($name: String!, $userIds: [Int!]) {
+    createGroup(name: $name, userIds: $userIds) {
+      id
+      name
+      users {
+        id
+      }
+      messages(first: 1) { # we don't need to use variables
+        edges {
+          cursor
+          node {
+            ... MessageFragment
+          }
+        }
+      }
+    }
+  }
+  ${MESSAGE_FRAGMENT}
+`;
+
+// unsurprisingly subscriptions to new groups
+// looks like CREATE_GROUP_MUTATION
+const GROUP_ADDED_SUBSCRIPTION = gql`
+  subscription onGroupAdded($userId: Int){
+    groupAdded(userId: $userId){
+      id
+      name
+      messages(first: 1) {
+        edges {
+          cursor
+          node {
+            ... MessageFragment
+          }
+        }
+      }
+    }
+  }
+  ${MESSAGE_FRAGMENT}
+`;
+
+// and the group field in USER_QUERY looks a lot like these too
+export const USER_QUERY = gql`
+  query user($id: Int) {
+    user(id: $id) {
+      id
+      email
+      username
+      groups {
+        id
+        name
+        messages(first: 1) { # we don't need to use variables
+          edges {
+            cursor
+            node {
+              ... MessageFragment
+            }
+          }
+        }
+      }
+      friends {
+        id
+        username
+      }
+    }
+  }
+  ${MESSAGE_FRAGMENT}
+`;
+```
+
+If we create a common GraphQL fragment for our queries and mutations to share, we'll only need to update the one fragment when the `Group` type changes and all our queries, mutations, and subscriptions will benefit:
+
+{{{diffStep 8.1}}}
+
+Now we can update all these GraphQL requests to use the fragment:
+
+{{{diffStep 8.2}}}
+
+There are a few things worth noting about this pattern:
+1. Changing fields on `GROUP_FRAGMENT` will immediately apply to all queries, mutations, and subscriptions that use it.
+2. We are occasionally using default values for the `$first` variable -- `$first: Int = 1` to return the first message in a Group if that variable is not specified when executing the query/mutation/subscription. 
+
+(GraphQL default variables is without a doubt the greatest and most essential addition to `apollo-client` of all time, and whoever wrote that PR deserves free beer for life 😉)
+
+3. Our GraphQL requests have much simpler return shapes, but much more complex sets of variables.
+
+Old `CREATE_GROUP_MUTATION`:
+```
+mutation createGroup($name: String!, $userIds: [Int!]) { ... }
+```
+
+New `CREATE_GROUP_MUTATION`:
+```
+mutation createGroup($name: String!, $userIds: [Int!], $first: Int = 1, $after: String, $last: Int, $before: String) { ... }
+```
+
+Yeesh! If we needed to change a variable used in `GROUP_FRAGMENT`, we'd still have to change all the queries/mutations/subscriptions. Moreover, it's not very clear what all these variables mean. `$first`, `$after`, `$last`, and `$before` are variables we use to paginate messages within a `Group`, but those variables need to be specified in `USER_QUERY` -- that's nonobvious and weird. What we need is a way to abstract inputs to simplify the way we declare variables and update those variables as our app evolves. Enter GraphQL Input Types!
+
+# Input Types on the Server
+GraphQL Input Types are a super simple concept -- you can declare named arguments in a GraphQL request in whatever shape you want. 
+
+For example, we can abstract away the pagination variables from our GraphQL requests by adding the following `ConnectionInput` in our schema:
+
+```
+# input for relay cursor connections
+  input ConnectionInput {
+    first: Int
+    after: String
+    last: Int
+    before: String
+  }
+```
+
+This will enable us to update `Group` like so:
+
+```
+# a group chat entity
+  type Group {
+    id: Int! # unique id for the group
+    name: String # name of the group
+    users: [User]! # users in the group
+    messages(messageConnection: ConnectionInput): MessageConnection # messages sent to the group
+  }
+```
+
+This will drastically simplify any request that returns `Group` types!
+
+We should strive to apply input types to all of our GraphQL requests that have even the slightest complexity in their input requirements. For Chatty, I've added input types for most of our mutations:
+
+{{{diffStep 8.3}}}
+
+Sweet! Now let's update our resolvers and business logic to handle input types instead of individual variables. The changes are minimal:
+
+{{{diffStep 8.4}}}
+
+That's it!
+
+# Input Types on the Client
+We need the GraphQL requests on our client to match the input type updates we made on our server.
+
+Let's start by updating `GROUP_FRAGMENT` with our new `ConnectionInput`:
+
+{{{diffStep 8.5 files="client/src/graphql/group.fragment.js"}}}
+
+This will super simplify all GraphQL requests that return `Group` types:
+
+{{{diffStep 8.5 files="client/src/graphql/group.query.js,client/src/graphql/create-group.mutation.js,client/src/graphql/group-added.subscription.js"}}}
+
+Our other mutations will also look cleaner with their fancy input types as well:
+
+{{{diffStep 8.5 files="client/src/graphql/login.mutation.js,client/src/graphql/signup.mutation.js,client/src/graphql/create-message.mutation.js"}}}
+
+Finally, we need to update our React Native components to pass in the right values to the new input types. The changes are pretty trivial:
+
+{{{diffStep 8.6}}}
+
+Unlike with the previous tutorials in this series, this one doesn't have a flashy ending. Everything should be working as if nothing ever happenend, but under the hood, we've vastly improved the way we make GraphQL requests to gracefully adapt to future changes to our Schema! 
+
+Fragments, default variables, and input types are essential tools for designing scalable GraphQL schemas to use in everchanging complex applications. They keep our code lean and adaptable. Apply liberally!
