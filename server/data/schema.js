@@ -7,6 +7,45 @@ export const Schema = [`
   # declare custom scalars
   scalar Date
 
+  # input for creating messages
+  input CreateMessageInput {
+    groupId: Int!
+    text: String!
+  }
+
+  # input for creating groups
+  input CreateGroupInput {
+    name: String!
+    userIds: [Int!]
+  }
+
+  # input for updating groups
+  input UpdateGroupInput {
+    id: Int!
+    name: String
+    userIds: [Int!]
+  }
+
+  # input for signing in users
+  input SigninUserInput {
+    email: String!
+    password: String!
+    username: String
+  }
+
+  # input for updating users
+  input UpdateUserInput {
+    username: String
+  }
+
+  # input for relay cursor connections
+  input ConnectionInput {
+    first: Int
+    after: String
+    last: Int
+    before: String
+  }
+
   type MessageConnection {
     edges: [MessageEdge]
     pageInfo: PageInfo!
@@ -27,7 +66,7 @@ export const Schema = [`
     id: Int! # unique id for the group
     name: String # name of the group
     users: [User]! # users in the group
-    messages(first: Int, after: String, last: Int, before: String): MessageConnection # messages sent to the group
+    messages(messageConnection: ConnectionInput): MessageConnection # messages sent to the group
   }
 
   # a user -- keep type really simple for now
@@ -65,13 +104,13 @@ export const Schema = [`
 
   type Mutation {
     # send a message to a group
-    createMessage(text: String!, groupId: Int!): Message
-    createGroup(name: String!, userIds: [Int]): Group
+    createMessage(message: CreateMessageInput!): Message
+    createGroup(group: CreateGroupInput!): Group
     deleteGroup(id: Int!): Group
     leaveGroup(id: Int!): Group # let user leave group
-    updateGroup(id: Int!, name: String): Group
-    login(email: String!, password: String!): User
-    signup(email: String!, password: String!, username: String): User
+    updateGroup(group: UpdateGroupInput!): Group
+    login(user: SigninUserInput!): User
+    signup(user: SigninUserInput!): User
   }
 
   type Subscription {
