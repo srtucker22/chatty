@@ -223,9 +223,9 @@ FinalizeGroup.propTypes = {
 
 const createGroupMutation = graphql(CREATE_GROUP_MUTATION, {
   props: ({ ownProps, mutate }) => ({
-    createGroup: ({ name, userIds }) =>
+    createGroup: group =>
       mutate({
-        variables: { name, userIds },
+        variables: { group },
         update: (store, { data: { createGroup } }) => {
           // Read the data from our cache for this query.
           const data = store.readQuery({ query: USER_QUERY, variables: { id: ownProps.auth.id } });
