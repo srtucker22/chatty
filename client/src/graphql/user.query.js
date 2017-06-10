@@ -12,7 +12,7 @@ export const USER_QUERY = gql`
       groups {
         id
         name
-        messages(first: 1) { # we don't need to use variables
+        messages(messageConnection: { first: 1 }) { # we don't need to use variables
           edges {
             cursor
             node {
