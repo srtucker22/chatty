@@ -13,6 +13,7 @@ import { User } from './data/connectors';
 import { getSubscriptionDetails } from './subscriptions'; // make sure this imports before executableSchema!
 import { executableSchema } from './data/schema';
 import { subscriptionLogic } from './data/logic';
+import { groupLoader, userLoader } from './data/batch';
 
 const GRAPHQL_PORT = 8080;
 const GRAPHQL_PATH = '/graphql';
@@ -30,6 +31,8 @@ app.use('/graphql', OpticsAgent.middleware(), bodyParser.json(), jwt({
     user: req.user ?
       User.findOne({ where: { id: req.user.id, version: req.user.version } }) :
       Promise.resolve(null),
+    userLoader: userLoader(), // create a new dataloader for each request
+    groupLoader: groupLoader(), // create a new dataloader for each request
     opticsContext: OpticsAgent.context(req), // for Apollo optics
   },
 })));
