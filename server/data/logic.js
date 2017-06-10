@@ -11,11 +11,17 @@ function getAuthenticatedUser(ctx) {
 }
 
 export const messageLogic = {
-  from(message) {
-    return message.getUser({ attributes: ['id', 'username'] });
+  from(message, args, ctx) {
+    if (!ctx.userLoader) {
+      return message.getUser({ attributes: ['id', 'username'] });
+    }
+    return ctx.userLoader.load(message.userId).then(({ id, username }) => ({ id, username }));
   },
-  to(message) {
-    return message.getGroup({ attributes: ['id', 'name'] });
+  to(message, args, ctx) {
+    if (!ctx.groupLoader) {
+      return message.getGroup({ attributes: ['id', 'name'] });
+    }
+    return ctx.groupLoader.load(message.groupId).then(({ id, name }) => ({ id, name }));
   },
   createMessage(_, createMessageInput, ctx) {
     const { text, groupId } = createMessageInput.message;
