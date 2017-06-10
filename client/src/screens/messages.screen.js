@@ -263,7 +263,9 @@ const groupQuery = graphql(GROUP_QUERY, {
   options: ownProps => ({
     variables: {
       groupId: ownProps.navigation.state.params.groupId,
-      first: ITEMS_PER_PAGE,
+      messageConnection: {
+        first: ITEMS_PER_PAGE,
+      },
     },
   }),
   props: ({ data: { fetchMore, loading, group, refetch, subscribeToMore } }) => ({
@@ -277,7 +279,10 @@ const groupQuery = graphql(GROUP_QUERY, {
         // GROUP_QUERY is used by default)
         variables: {
           // load more queries starting from the cursor of the last (oldest) message
-          after: group.messages.edges[group.messages.edges.length - 1].cursor,
+          messageConnection: {
+            first: ITEMS_PER_PAGE,
+            after: group.messages.edges[group.messages.edges.length - 1].cursor,
+          },
         },
         updateQuery: (previousResult, { fetchMoreResult }) => {
           // we will make an extra call to check if no more entries
@@ -299,15 +304,15 @@ const groupQuery = graphql(GROUP_QUERY, {
 
 const createMessageMutation = graphql(CREATE_MESSAGE_MUTATION, {
   props: ({ ownProps, mutate }) => ({
-    createMessage: ({ text, groupId }) =>
+    createMessage: message =>
       mutate({
-        variables: { text, groupId },
+        variables: { message },
         optimisticResponse: {
           __typename: 'Mutation',
           createMessage: {
             __typename: 'Message',
             id: -1, // don't know id yet, but it doesn't matter
-            text, // we know what the text will be
+            text: message.text, // we know what the text will be
             createdAt: new Date().toISOString(), // the time is now!
             from: {
               __typename: 'User',
@@ -316,7 +321,7 @@ const createMessageMutation = graphql(CREATE_MESSAGE_MUTATION, {
             },
             to: {
               __typename: 'Group',
-              id: groupId,
+              id: message.groupId,
             },
           },
         },
@@ -325,8 +330,8 @@ const createMessageMutation = graphql(CREATE_MESSAGE_MUTATION, {
           const groupData = store.readQuery({
             query: GROUP_QUERY,
             variables: {
-              groupId,
-              first: ITEMS_PER_PAGE,
+              groupId: message.groupId,
+              messageConnection: { first: ITEMS_PER_PAGE },
             },
           });
 
@@ -341,8 +346,8 @@ const createMessageMutation = graphql(CREATE_MESSAGE_MUTATION, {
           store.writeQuery({
             query: GROUP_QUERY,
             variables: {
-              groupId,
-              first: ITEMS_PER_PAGE,
+              groupId: message.groupId,
+              messageConnection: { first: ITEMS_PER_PAGE },
             },
             data: groupData,
           });
@@ -355,9 +360,9 @@ const createMessageMutation = graphql(CREATE_MESSAGE_MUTATION, {
           });
 
           // check whether the mutation is the latest message and update cache
-          const updatedGroup = _.find(userData.user.groups, { id: groupId });
+          const updatedGroup = _.find(userData.user.groups, { id: message.groupId });
           if (!updatedGroup.messages.edges.length ||
-            moment(updatedGroup.messages.edges[0].node.createdAt).isBefore(moment(createMessage.createdAt))) {
+            moment(updatedGroup.messages.edges[0].node.createdAt).isBefore(moment(message.createdAt))) {
             // update the latest message
             updatedGroup.messages.edges[0] = {
               __typename: 'MessageEdge',

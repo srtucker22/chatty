@@ -207,18 +207,18 @@ Signin.propTypes = {
 
 const login = graphql(LOGIN_MUTATION, {
   props: ({ mutate }) => ({
-    login: ({ email, password }) =>
+    login: user =>
       mutate({
-        variables: { email, password },
+        variables: { user },
       }),
   }),
 });
 
 const signup = graphql(SIGNUP_MUTATION, {
   props: ({ mutate }) => ({
-    signup: ({ email, password }) =>
+    signup: user =>
       mutate({
-        variables: { email, password },
+        variables: { user },
       }),
   }),
 });
