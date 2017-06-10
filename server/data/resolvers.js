@@ -55,8 +55,10 @@ export const Resolvers = {
     updateGroup(_, args, ctx) {
       return groupLogic.updateGroup(_, args, ctx);
     },
-    login(_, { email, password }, ctx) {
+    login(_, signinUserInput, ctx) {
       // find user by email
+      const { email, password } = signinUserInput.user;
+
       return User.findOne({ where: { email } }).then((user) => {
         if (user) {
           // validate password
@@ -80,7 +82,9 @@ export const Resolvers = {
         return Promise.reject('email not found');
       });
     },
-    signup(_, { email, password, username }, ctx) {
+    signup(_, signinUserInput, ctx) {
+      const { email, password, username } = signinUserInput.user;
+
       // find user by email
       return User.findOne({ where: { email } }).then((existing) => {
         if (!existing) {
