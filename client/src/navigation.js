@@ -19,8 +19,9 @@ import Settings from './screens/settings.screen';
 import { USER_QUERY } from './graphql/user.query';
 import MESSAGE_ADDED_SUBSCRIPTION from './graphql/message-added.subscription';
 import GROUP_ADDED_SUBSCRIPTION from './graphql/group-added.subscription';
+import UPDATE_USER_MUTATION from './graphql/update-user.mutation';
 
-import { wsClient } from './app';
+import { firebaseClient, wsClient } from './app';
 
 // tabs in main screen
 const MainScreenNavigator = TabNavigator({
@@ -82,7 +83,22 @@ export const navigationReducer = (state = initialNavState, action) => {
 
 class AppWithNavigationState extends Component {
   componentWillReceiveProps(nextProps) {
+    // when we get the user, start listening for notifications
+    if (nextProps.user && !this.props.user) {
+      firebaseClient.init().then((registrationId) => {
+        if (registrationId !== nextProps.user.registrationId) {
+          // update notification registration token on server
+          nextProps.updateUser({ registrationId });
+        }
+      });
+    }
+
     if (!nextProps.user) {
+      // unsubscribe from all notifications
+      if (firebaseClient.token) {
+        firebaseClient.clear();
+      }
+
       if (this.groupSubscription) {
         this.groupSubscription();
       }
@@ -131,9 +147,11 @@ AppWithNavigationState.propTypes = {
   refetch: PropTypes.func,
   subscribeToGroups: PropTypes.func,
   subscribeToMessages: PropTypes.func,
+  updateUser: PropTypes.func,
   user: PropTypes.shape({
     id: PropTypes.number.isRequired,
     email: PropTypes.string.isRequired,
+    registrationId: PropTypes.string,
     groups: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
@@ -212,7 +230,17 @@ const userQuery = graphql(USER_QUERY, {
   }),
 });
 
+const updateUserMutation = graphql(UPDATE_USER_MUTATION, {
+  props: ({ mutate }) => ({
+    updateUser: user =>
+      mutate({
+        variables: { user },
+      }),
+  }),
+});
+
 export default compose(
   connect(mapStateToProps),
+  updateUserMutation,
   userQuery,
 )(AppWithNavigationState);
