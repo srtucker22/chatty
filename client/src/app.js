@@ -96,7 +96,6 @@ const store = createStore(
 );
 
 export const firebaseClient = new FirebaseClient();
-firebaseClient.init(); // test FCM
 
 // persistent storage
 persistStore(store, {
