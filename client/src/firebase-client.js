@@ -4,8 +4,9 @@ import {
 import FCM, { FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType } from 'react-native-fcm';
 
 export class FirebaseClient {
-  constructor({ onWillPresentNotification }) {
+  constructor({ onWillPresentNotification, actions }) {
     this.onWillPresentNotification = onWillPresentNotification;
+    this.actions = actions;
   }
 
   init() {
@@ -32,6 +33,10 @@ export class FirebaseClient {
       }
       if (notification.opened_from_tray) {
         // app is open/resumed because user clicked banner
+        // execute preregistered action associated with notification if exists
+        if (notification.aps && notification.aps.category && this.actions[notification.aps.category]) {
+          this.actions[notification.aps.category](notification);
+        }
         return;
       }
 
