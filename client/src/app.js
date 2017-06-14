@@ -11,6 +11,7 @@ import { SubscriptionClient, addGraphQLSubscriptions } from 'subscriptions-trans
 import { persistStore, autoRehydrate } from 'redux-persist';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
+import { WillPresentNotificationResult } from 'react-native-fcm';
 
 import AppWithNavigationState, { navigationReducer } from './navigation';
 import auth from './reducers/auth.reducer';
@@ -95,7 +96,24 @@ const store = createStore(
   ),
 );
 
-export const firebaseClient = new FirebaseClient();
+export const firebaseClient = new FirebaseClient({
+  // only show message notification if not on current Messages Screen
+  onWillPresentNotification(notification) { // needs to call notification.finish
+    // check notification deets
+    // check current route deets
+    // apply rule
+    const { routes, index } = store.getState().nav;
+    const currentRoute = routes[index];
+    if (notification.type === 'MESSAGE_ADDED' && notification.group &&
+      currentRoute.routeName === 'Messages') {
+      const group = JSON.parse(notification.group);
+      if (currentRoute.params.groupId === parseInt(group.id, 10)) {
+        return notification.finish(WillPresentNotificationResult.None);
+      }
+    }
+    return notification.finish(WillPresentNotificationResult.All);
+  },
+});
 
 // persistent storage
 persistStore(store, {

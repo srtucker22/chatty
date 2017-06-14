@@ -4,6 +4,10 @@ import {
 import FCM, { FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType } from 'react-native-fcm';
 
 export class FirebaseClient {
+  constructor({ onWillPresentNotification }) {
+    this.onWillPresentNotification = onWillPresentNotification;
+  }
+
   init() {
     const self = this;
 
@@ -46,7 +50,11 @@ export class FirebaseClient {
             break;
           case NotificationType.WillPresent:
             // custom handling of WillPresent
-            notification.finish(WillPresentNotificationResult.All); // other types available: WillPresentNotificationResult.None
+            if (this.onWillPresentNotification) {
+              this.onWillPresentNotification(notification); // needs to call notification.finish
+            } else {
+              notification.finish(WillPresentNotificationResult.All); // other types available: WillPresentNotificationResult.None
+            }
             break;
         }
       }
