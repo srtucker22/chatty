@@ -15,9 +15,12 @@ import _ from 'lodash';
 import AppWithNavigationState, { navigationReducer } from './navigation';
 import auth from './reducers/auth.reducer';
 import { logout } from './actions/auth.actions';
+import { FirebaseClient } from './firebase-client';
+
+const URL = 'localhost:8080'; // set your comp's url here
 
 const networkInterface = createBatchingNetworkInterface({
-  uri: 'http://localhost:8080/graphql',
+  uri: `http://${URL}/graphql`,
   batchInterval: 10,
   queryDeduplication: true,
 });
@@ -60,7 +63,7 @@ networkInterface.useAfter([{
 }]);
 
 // Create WebSocket client
-export const wsClient = new SubscriptionClient('ws://localhost:8080/subscriptions', {
+export const wsClient = new SubscriptionClient(`ws://${URL}/subscriptions`, {
   reconnect: true,
   connectionParams() {
     // get the authentication token from local storage if it exists
@@ -91,6 +94,9 @@ const store = createStore(
     autoRehydrate(),
   ),
 );
+
+export const firebaseClient = new FirebaseClient();
+firebaseClient.init(); // test FCM
 
 // persistent storage
 persistStore(store, {
