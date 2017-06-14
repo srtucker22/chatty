@@ -37,6 +37,7 @@ export const Schema = [`
   # input for updating users
   input UpdateUserInput {
     username: String
+    registrationId: String
   }
 
   # input for relay cursor connections
@@ -81,6 +82,7 @@ export const Schema = [`
     groups: [Group] # groups the user belongs to
     friends: [User] # user's friends/contacts
     jwt: String # json web token for access
+    registrationId: String
   }
 
   # a message sent from a user to a group
@@ -112,6 +114,7 @@ export const Schema = [`
     deleteGroup(id: Int!): Group
     leaveGroup(id: Int!): Group # let user leave group
     updateGroup(group: UpdateGroupInput!): Group
+    updateUser(user: UpdateUserInput!): User # update registration for user
     login(user: SigninUserInput!): User
     signup(user: SigninUserInput!): User
   }
