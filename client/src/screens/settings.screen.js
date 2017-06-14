@@ -13,6 +13,7 @@ import { connect } from 'react-redux';
 import { graphql, compose } from 'react-apollo';
 
 import USER_QUERY from '../graphql/user.query';
+import UPDATE_USER_MUTATION from '../graphql/update-user.mutation';
 import { logout } from '../actions/auth.actions';
 
 const styles = StyleSheet.create({
@@ -89,7 +90,11 @@ class Settings extends Component {
   }
 
   logout() {
-    this.props.dispatch(logout());
+    // clear the registrationId for notifications before logout
+    this.props.updateUser({ registrationId: null }).then(() => {
+      // log out the user
+      this.props.dispatch(logout());
+    });
   }
 
   // eslint-disable-next-line
@@ -152,6 +157,7 @@ Settings.propTypes = {
   navigation: PropTypes.shape({
     navigate: PropTypes.func,
   }),
+  updateUser: PropTypes.func,
   user: PropTypes.shape({
     username: PropTypes.string,
   }),
@@ -165,11 +171,21 @@ const userQuery = graphql(USER_QUERY, {
   }),
 });
 
+const updateUserMutation = graphql(UPDATE_USER_MUTATION, {
+  props: ({ mutate }) => ({
+    updateUser: user =>
+      mutate({
+        variables: { user },
+      }),
+  }),
+});
+
 const mapStateToProps = ({ auth }) => ({
   auth,
 });
 
 export default compose(
   connect(mapStateToProps),
+  updateUserMutation,
   userQuery,
 )(Settings);
