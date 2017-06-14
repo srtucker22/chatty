@@ -8,6 +8,7 @@ export const USER_QUERY = gql`
     user(id: $id) {
       id
       email
+      registrationId
       username
       groups {
         id
