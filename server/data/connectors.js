@@ -25,6 +25,7 @@ const UserModel = db.define('user', {
   email: { type: Sequelize.STRING },
   username: { type: Sequelize.STRING },
   password: { type: Sequelize.STRING },
+  registrationId: { type: Sequelize.STRING }, // device registration for push notifications
   version: { type: Sequelize.INTEGER }, // version the password
 });
 
