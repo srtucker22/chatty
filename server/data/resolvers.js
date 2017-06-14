@@ -55,6 +55,9 @@ export const Resolvers = {
     updateGroup(_, args, ctx) {
       return groupLogic.updateGroup(_, args, ctx);
     },
+    updateUser(_, args, ctx) {
+      return userLogic.updateUser(_, args, ctx);
+    },
     login(_, signinUserInput, ctx) {
       // find user by email
       const { email, password } = signinUserInput.user;
@@ -174,6 +177,9 @@ export const Resolvers = {
     },
     messages(user, args, ctx) {
       return userLogic.messages(user, args, ctx);
+    },
+    registrationId(user, args, ctx) {
+      return userLogic.registrationId(user, args, ctx);
     },
   },
 };
