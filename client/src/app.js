@@ -12,6 +12,7 @@ import { persistStore, autoRehydrate } from 'redux-persist';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
 import { WillPresentNotificationResult } from 'react-native-fcm';
+import { NavigationActions } from 'react-navigation';
 
 import AppWithNavigationState, { navigationReducer } from './navigation';
 import auth from './reducers/auth.reducer';
@@ -112,6 +113,28 @@ export const firebaseClient = new FirebaseClient({
       }
     }
     return notification.finish(WillPresentNotificationResult.All);
+  },
+  actions: {
+    openGroup(notification) {
+      const group = JSON.parse(notification.group);
+
+      // reset navigation and redirect to group's messages screen
+      const navigateAction = NavigationActions.reset({
+        index: 1,
+        actions: [
+          NavigationActions.navigate({ routeName: 'Main' }),
+          NavigationActions.navigate({
+            routeName: 'Messages',
+            params: {
+              groupId: group.id,
+              title: group.name,
+              icon: group.icon,
+            },
+          }),
+        ],
+      });
+      store.dispatch(navigateAction);
+    },
   },
 });
 
