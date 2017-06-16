@@ -994,7 +994,7 @@ Final product: ![Final Image](https://s3-us-west-1.amazonaws.com/tortilla/chatty
 
 [{]: <helper> (navStep)
 
-| [< Previous Step](step5.md) | [Next Step >](step7.md) |
-|:--------------------------------|--------------------------------:|
+| [< Previous Step](step10.md) |
+|:----------------------|
 
 [}]: #
