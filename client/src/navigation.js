@@ -7,6 +7,8 @@ import update from 'immutability-helper';
 import { map } from 'lodash';
 import { Buffer } from 'buffer';
 import { REHYDRATE } from 'redux-persist/constants';
+import { AppState } from 'react-native';
+import FCM from 'react-native-fcm';
 
 import Groups from './screens/groups.screen';
 import Messages from './screens/messages.screen';
@@ -82,6 +84,14 @@ export const navigationReducer = (state = initialNavState, action) => {
 };
 
 class AppWithNavigationState extends Component {
+  state = {
+    appState: AppState.currentState,
+  }
+
+  componentWillMount() {
+    AppState.addEventListener('change', this.handleAppStateChange);
+  }
+
   componentWillReceiveProps(nextProps) {
     // when we get the user, start listening for notifications
     if (nextProps.user && !this.props.user) {
@@ -135,6 +145,24 @@ class AppWithNavigationState extends Component {
     }
   }
 
+  componentWillUnmount() {
+    AppState.removeEventListener('change', this.handleAppStateChange);
+  }
+
+  handleAppStateChange = (nextAppState) => {
+    console.log('App has changed state!', nextAppState, this.props.user.badgeCount);
+    if (this.props.user && FCM.getBadgeNumber()) {
+      // clear notifications from center/tray
+      FCM.removeAllDeliveredNotifications();
+
+      FCM.setBadgeNumber(0);
+
+      // update badge count on server
+      this.props.updateUser({ badgeCount: 0 });
+    }
+    this.setState({ appState: nextAppState });
+  }
+
   render() {
     const { dispatch, nav } = this.props;
     return <AppNavigator navigation={addNavigationHelpers({ dispatch, state: nav })} />;
@@ -150,6 +178,7 @@ AppWithNavigationState.propTypes = {
   updateUser: PropTypes.func,
   user: PropTypes.shape({
     id: PropTypes.number.isRequired,
+    badgeCount: PropTypes.number,
     email: PropTypes.string.isRequired,
     registrationId: PropTypes.string,
     groups: PropTypes.arrayOf(
