@@ -24,7 +24,7 @@ const networkInterface = createBatchingNetworkInterface({
 
 // middleware for requests
 networkInterface.use([{
-  applyMiddleware(req, next) {
+  applyBatchMiddleware(req, next) {
     if (!req.options.headers) {
       req.options.headers = {};
     }
@@ -39,28 +39,23 @@ networkInterface.use([{
 
 // afterware for responses
 networkInterface.useAfter([{
-  applyAfterware({ response }, next) {
-    if (!response.ok) {
-      response.clone().text().then((bodyText) => {
-        console.log(`Network Error: ${response.status} (${response.statusText}) - ${bodyText}`);
-        next();
-      });
-    } else {
-      let isUnauthorized = false;
-      response.clone().json().then(({ errors }) => {
-        if (errors) {
-          console.log('GraphQL Errors:', errors);
-          if (_.some(errors, { message: 'Unauthorized' })) {
-            isUnauthorized = true;
-          }
+  applyBatchAfterware({ responses }, next) {
+    let isUnauthorized = false;
+
+    responses.forEach((response) => {
+      if (response.errors) {
+        console.log('GraphQL Error:', response.errors);
+        if (_.some(response.errors, { message: 'Unauthorized' })) {
+          isUnauthorized = true;
         }
-      }).then(() => {
-        if (isUnauthorized) {
-          store.dispatch(logout());
-        }
-        next();
-      });
+      }
+    });
+
+    if (isUnauthorized) {
+      store.dispatch(logout());
     }
+
+    next();
   },
 }]);
 
