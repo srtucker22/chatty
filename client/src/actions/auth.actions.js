@@ -7,7 +7,7 @@ export const setCurrentUser = user => ({
 });
 
 export const logout = () => {
-  client.resetStore();
+  setTimeout(client.resetStore);
   wsClient.unsubscribeAll(); // unsubscribe from all subscriptions
   wsClient.close(); // close the WebSocket connection
   return { type: LOGOUT };
