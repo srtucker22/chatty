@@ -36,6 +36,7 @@ export const Schema = [`
 
   # input for updating users
   input UpdateUserInput {
+    badgeCount: Int
     username: String
     registrationId: String
   }
@@ -76,6 +77,7 @@ export const Schema = [`
   # a user -- keep type really simple for now
   type User {
     id: Int! # unique id for the user
+    badgeCount: Int # number of unread notifications
     email: String! # we will also require a unique email per user
     username: String # this is the name we'll show other users
     messages: [Message] # messages sent by user
