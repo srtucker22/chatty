@@ -6,7 +6,7 @@ import {
 import { ApolloProvider } from 'react-apollo';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import ApolloClient, { createNetworkInterface } from 'apollo-client';
+import ApolloClient, { createBatchingNetworkInterface } from 'apollo-client';
 import { SubscriptionClient, addGraphQLSubscriptions } from 'subscriptions-transport-ws';
 import { persistStore, autoRehydrate } from 'redux-persist';
 import thunk from 'redux-thunk';
@@ -16,7 +16,11 @@ import AppWithNavigationState, { navigationReducer } from './navigation';
 import auth from './reducers/auth.reducer';
 import { logout } from './actions/auth.actions';
 
-const networkInterface = createNetworkInterface({ uri: 'http://localhost:8080/graphql' });
+const networkInterface = createBatchingNetworkInterface({
+  uri: 'http://localhost:8080/graphql',
+  batchInterval: 10,
+  queryDeduplication: true,
+});
 
 // middleware for requests
 networkInterface.use([{
