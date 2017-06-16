@@ -1,4 +1,4 @@
-import { map, compact, reject } from 'lodash';
+import { map, filter } from 'lodash';
 import { Group, Message, User } from './connectors';
 import { sendNotification } from '../notifications';
 
@@ -38,30 +38,33 @@ export const messageLogic = {
               groupId,
             }).then((message) => {
               const group = groups[0];
-              group.getUsers({ attributes: ['id', 'registrationId'] }).then((users) => {
-                const registration_ids = compact(map(reject(users, ['id', user.id]), 'registrationId'));
-                console.log('registration_ids', registration_ids);
-                if (registration_ids.length) {
-                  sendNotification({
-                    registration_ids,
-                    notification: {
-                      title: `${user.username} @ ${group.name}`,
-                      body: text,
-                      sound: 'default', // can use custom sounds -- see https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/SupportingNotificationsinYourApp.html#//apple_ref/doc/uid/TP40008194-CH4-SW10
-                      click_action: 'openGroup',
-                    },
-                    data: {
-                      title: `${user.username} @ ${group.name}`,
-                      body: text,
-                      type: 'MESSAGE_ADDED',
-                      group: {
-                        id: group.id,
-                        name: group.name,
+              group.getUsers().then((users) => {
+                const userPromises = map(filter(users, usr => usr.id !== user.id), usr => usr.increment('badgeCount'));
+                Promise.all(userPromises).then((updatedUsers) => {
+                  const registeredUsers = filter(updatedUsers, usr => usr.registrationId);
+                  if (registeredUsers.length) {
+                    registeredUsers.forEach(({ badgeCount, registrationId }) => sendNotification({
+                      to: registrationId,
+                      notification: {
+                        title: `${user.username} @ ${group.name}`,
+                        body: text,
+                        sound: 'default', // can use custom sounds -- see https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/SupportingNotificationsinYourApp.html#//apple_ref/doc/uid/TP40008194-CH4-SW10
+                        badge: badgeCount + 1, // badgeCount doesn't get updated in Promise return?!
+                        click_action: 'openGroup',
                       },
-                    },
-                    priority: 'high', // will wake sleeping device
-                  });
-                }
+                      data: {
+                        title: `${user.username} @ ${group.name}`,
+                        body: text,
+                        type: 'MESSAGE_ADDED',
+                        group: {
+                          id: group.id,
+                          name: group.name,
+                        },
+                      },
+                      priority: 'high', // will wake sleeping device
+                    }));
+                  }
+                });
               });
 
               return message;
@@ -324,9 +327,19 @@ export const userLogic = {
       return Promise.reject('Unauthorized');
     });
   },
-  updateUser(_, { registrationId = null }, ctx) {
+  updateUser(_, { badgeCount, registrationId }, ctx) {
     return getAuthenticatedUser(ctx).then((user) => { // eslint-disable-line arrow-body-style
-      return user.update({ registrationId });
+      const options = {};
+
+      if (registrationId || registrationId === null) {
+        options.registrationId = registrationId;
+      }
+
+      if (badgeCount || badgeCount === 0) {
+        options.badgeCount = badgeCount;
+      }
+
+      return user.update(options);
     });
   },
 };
