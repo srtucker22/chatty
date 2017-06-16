@@ -22,6 +22,7 @@ const MessageModel = db.define('message', {
 
 // define users
 const UserModel = db.define('user', {
+  badgeCount: { type: Sequelize.INTEGER },
   email: { type: Sequelize.STRING },
   username: { type: Sequelize.STRING },
   password: { type: Sequelize.STRING },
@@ -61,6 +62,7 @@ db.sync({ force: true }).then(() => _.times(GROUPS, () => GroupModel.create({
 }).then(group => _.times(USERS_PER_GROUP, () => {
   const password = faker.internet.password();
   return bcrypt.hash(password, 10).then(hash => group.createUser({
+    badgeCount: 0,
     email: faker.internet.email(),
     username: faker.internet.userName(),
     password: hash,
