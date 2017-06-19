@@ -6,6 +6,7 @@ const GROUP_FRAGMENT = gql`
   fragment GroupFragment on Group {
     id
     name
+    unreadCount
     users {
       id
       username
