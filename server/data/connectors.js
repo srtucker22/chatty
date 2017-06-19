@@ -7,7 +7,7 @@ import bcrypt from 'bcrypt';
 const db = new Sequelize('chatty', null, null, {
   dialect: 'sqlite',
   storage: './chatty.sqlite',
-  logging: false, // mark this true if you want to see logs
+  // logging: false, // mark this true if you want to see logs
 });
 
 // define groups
@@ -36,6 +36,10 @@ UserModel.belongsToMany(UserModel, { through: 'Friends', as: 'friends' });
 
 // messages are sent from users
 MessageModel.belongsTo(UserModel);
+
+// track last read message in a group for a given user
+MessageModel.belongsToMany(UserModel, { through: 'MessageUser', as: 'lastRead' });
+UserModel.belongsToMany(MessageModel, { through: 'MessageUser', as: 'lastRead' });
 
 // messages are sent to groups
 MessageModel.belongsTo(GroupModel);
