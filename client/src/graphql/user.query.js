@@ -12,6 +12,7 @@ export const USER_QUERY = gql`
       groups {
         id
         name
+        unreadCount
         messages(messageConnection: { first: 1 }) { # we don't need to use variables
           edges {
             cursor
