@@ -65,6 +65,23 @@ const styles = StyleSheet.create({
   groupUsername: {
     paddingVertical: 4,
   },
+  groupTextInnerContainer: {
+    flexDirection: 'row',
+    flex: 1,
+    paddingRight: 6,
+    alignItems: 'center',
+  },
+  groupBadge: {
+    borderRadius: 20,
+    backgroundColor: '#037aff',
+    justifyContent: 'center',
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+  },
+  groupBadgeText: {
+    color: 'white',
+    textAlign: 'center',
+  },
   header: {
     alignItems: 'flex-end',
     padding: 6,
@@ -74,6 +91,10 @@ const styles = StyleSheet.create({
   warning: {
     textAlign: 'center',
     padding: 12,
+  },
+  column: {
+    flexDirection: 'column',
+    flex: 1,
   },
 });
 
@@ -104,7 +125,8 @@ class Group extends Component {
   }
 
   render() {
-    const { id, name, messages } = this.props.group;
+    const { id, name, messages, unreadCount } = this.props.group;
+
     return (
       <TouchableHighlight
         key={id}
@@ -125,13 +147,25 @@ class Group extends Component {
                   formatCreatedAt(messages.edges[0].node.createdAt) : ''}
               </Text>
             </View>
-            <Text style={styles.groupUsername}>
-              {messages.edges.length ?
-                `${messages.edges[0].node.from.username}:` : ''}
-            </Text>
-            <Text style={styles.groupText} numberOfLines={1}>
-              {messages.edges.length ? messages.edges[0].node.text : ''}
-            </Text>
+            <View style={styles.groupTextInnerContainer}>
+              <View style={styles.column}>
+                <Text style={styles.groupUsername}>
+                  {messages.edges.length ?
+                    `${messages.edges[0].node.from.username}:` : ''}
+                </Text>
+                <Text style={styles.groupText} numberOfLines={1}>
+                  {messages.edges.length ? messages.edges[0].node.text : ''}
+                </Text>
+              </View>
+              {unreadCount ?
+                <TouchableHighlight>
+                  <View style={styles.groupBadge}>
+                    <Text style={styles.groupBadgeText}>
+                      {unreadCount}
+                    </Text>
+                  </View>
+                </TouchableHighlight> : undefined}
+            </View>
           </View>
           <Icon
             name="angle-right"
