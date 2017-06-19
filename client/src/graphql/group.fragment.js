@@ -7,6 +7,10 @@ const GROUP_FRAGMENT = gql`
     id
     name
     unreadCount
+    lastRead {
+      id
+      createdAt
+    }
     users {
       id
       username
