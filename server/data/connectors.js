@@ -7,12 +7,13 @@ import bcrypt from 'bcrypt';
 const db = new Sequelize('chatty', null, null, {
   dialect: 'sqlite',
   storage: './chatty.sqlite',
-  // logging: false, // mark this true if you want to see logs
+  logging: false, // mark this true if you want to see logs
 });
 
 // define groups
 const GroupModel = db.define('group', {
   name: { type: Sequelize.STRING },
+  icon: { type: Sequelize.STRING }, // url for group icon
 });
 
 // define messages
@@ -28,6 +29,7 @@ const UserModel = db.define('user', {
   password: { type: Sequelize.STRING },
   registrationId: { type: Sequelize.STRING }, // device registration for push notifications
   version: { type: Sequelize.INTEGER }, // version the password
+  avatar: { type: Sequelize.STRING }, // url for avatar image
 });
 
 // users belong to multiple groups
