@@ -125,7 +125,7 @@ class Group extends Component {
   }
 
   render() {
-    const { id, name, messages, unreadCount } = this.props.group;
+    const { icon, id, name, messages, unreadCount } = this.props.group;
 
     return (
       <TouchableHighlight
@@ -136,7 +136,7 @@ class Group extends Component {
           <Image
             style={styles.groupImage}
             source={{
-              uri: 'https://facebook.github.io/react/img/logo_og.png',
+              uri: icon || 'https://facebook.github.io/react/img/logo_og.png',
             }}
           />
           <View style={styles.groupTextContainer}>
@@ -182,6 +182,7 @@ Group.propTypes = {
   goToMessages: PropTypes.func.isRequired,
   group: PropTypes.shape({
     id: PropTypes.number,
+    icon: PropTypes.string,
     name: PropTypes.string,
     messages: PropTypes.shape({
       edges: PropTypes.arrayOf(PropTypes.shape({
@@ -213,7 +214,7 @@ class Groups extends Component {
 
   goToMessages(group) {
     const { navigate } = this.props.navigation;
-    navigate('Messages', { groupId: group.id, title: group.name });
+    navigate('Messages', { groupId: group.id, title: group.name, icon: group.icon });
   }
 
   goToNewGroup() {
