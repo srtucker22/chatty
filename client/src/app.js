@@ -6,13 +6,14 @@ import {
 import { ApolloProvider } from 'react-apollo';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import ApolloClient, { createBatchingNetworkInterface } from 'apollo-client';
+import ApolloClient from 'apollo-client';
 import { SubscriptionClient, addGraphQLSubscriptions } from 'subscriptions-transport-ws';
 import { persistStore, autoRehydrate } from 'redux-persist';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
 import { WillPresentNotificationResult } from 'react-native-fcm';
 import { NavigationActions } from 'react-navigation';
+import { createBatchingNetworkInterface } from 'apollo-upload-client';
 
 import AppWithNavigationState, { navigationReducer } from './navigation';
 import auth from './reducers/auth.reducer';
