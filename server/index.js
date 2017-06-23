@@ -7,6 +7,7 @@ import { execute, subscribe } from 'graphql';
 import jwt from 'express-jwt';
 import jsonwebtoken from 'jsonwebtoken';
 import OpticsAgent from 'optics-agent';
+import { apolloUploadExpress } from 'apollo-upload-server';
 
 import { JWT_SECRET } from './config';
 import { User } from './data/connectors';
@@ -22,10 +23,17 @@ const SUBSCRIPTIONS_PATH = '/subscriptions';
 const app = express();
 
 // `context` must be an object and can't be undefined when using connectors
-app.use('/graphql', OpticsAgent.middleware(), bodyParser.json(), jwt({
-  secret: JWT_SECRET,
-  credentialsRequired: false,
-}), graphqlExpress(req => ({
+app.use('/graphql',
+  OpticsAgent.middleware(),
+  bodyParser.json(),
+  apolloUploadExpress({
+    uploadDir: '/tmp/uploads',
+  }),
+  jwt({
+    secret: JWT_SECRET,
+    credentialsRequired: false,
+  },
+), graphqlExpress(req => ({
   schema: OpticsAgent.instrumentSchema(executableSchema),
   context: {
     user: req.user ?
