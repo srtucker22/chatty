@@ -5,6 +5,7 @@ const UPDATE_GROUP_MUTATION = gql`
     updateGroup(group: $group) {
       id
       name
+      icon
       lastRead {
         id
         createdAt

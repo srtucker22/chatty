@@ -7,6 +7,7 @@ export const USER_QUERY = gql`
   query user($id: Int) {
     user(id: $id) {
       id
+      avatar
       badgeCount
       email
       registrationId
@@ -14,6 +15,7 @@ export const USER_QUERY = gql`
       groups {
         id
         name
+        icon
         unreadCount
         messages(messageConnection: { first: 1 }) { # we don't need to use variables
           edges {
