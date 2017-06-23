@@ -7,6 +7,14 @@ export const Schema = [`
   # declare custom scalars
   scalar Date
 
+  # input for file types
+  input File {
+    name: String!
+    type: String!
+    size: Int!
+    path: String!
+  }
+
   # input for creating messages
   input CreateMessageInput {
     groupId: Int!
@@ -17,6 +25,7 @@ export const Schema = [`
   input CreateGroupInput {
     name: String!
     userIds: [Int!]
+    icon: File # group icon image
   }
 
   # input for updating groups
@@ -25,6 +34,7 @@ export const Schema = [`
     lastRead: Int
     name: String
     userIds: [Int!]
+    icon: File # group icom image
   }
 
   # input for signing in users
@@ -36,6 +46,7 @@ export const Schema = [`
 
   # input for updating users
   input UpdateUserInput {
+    avatar: File
     badgeCount: Int
     username: String
     registrationId: String
@@ -72,6 +83,7 @@ export const Schema = [`
     messages(messageConnection: ConnectionInput): MessageConnection # messages sent to the group
     lastRead: Message # message last read by user
     unreadCount: Int # number of unread messages by user
+    icon: String # url for icon image
   }
 
   # a user -- keep type really simple for now
@@ -85,6 +97,7 @@ export const Schema = [`
     friends: [User] # user's friends/contacts
     jwt: String # json web token for access
     registrationId: String
+    avatar: String # url for avatar image
   }
 
   # a message sent from a user to a group
