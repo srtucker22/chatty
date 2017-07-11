@@ -3706,6 +3706,10 @@ react-native-image-crop-picker@^0.14.4:
   version "0.14.4"
   resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.14.4.tgz#3b5c9f9e933ab367c61cf33b46df623f52943e83"
 
+react-native-loading-spinner-overlay@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/react-native-loading-spinner-overlay/-/react-native-loading-spinner-overlay-0.5.1.tgz#5484fc8511dd85038bd595746e8a6207aa72c6c1"
+
 react-native-tab-view@^0.0.67:
   version "0.0.67"
   resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-0.0.67.tgz#cdd146fe5e5d4baff6c89f2d5d0b15fa23db39d0"

@@ -7,6 +7,7 @@ const UPDATE_USER_MUTATION = gql`
       avatar
       badgeCount
       registrationId
+      username
     }
   }
 `;

@@ -22,6 +22,7 @@
 		"react-native-alphabetlistview": "^0.2.0",
 		"react-native-fcm": "^8.0.0",
 		"react-native-image-crop-picker": "^0.14.4",
+		"react-native-loading-spinner-overlay": "^0.5.1",
 		"react-native-vector-icons": "^4.3.0",
 		"react-navigation": "^1.0.0-beta.11",
 		"react-redux": "^5.0.5",
