@@ -18,6 +18,8 @@ import { USER_QUERY } from './graphql/user.query';
 import MESSAGE_ADDED_SUBSCRIPTION from './graphql/message-added.subscription';
 import GROUP_ADDED_SUBSCRIPTION from './graphql/group-added.subscription';
 
+import { wsClient } from './app';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -89,6 +91,15 @@ class AppWithNavigationState extends Component {
       if (this.messagesSubscription) {
         this.messagesSubscription();
       }
+
+      // clear the event subscription
+      if (this.reconnected) {
+        this.reconnected();
+      }
+    } else if (!this.reconnected) {
+      this.reconnected = wsClient.onReconnected(() => {
+        this.props.refetch(); // check for any data lost during disconnect
+      }, this);
     }
 
     if (nextProps.user &&
@@ -118,6 +129,7 @@ class AppWithNavigationState extends Component {
 AppWithNavigationState.propTypes = {
   dispatch: PropTypes.func.isRequired,
   nav: PropTypes.object.isRequired,
+  refetch: PropTypes.func,
   subscribeToGroups: PropTypes.func,
   subscribeToMessages: PropTypes.func,
   user: PropTypes.shape({
@@ -138,9 +150,10 @@ const mapStateToProps = state => ({
 
 const userQuery = graphql(USER_QUERY, {
   options: () => ({ variables: { id: 1 } }), // fake the user for now
-  props: ({ data: { loading, user, subscribeToMore } }) => ({
+  props: ({ data: { loading, user, refetch, subscribeToMore } }) => ({
     loading,
     user,
+    refetch,
     subscribeToMessages() {
       return subscribeToMore({
         document: MESSAGE_ADDED_SUBSCRIPTION,

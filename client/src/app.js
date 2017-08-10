@@ -11,7 +11,7 @@ import AppWithNavigationState, { navigationReducer } from './navigation';
 const networkInterface = createNetworkInterface({ uri: 'http://localhost:8080/graphql' });
 
 // Create WebSocket client
-const wsClient = new SubscriptionClient('ws://localhost:8080/subscriptions', {
+export const wsClient = new SubscriptionClient('ws://localhost:8080/subscriptions', {
   reconnect: true,
   connectionParams: {
     // Pass any arguments you want for initialization
