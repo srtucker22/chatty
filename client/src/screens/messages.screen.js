@@ -138,9 +138,18 @@ class Messages extends Component {
         });
       }
 
+      if (!this.reconnected) {
+        this.reconnected = wsClient.onReconnected(() => {
+          this.props.refetch(); // check for any data lost during disconnect
+        }, this);
+      }
+
       this.setState({
         usernameColors,
       });
+    } else if (this.reconnected) {
+      // remove event subscription
+      this.reconnected();
     }
   }
 
@@ -242,6 +251,7 @@ Messages.propTypes = {
   }),
   loading: PropTypes.bool,
   loadMoreEntries: PropTypes.func,
+  refetch: PropTypes.func,
   subscribeToMore: PropTypes.func,
 };
 
@@ -253,9 +263,10 @@ const groupQuery = graphql(GROUP_QUERY, {
       first: ITEMS_PER_PAGE,
     },
   }),
-  props: ({ data: { fetchMore, loading, group, subscribeToMore } }) => ({
+  props: ({ data: { fetchMore, loading, group, refetch, subscribeToMore } }) => ({
     loading,
     group,
+    refetch,
     subscribeToMore,
     loadMoreEntries() {
       return fetchMore({
