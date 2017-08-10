@@ -105,24 +105,28 @@ export const Resolvers = {
     messageAdded: {
       subscribe: withFilter(
         () => pubsub.asyncIterator(MESSAGE_ADDED_TOPIC),
-        (payload, args) => {
-          return Boolean(
-            args.groupIds &&
-            ~args.groupIds.indexOf(payload.messageAdded.groupId) &&
-            args.userId !== payload.messageAdded.userId, // don't send to user creating message
-          );
+        (payload, args, ctx) => {
+          return ctx.user.then((user) => {
+            return Boolean(
+              args.groupIds &&
+              ~args.groupIds.indexOf(payload.messageAdded.groupId) &&
+              user.id !== payload.messageAdded.userId, // don't send to user creating message
+            );
+          });
         },
       ),
     },
     groupAdded: {
       subscribe: withFilter(
         () => pubsub.asyncIterator(GROUP_ADDED_TOPIC),
-        (payload, args) => {
-          return Boolean(
-            args.userId &&
-            ~map(payload.groupAdded.users, 'id').indexOf(args.userId) &&
-            args.userId !== payload.groupAdded.users[0].id, // don't send to user creating group
-          );
+        (payload, args, ctx) => {
+          return ctx.user.then((user) => {
+            return Boolean(
+              args.userId &&
+              ~map(payload.groupAdded.users, 'id').indexOf(args.userId) &&
+              user.id !== payload.groupAdded.users[0].id, // don't send to user creating group
+            );
+          });
         },
       ),
     },
