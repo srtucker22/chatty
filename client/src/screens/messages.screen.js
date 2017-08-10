@@ -14,11 +14,14 @@ import randomColor from 'randomcolor';
 import { graphql, compose } from 'react-apollo';
 import update from 'immutability-helper';
 import { Buffer } from 'buffer';
+import _ from 'lodash';
+import moment from 'moment';
 
 import Message from '../components/message.component';
 import MessageInput from '../components/message-input.component';
 import GROUP_QUERY from '../graphql/group.query';
 import CREATE_MESSAGE_MUTATION from '../graphql/create-message.mutation';
+import USER_QUERY from '../graphql/user.query';
 
 const styles = StyleSheet.create({
   container: {
@@ -296,6 +299,34 @@ const createMessageMutation = graphql(CREATE_MESSAGE_MUTATION, {
             },
             data: groupData,
           });
+
+          const userData = store.readQuery({
+            query: USER_QUERY,
+            variables: {
+              id: 1, // faking the user for now
+            },
+          });
+
+          // check whether the mutation is the latest message and update cache
+          const updatedGroup = _.find(userData.user.groups, { id: groupId });
+          if (!updatedGroup.messages.edges.length ||
+            moment(updatedGroup.messages.edges[0].node.createdAt).isBefore(moment(createMessage.createdAt))) {
+            // update the latest message
+            updatedGroup.messages.edges[0] = {
+              __typename: 'MessageEdge',
+              node: createMessage,
+              cursor: Buffer.from(createMessage.id.toString()).toString('base64'),
+            };
+
+            // Write our data back to the cache.
+            store.writeQuery({
+              query: USER_QUERY,
+              variables: {
+                id: 1, // faking the user for now
+              },
+              data: userData,
+            });
+          }
         },
       }),
 
