@@ -17,6 +17,8 @@ import { Buffer } from 'buffer';
 import _ from 'lodash';
 import moment from 'moment';
 
+import { wsClient } from '../app';
+
 import Message from '../components/message.component';
 import MessageInput from '../components/message-input.component';
 import GROUP_QUERY from '../graphql/group.query';
@@ -137,9 +139,18 @@ class Messages extends Component {
         });
       }
 
+      if (!this.reconnected) {
+        this.reconnected = wsClient.onReconnected(() => {
+          this.props.refetch(); // check for any data lost during disconnect
+        }, this);
+      }
+
       this.setState({
         usernameColors,
       });
+    } else if (this.reconnected) {
+      // remove event subscription
+      this.reconnected();
     }
   }
 
@@ -241,6 +252,7 @@ Messages.propTypes = {
   }),
   loading: PropTypes.bool,
   loadMoreEntries: PropTypes.func,
+  refetch: PropTypes.func,
   subscribeToMore: PropTypes.func,
 };
 
@@ -252,9 +264,10 @@ const groupQuery = graphql(GROUP_QUERY, {
       first: ITEMS_PER_PAGE,
     },
   }),
-  props: ({ data: { fetchMore, loading, group, subscribeToMore } }) => ({
+  props: ({ data: { fetchMore, loading, group, refetch, subscribeToMore } }) => ({
     loading,
     group,
+    refetch,
     subscribeToMore,
     loadMoreEntries() {
       return fetchMore({
