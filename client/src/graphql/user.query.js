@@ -7,6 +7,7 @@ export const USER_QUERY = gql`
   query user($id: Int) {
     user(id: $id) {
       id
+      badgeCount
       email
       registrationId
       username

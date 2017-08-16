@@ -4,6 +4,7 @@ const UPDATE_USER_MUTATION = gql`
   mutation updateUser($user: UpdateUserInput!) {
     updateUser(user: $user) {
       id
+      badgeCount
       registrationId
     }
   }
