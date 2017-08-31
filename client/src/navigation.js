@@ -187,7 +187,6 @@ const userQuery = graphql(USER_QUERY, {
       return subscribeToMore({
         document: MESSAGE_ADDED_SUBSCRIPTION,
         variables: {
-          userId: 1, // fake the user for now
           groupIds: map(user.groups, 'id'),
         },
         updateQuery: (previousResult, { subscriptionData }) => {
