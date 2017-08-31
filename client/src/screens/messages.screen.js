@@ -116,7 +116,6 @@ class Messages extends Component {
         this.subscription = nextProps.subscribeToMore({
           document: MESSAGE_ADDED_SUBSCRIPTION,
           variables: {
-            userId: 1, // fake the user for now
             groupIds: [nextProps.navigation.state.params.groupId],
           },
           updateQuery: (previousResult, { subscriptionData }) => {
