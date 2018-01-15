@@ -1,0 +1,12 @@
+created: 20150822152602396
+modified: 20180105230820861
+tags: $:/tags/Stylesheet
+title: Alec stylee
+type: text/vnd.tiddlywiki
+
+html span.tc-title{
+  color: red;
+  font-family: 'Roboto', sans-serif;
+}
+.iframe800{
+width:100%;height:800px;}

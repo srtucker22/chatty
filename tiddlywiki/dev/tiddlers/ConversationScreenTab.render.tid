@@ -1,0 +1,49 @@
+caption: Render
+created: 20180106002820075
+modified: 20180106002844812
+order: 5
+tags: ConversationsScreenTab
+title: ConversationScreenTab.render
+type: text/vnd.tiddlywiki
+
+```javascript
+  renderItem = ({ item }) => <Group group={item} goToMessages={this.goToMessages} />;
+
+  render() {
+    const { loading, user, networkStatus } = this.props;
+
+    // render loading placeholder while we fetch messages
+    if (loading || !user) {
+      return (
+        <View style={[styles.loading, styles.container]}>
+          <ActivityIndicator />
+        </View>
+      );
+    }
+
+    if (user && !user.groups.length) {
+      return (
+        <View style={styles.container}>
+          { /* <Header onPress={this.goToNewGroup} /> */ }
+          <Header onPress={this.goToNewConversation} />
+          <Text style={styles.warning}>{'You do not have any groups.'}</Text>
+        </View>
+      );
+    }
+
+    // render list of groups for user
+    return (
+      <View style={styles.container}>
+        <FlatList
+          data={user.groups}
+          keyExtractor={this.keyExtractor}
+          renderItem={this.renderItem}
+          ListHeaderComponent={() => <Header onPress={this.goToNewConversation} />}
+          onRefresh={this.onRefresh}
+          refreshing={networkStatus === 4}
+        />
+      </View>
+    );
+  }
+}
+```

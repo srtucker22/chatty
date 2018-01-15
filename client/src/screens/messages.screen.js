@@ -74,7 +74,7 @@ class Messages extends Component {
           <View style={styles.title}>
             <Image
               style={styles.titleImage}
-              source={{ uri: state.params.icon || 'https://facebook.github.io/react/img/logo_og.png' }}
+              source={{ uri: state.params.icon || 'https://reactjs.org/logo-og.png' }}
             />
             <Text>{state.params.title}</Text>
           </View>

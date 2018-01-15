@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "101019675103",
+    "firebase_url": "https://apollo-1429d.firebaseio.com",
+    "project_id": "apollo-1429d",
+    "storage_bucket": "apollo-1429d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:101019675103:android:bb5b320b7513a28b",
+        "android_client_info": {
+          "package_name": "com.chatty"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "101019675103-0hrq3maasno110q56ijkkjuddfktusk7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZiIHT2GmUwoAEsgJJUfi5NJ6f7ysP_zI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

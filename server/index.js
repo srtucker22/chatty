@@ -93,6 +93,11 @@ const subscriptionServer = SubscriptionServer.create({
       schema: executableSchema,
     });
 
+    console.log('##########  parsedMessage  ##########');
+    console.log(parsedMessage.payload.variables);
+    console.log('##########  baseParams  ##########');
+    console.log(baseParams.operationName);
+
     // we need to implement this too!!!
     return subscriptionLogic[subscriptionName](baseParams, args, baseParams.context);
   },

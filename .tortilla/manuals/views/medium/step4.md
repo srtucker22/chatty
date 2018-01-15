@@ -830,7 +830,7 @@ If you want to see some UI or you want a hint or you don’t wanna write any cod
 <b>+┊   ┊ 60┊        &lt;View&gt;</b>
 <b>+┊   ┊ 61┊          &lt;Image</b>
 <b>+┊   ┊ 62┊            style&#x3D;{styles.itemImage}</b>
-<b>+┊   ┊ 63┊            source&#x3D;{{ uri: &#x27;https://facebook.github.io/react/img/logo_og.png&#x27; }}</b>
+<b>+┊   ┊ 63┊            source&#x3D;{{ uri: &#x27;https://reactjs.org/logo-og.png&#x27; }}</b>
 <b>+┊   ┊ 64┊          /&gt;</b>
 <b>+┊   ┊ 65┊          &lt;TouchableOpacity onPress&#x3D;{this.remove} style&#x3D;{styles.itemIcon}&gt;</b>
 <b>+┊   ┊ 66┊            &lt;Icon</b>
@@ -1183,7 +1183,7 @@ If you want to see some UI or you want a hint or you don’t wanna write any cod
 <b>+┊   ┊183┊          &lt;TouchableOpacity style&#x3D;{styles.imageContainer}&gt;</b>
 <b>+┊   ┊184┊            &lt;Image</b>
 <b>+┊   ┊185┊              style&#x3D;{styles.groupImage}</b>
-<b>+┊   ┊186┊              source&#x3D;{{ uri: &#x27;https://facebook.github.io/react/img/logo_og.png&#x27; }}</b>
+<b>+┊   ┊186┊              source&#x3D;{{ uri: &#x27;https://reactjs.org/logo-og.png&#x27; }}</b>
 <b>+┊   ┊187┊            /&gt;</b>
 <b>+┊   ┊188┊            &lt;Text&gt;edit&lt;/Text&gt;</b>
 <b>+┊   ┊189┊          &lt;/TouchableOpacity&gt;</b>
@@ -1406,7 +1406,7 @@ If you want to see some UI or you want a hint or you don’t wanna write any cod
 <b>+┊   ┊126┊    &lt;View style&#x3D;{styles.user}&gt;</b>
 <b>+┊   ┊127┊      &lt;Image</b>
 <b>+┊   ┊128┊        style&#x3D;{styles.avatar}</b>
-<b>+┊   ┊129┊        source&#x3D;{{ uri: &#x27;https://facebook.github.io/react/img/logo_og.png&#x27; }}</b>
+<b>+┊   ┊129┊        source&#x3D;{{ uri: &#x27;https://reactjs.org/logo-og.png&#x27; }}</b>
 <b>+┊   ┊130┊      /&gt;</b>
 <b>+┊   ┊131┊      &lt;Text style&#x3D;{styles.username}&gt;{user.username}&lt;/Text&gt;</b>
 <b>+┊   ┊132┊    &lt;/View&gt;</b>
@@ -1436,7 +1436,7 @@ If you want to see some UI or you want a hint or you don’t wanna write any cod
 <b>+┊   ┊156┊                &lt;TouchableOpacity style&#x3D;{styles.groupImageContainer} onPress&#x3D;{this.pickGroupImage}&gt;</b>
 <b>+┊   ┊157┊                  &lt;Image</b>
 <b>+┊   ┊158┊                    style&#x3D;{styles.groupImage}</b>
-<b>+┊   ┊159┊                    source&#x3D;{{ uri: &#x27;https://facebook.github.io/react/img/logo_og.png&#x27; }}</b>
+<b>+┊   ┊159┊                    source&#x3D;{{ uri: &#x27;https://reactjs.org/logo-og.png&#x27; }}</b>
 <b>+┊   ┊160┊                  /&gt;</b>
 <b>+┊   ┊161┊                  &lt;Text&gt;edit&lt;/Text&gt;</b>
 <b>+┊   ┊162┊                &lt;/TouchableOpacity&gt;</b>
@@ -1718,7 +1718,7 @@ If you want to see some UI or you want a hint or you don’t wanna write any cod
 <b>+┊  ┊69┊          &lt;View style&#x3D;{styles.title}&gt;</b>
 <b>+┊  ┊70┊            &lt;Image</b>
 <b>+┊  ┊71┊              style&#x3D;{styles.titleImage}</b>
-<b>+┊  ┊72┊              source&#x3D;{{ uri: &#x27;https://facebook.github.io/react/img/logo_og.png&#x27; }}</b>
+<b>+┊  ┊72┊              source&#x3D;{{ uri: &#x27;https://reactjs.org/logo-og.png&#x27; }}</b>
 <b>+┊  ┊73┊            /&gt;</b>
 <b>+┊  ┊74┊            &lt;Text&gt;{state.params.title}&lt;/Text&gt;</b>
 <b>+┊  ┊75┊          &lt;/View&gt;</b>
@@ -1873,7 +1873,7 @@ If you want to see some UI or you want a hint or you don’t wanna write any cod
 <b>+┊   ┊125┊      &lt;View style&#x3D;{styles.cellContainer}&gt;</b>
 <b>+┊   ┊126┊        &lt;Image</b>
 <b>+┊   ┊127┊          style&#x3D;{styles.cellImage}</b>
-<b>+┊   ┊128┊          source&#x3D;{{ uri: &#x27;https://facebook.github.io/react/img/logo_og.png&#x27; }}</b>
+<b>+┊   ┊128┊          source&#x3D;{{ uri: &#x27;https://reactjs.org/logo-og.png&#x27; }}</b>
 <b>+┊   ┊129┊        /&gt;</b>
 <b>+┊   ┊130┊        &lt;Text style&#x3D;{styles.cellLabel}&gt;{this.props.item.username}&lt;/Text&gt;</b>
 <b>+┊   ┊131┊        &lt;View style&#x3D;{styles.checkButtonContainer}&gt;</b>
