@@ -1,26 +1,33 @@
 import React, { Component } from 'react';
 import {
   AsyncStorage,
+  UIManager,
 } from 'react-native';
 
 import { ApolloProvider } from 'react-apollo';
+import { ThemeProvider } from 'styled-components';
+// import ActionSheet from 'react-native-actionsheet';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import ApolloClient from 'apollo-client';
 import { SubscriptionClient, addGraphQLSubscriptions } from 'subscriptions-transport-ws';
 import { persistStore, autoRehydrate } from 'redux-persist';
 import thunk from 'redux-thunk';
+import { createLogger } from 'redux-logger';
 import _ from 'lodash';
 import { WillPresentNotificationResult } from 'react-native-fcm';
 import { NavigationActions } from 'react-navigation';
 import { createBatchingNetworkInterface } from 'apollo-upload-client';
 
 import AppWithNavigationState, { navigationReducer } from './navigation';
+import { colors } from './utils/constants';
 import auth from './reducers/auth.reducer';
 import { logout } from './actions/auth.actions';
 import { FirebaseClient } from './firebase-client';
 
-const URL = 'localhost:8080'; // set your comp's url here
+// const URL = 'localhost:8080'; // set your comp's url here
+// const URL = '192.168.1.110:8080'; // set your comp's url here
+const URL = '192.168.1.31:8080'; // set your comp's url here
 
 const networkInterface = createBatchingNetworkInterface({
   uri: `http://${URL}/graphql`,
@@ -93,7 +100,7 @@ const store = createStore(
   }),
   {}, // initial state
   composeWithDevTools(
-    applyMiddleware(client.middleware(), thunk),
+    applyMiddleware(client.middleware(), thunk, createLogger()),
     autoRehydrate(),
   ),
 );
@@ -145,11 +152,17 @@ persistStore(store, {
   blacklist: ['apollo', 'nav'], // don't persist apollo or nav for now
 });
 
+if (UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 export default class App extends Component {
   render() {
+    console.log('##########  APP RENDER  ##########');
     return (
       <ApolloProvider store={store} client={client}>
-        <AppWithNavigationState />
+        <ThemeProvider theme={colors}>
+          <AppWithNavigationState />
+        </ThemeProvider>
       </ApolloProvider>
     );
   }

@@ -845,7 +845,7 @@ const Header &#x3D; ({ onPress }) &#x3D;&gt; (
 <b>          &lt;Image</b>
 <b>            style&#x3D;{styles.groupImage}</b>
 <b>            source&#x3D;{{</b>
-<b>              uri: &#x27;https://facebook.github.io/react/img/logo_og.png&#x27;,</b>
+<b>              uri: &#x27;https://reactjs.org/logo-og.png&#x27;,</b>
 <b>            }}</b>
 <b>          /&gt;</b>
 <b>          &lt;View style&#x3D;{styles.groupTextContainer}&gt;</b>

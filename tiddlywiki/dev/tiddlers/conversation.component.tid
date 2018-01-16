@@ -1,0 +1,85 @@
+created: 20180105233420190
+modified: 20180106003013394
+tags: component onConversationsScreen
+title: conversation.component
+type: text/vnd.tiddlywiki
+
+onConversationsScreen:
+
+```javascript
+class Group extends Component {
+  constructor(props) {
+    super(props);
+
+    this.goToMessages = this.props.goToMessages.bind(this, this.props.group);
+  }
+
+  render() {
+    const { icon, id, name, messages, unreadCount } = this.props.group;
+
+    return (
+      <TouchableHighlight
+        key={id}
+        onPress={this.goToMessages}
+      >
+        <View style={styles.groupContainer}>
+          <Image
+            style={styles.groupImage}
+            source={{
+              uri: icon || 'https://reactjs.org/logo-og.png',
+            }}
+          />
+          <View style={styles.groupTextContainer}>
+            <View style={styles.groupTitleContainer}>
+              <Text style={styles.groupName}>{`${name}`}</Text>
+              <Text style={styles.groupLastUpdated}>
+                {messages.edges.length ?
+                  formatCreatedAt(messages.edges[0].node.createdAt) : ''}
+              </Text>
+            </View>
+            <View style={styles.groupTextInnerContainer}>
+              <View style={styles.column}>
+                <Text style={styles.groupUsername}>
+                  {messages.edges.length ?
+                    `${messages.edges[0].node.from.username}:` : ''}
+                </Text>
+                <Text style={styles.groupText} numberOfLines={1}>
+                  {messages.edges.length ? messages.edges[0].node.text : ''}
+                </Text>
+              </View>
+              {unreadCount ?
+                <TouchableHighlight>
+                  <View style={styles.groupBadge}>
+                    <Text style={styles.groupBadgeText}>
+                      {unreadCount}
+                    </Text>
+                  </View>
+                </TouchableHighlight> : undefined}
+            </View>
+          </View>
+          <Icon
+            name="angle-right"
+            size={24}
+            color={'#8c8c8c'}
+          />
+        </View>
+      </TouchableHighlight>
+    );
+  }
+}
+
+Group.propTypes = {
+  goToMessages: PropTypes.func.isRequired,
+  group: PropTypes.shape({
+    id: PropTypes.number,
+    icon: PropTypes.string,
+    name: PropTypes.string,
+    messages: PropTypes.shape({
+      edges: PropTypes.arrayOf(PropTypes.shape({
+        cursor: PropTypes.string,
+        node: PropTypes.object,
+      })),
+    }),
+  }),
+};
+```

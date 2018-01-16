@@ -777,7 +777,7 @@ If you want to see some UI or you want a hint or you don’t wanna write any cod
 +┊   ┊ 60┊        <View>
 +┊   ┊ 61┊          <Image
 +┊   ┊ 62┊            style={styles.itemImage}
-+┊   ┊ 63┊            source={{ uri: 'https://facebook.github.io/react/img/logo_og.png' }}
++┊   ┊ 63┊            source={{ uri: 'https://reactjs.org/logo-og.png' }}
 +┊   ┊ 64┊          />
 +┊   ┊ 65┊          <TouchableOpacity onPress={this.remove} style={styles.itemIcon}>
 +┊   ┊ 66┊            <Icon
@@ -1108,7 +1108,7 @@ If you want to see some UI or you want a hint or you don’t wanna write any cod
 +┊   ┊175┊          <TouchableOpacity style={styles.imageContainer}>
 +┊   ┊176┊            <Image
 +┊   ┊177┊              style={styles.groupImage}
-+┊   ┊178┊              source={{ uri: 'https://facebook.github.io/react/img/logo_og.png' }}
++┊   ┊178┊              source={{ uri: 'https://reactjs.org/logo-og.png' }}
 +┊   ┊179┊            />
 +┊   ┊180┊            <Text>edit</Text>
 +┊   ┊181┊          </TouchableOpacity>
@@ -1325,7 +1325,7 @@ If you want to see some UI or you want a hint or you don’t wanna write any cod
 +┊   ┊126┊    <View style={styles.user}>
 +┊   ┊127┊      <Image
 +┊   ┊128┊        style={styles.avatar}
-+┊   ┊129┊        source={{ uri: 'https://facebook.github.io/react/img/logo_og.png' }}
++┊   ┊129┊        source={{ uri: 'https://reactjs.org/logo-og.png' }}
 +┊   ┊130┊      />
 +┊   ┊131┊      <Text style={styles.username}>{user.username}</Text>
 +┊   ┊132┊    </View>
@@ -1355,7 +1355,7 @@ If you want to see some UI or you want a hint or you don’t wanna write any cod
 +┊   ┊156┊                <TouchableOpacity style={styles.groupImageContainer} onPress={this.pickGroupImage}>
 +┊   ┊157┊                  <Image
 +┊   ┊158┊                    style={styles.groupImage}
-+┊   ┊159┊                    source={{ uri: 'https://facebook.github.io/react/img/logo_og.png' }}
++┊   ┊159┊                    source={{ uri: 'https://reactjs.org/logo-og.png' }}
 +┊   ┊160┊                  />
 +┊   ┊161┊                  <Text>edit</Text>
 +┊   ┊162┊                </TouchableOpacity>
@@ -1616,7 +1616,7 @@ If you want to see some UI or you want a hint or you don’t wanna write any cod
 +┊  ┊64┊          <View style={styles.title}>
 +┊  ┊65┊            <Image
 +┊  ┊66┊              style={styles.titleImage}
-+┊  ┊67┊              source={{ uri: 'https://facebook.github.io/react/img/logo_og.png' }}
++┊  ┊67┊              source={{ uri: 'https://reactjs.org/logo-og.png' }}
 +┊  ┊68┊            />
 +┊  ┊69┊            <Text>{state.params.title}</Text>
 +┊  ┊70┊          </View>
@@ -1767,7 +1767,7 @@ If you want to see some UI or you want a hint or you don’t wanna write any cod
 +┊   ┊125┊      <View style={styles.cellContainer}>
 +┊   ┊126┊        <Image
 +┊   ┊127┊          style={styles.cellImage}
-+┊   ┊128┊          source={{ uri: 'https://facebook.github.io/react/img/logo_og.png' }}
++┊   ┊128┊          source={{ uri: 'https://reactjs.org/logo-og.png' }}
 +┊   ┊129┊        />
 +┊   ┊130┊        <Text style={styles.cellLabel}>{this.props.item.username}</Text>
 +┊   ┊131┊        <View style={styles.checkButtonContainer}>

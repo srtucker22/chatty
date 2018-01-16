@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   input: {
     color: 'black',
-    height: 32,
+    height: 48,
   },
   inputBorder: {
     borderColor: '#dbdbdb',
@@ -192,7 +192,7 @@ class Settings extends Component {
             <TouchableOpacity style={styles.imageContainer} onPress={this.getAvatar}>
               <Image
                 style={styles.userImage}
-                source={this.state.avatar || { uri: user.avatar || 'https://facebook.github.io/react/img/logo_og.png' }}
+                source={this.state.avatar || { uri: user.avatar || 'https://reactjs.org/logo-og.png' }}
                 cache={'force-cache'}
               />
               <Text>edit</Text>

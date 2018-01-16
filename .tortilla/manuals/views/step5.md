@@ -821,7 +821,7 @@ And then we update the layout of the Group list item component in `Groups`:
 +┊   ┊113┊          <Image
 +┊   ┊114┊            style={styles.groupImage}
 +┊   ┊115┊            source={{
-+┊   ┊116┊              uri: 'https://facebook.github.io/react/img/logo_og.png',
++┊   ┊116┊              uri: 'https://reactjs.org/logo-og.png',
 +┊   ┊117┊            }}
 +┊   ┊118┊          />
 +┊   ┊119┊          <View style={styles.groupTextContainer}>

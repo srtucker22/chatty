@@ -609,7 +609,7 @@ And then we update the layout of the Group list item component in `Groups`:
 <b>+┊   ┊113┊          &lt;Image</b>
 <b>+┊   ┊114┊            style&#x3D;{styles.groupImage}</b>
 <b>+┊   ┊115┊            source&#x3D;{{</b>
-<b>+┊   ┊116┊              uri: &#x27;https://facebook.github.io/react/img/logo_og.png&#x27; </b>
+<b>+┊   ┊116┊              uri: &#x27;https://reactjs.org/logo-og.png&#x27; </b>
 <b>+┊   ┊117┊            }}</b>
 <b>+┊   ┊118┊          /&gt;</b>
 <b>+┊   ┊119┊          &lt;View style&#x3D;{styles.groupTextContainer}&gt;</b>

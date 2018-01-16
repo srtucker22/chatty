@@ -209,7 +209,7 @@ class GroupDetails extends Component {
           <TouchableOpacity style={styles.groupImageContainer} onPress={this.getIcon}>
             <Image
               style={styles.groupImage}
-              source={this.state.icon || { uri: group.icon || 'https://facebook.github.io/react/img/logo_og.png' }}
+              source={this.state.icon || { uri: group.icon || 'https://reactjs.org/logo-og.png' }}
               cache={'force-cache'}
             />
             <Text>edit</Text>
@@ -234,7 +234,7 @@ class GroupDetails extends Component {
     <View style={styles.user}>
       <Image
         style={styles.avatar}
-        source={{ uri: user.avatar || 'https://facebook.github.io/react/img/logo_og.png' }}
+        source={{ uri: user.avatar || 'https://reactjs.org/logo-og.png' }}
         cache={'force-cache'}
       />
       <Text style={styles.username}>{user.username}</Text>

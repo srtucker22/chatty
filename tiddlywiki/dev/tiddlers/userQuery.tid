@@ -1,0 +1,17 @@
+created: 20180105233203069
+modified: 20180106001400414
+tags: query onConversationsScreen
+title: userQuery
+type: text/vnd.tiddlywiki
+
+onConversationsScreen:
+
+```javascript
+const userQuery = graphql(USER_QUERY, {
+  skip: ownProps => !ownProps.auth || !ownProps.auth.jwt,
+  options: ownProps => ({ variables: { id: ownProps.auth.id } }),
+  props: ({ data: { loading, networkStatus, refetch, user } }) => ({
+    loading, networkStatus, refetch, user,
+  }),
+});
+```

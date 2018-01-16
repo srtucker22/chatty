@@ -1,0 +1,8 @@
+created: 20180106003903412
+modified: 20180106003940130
+order: 2
+tags: MainScreenTab
+title: FollowersFeedScreen
+type: text/vnd.tiddlywiki
+
+<<tabs "[tag[FollowersFeedScreenTab]nsort[order]]" "FollowersFeedScreenTab.actions" "$:/state/tab1" "tc-vertical">>

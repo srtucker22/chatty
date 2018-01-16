@@ -2261,7 +2261,7 @@ We’ll put our new Settings Screen in a new file `client/src/screens/settings.s
 <b>            &lt;TouchableOpacity style&#x3D;{styles.imageContainer}&gt;</b>
 <b>              &lt;Image</b>
 <b>                style&#x3D;{styles.userImage}</b>
-<b>                source&#x3D;{{ uri: &#x27;https://facebook.github.io/react/img/logo_og.png&#x27; }}</b>
+<b>                source&#x3D;{{ uri: &#x27;https://reactjs.org/logo-og.png&#x27; }}</b>
 <b>              /&gt;</b>
 <b>              &lt;Text&gt;edit&lt;/Text&gt;</b>
 <b>            &lt;/TouchableOpacity&gt;</b>

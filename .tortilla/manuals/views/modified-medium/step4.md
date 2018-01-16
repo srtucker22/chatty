@@ -816,7 +816,7 @@ If you want to see some UI or you want a hint or you don’t wanna write any cod
 <b>        &lt;View&gt;</b>
 <b>          &lt;Image</b>
 <b>            style&#x3D;{styles.itemImage}</b>
-<b>            source&#x3D;{{ uri: &#x27;https://facebook.github.io/react/img/logo_og.png&#x27; }}</b>
+<b>            source&#x3D;{{ uri: &#x27;https://reactjs.org/logo-og.png&#x27; }}</b>
 <b>          /&gt;</b>
 <b>          &lt;TouchableOpacity onPress&#x3D;{this.remove} style&#x3D;{styles.itemIcon}&gt;</b>
 <b>            &lt;Icon</b>
@@ -1161,7 +1161,7 @@ const AppNavigator &#x3D; StackNavigator({
 <b>          &lt;TouchableOpacity style&#x3D;{styles.imageContainer}&gt;</b>
 <b>            &lt;Image</b>
 <b>              style&#x3D;{styles.groupImage}</b>
-<b>              source&#x3D;{{ uri: &#x27;https://facebook.github.io/react/img/logo_og.png&#x27; }}</b>
+<b>              source&#x3D;{{ uri: &#x27;https://reactjs.org/logo-og.png&#x27; }}</b>
 <b>            /&gt;</b>
 <b>            &lt;Text&gt;edit&lt;/Text&gt;</b>
 <b>          &lt;/TouchableOpacity&gt;</b>
@@ -1380,7 +1380,7 @@ const AppNavigator &#x3D; StackNavigator({
 <b>    &lt;View style&#x3D;{styles.user}&gt;</b>
 <b>      &lt;Image</b>
 <b>        style&#x3D;{styles.avatar}</b>
-<b>        source&#x3D;{{ uri: &#x27;https://facebook.github.io/react/img/logo_og.png&#x27; }}</b>
+<b>        source&#x3D;{{ uri: &#x27;https://reactjs.org/logo-og.png&#x27; }}</b>
 <b>      /&gt;</b>
 <b>      &lt;Text style&#x3D;{styles.username}&gt;{user.username}&lt;/Text&gt;</b>
 <b>    &lt;/View&gt;</b>
@@ -1410,7 +1410,7 @@ const AppNavigator &#x3D; StackNavigator({
 <b>                &lt;TouchableOpacity style&#x3D;{styles.groupImageContainer} onPress&#x3D;{this.pickGroupImage}&gt;</b>
 <b>                  &lt;Image</b>
 <b>                    style&#x3D;{styles.groupImage}</b>
-<b>                    source&#x3D;{{ uri: &#x27;https://facebook.github.io/react/img/logo_og.png&#x27; }}</b>
+<b>                    source&#x3D;{{ uri: &#x27;https://reactjs.org/logo-og.png&#x27; }}</b>
 <b>                  /&gt;</b>
 <b>                  &lt;Text&gt;edit&lt;/Text&gt;</b>
 <b>                &lt;/TouchableOpacity&gt;</b>
@@ -1685,7 +1685,7 @@ class Messages extends Component {
 <b>          &lt;View style&#x3D;{styles.title}&gt;</b>
 <b>            &lt;Image</b>
 <b>              style&#x3D;{styles.titleImage}</b>
-<b>              source&#x3D;{{ uri: &#x27;https://facebook.github.io/react/img/logo_og.png&#x27; }}</b>
+<b>              source&#x3D;{{ uri: &#x27;https://reactjs.org/logo-og.png&#x27; }}</b>
 <b>            /&gt;</b>
 <b>            &lt;Text&gt;{state.params.title}&lt;/Text&gt;</b>
 <b>          &lt;/View&gt;</b>
@@ -1840,7 +1840,7 @@ Messages.propTypes &#x3D; {
 <b>      &lt;View style&#x3D;{styles.cellContainer}&gt;</b>
 <b>        &lt;Image</b>
 <b>          style&#x3D;{styles.cellImage}</b>
-<b>          source&#x3D;{{ uri: &#x27;https://facebook.github.io/react/img/logo_og.png&#x27; }}</b>
+<b>          source&#x3D;{{ uri: &#x27;https://reactjs.org/logo-og.png&#x27; }}</b>
 <b>        /&gt;</b>
 <b>        &lt;Text style&#x3D;{styles.cellLabel}&gt;{this.props.item.username}&lt;/Text&gt;</b>
 <b>        &lt;View style&#x3D;{styles.checkButtonContainer}&gt;</b>
