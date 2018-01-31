@@ -60,7 +60,7 @@ export class SelectedUserListItem extends Component {
         <View>
           <Image
             style={styles.itemImage}
-            source={{ uri: 'https://facebook.github.io/react/img/logo_og.png' }}
+            source={{ uri: 'https://reactjs.org/logo-og.png' }}
           />
           <TouchableOpacity onPress={this.remove} style={styles.itemIcon}>
             <Icon

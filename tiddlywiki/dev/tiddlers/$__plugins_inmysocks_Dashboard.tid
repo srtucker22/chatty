@@ -1,0 +1,77 @@
+author: inmysocks
+core-version: >=5.1.6
+created: 20180131180122462
+dependents: 
+description: A dashboard interface for TiddlyWiki
+modified: 20180131180122462
+plugin-type: plugin
+source: https://github.com/inmysocks/TW5-NoLearningRequired-Full
+title: $:/plugins/inmysocks/Dashboard
+type: application/json
+version: 0.1.3
+
+{
+    "tiddlers": {
+        "$:/plugins/inmysocks/Dashboard/Contents": {
+            "caption": "Table of Contents",
+            "created": "20140907171933267",
+            "creator": "inmysocks",
+            "list": "Dashboard [[What to do]] [[Wiki Examples]] [[Things to import to make everything work]] Contacts",
+            "modified": "20141203194827582",
+            "modifier": "inmysocks",
+            "no_edit": "true",
+            "tags": "$:/tags/SideBar",
+            "title": "$:/plugins/inmysocks/Dashboard/Contents",
+            "text": "<div class='tc-table-of-contents'>\n<<toc-selective-expandable 'Contents' 'sort[list]'>>\n</div>"
+        },
+        "$:/plugins/inmysocks/Dashboard/Dashboard": {
+            "caption": "Dashboard",
+            "created": "20141203190920779",
+            "list-before": "",
+            "modified": "20141210060635302",
+            "no_edit": "true",
+            "tags": "Contents",
+            "title": "$:/plugins/inmysocks/Dashboard/Dashboard",
+            "text": "<<tabs \"[[$:/plugins/inmysocks/Dashboard/DashboardTemplate]] [tag[Dashboard Tab]]\" [[$:/plugins/inmysocks/Dashboard/DashboardTemplate]]>>"
+        },
+        "$:/plugins/inmysocks/Dashboard/DashboardTemplate": {
+            "caption": "Main Dashboard",
+            "created": "20141203194541067",
+            "modified": "20141206183332945",
+            "tags": "Templates",
+            "title": "$:/plugins/inmysocks/Dashboard/DashboardTemplate",
+            "text": "<<toc-tabbed-internal-nav tag:\"Dashboard\" selectedTiddler:\"$:/temp/toc/selectedTiddler\" unselectedText:\"Select a topic in the table of contents. Click the arrow to expand a topic.\" default:\"Introduction\">>"
+        },
+        "$:/plugins/inmysocks/Dashboard/Introduction": {
+            "caption": "Introduction",
+            "created": "20141204203357041",
+            "list-before": "",
+            "modified": "20141204210324190",
+            "no_edit": "true",
+            "tags": "Dashboard",
+            "title": "$:/plugins/inmysocks/Dashboard/Introduction",
+            "text": "!Welcome to ~TiddlyWiki!\n\n''If you just want to import functions into your own existing wiki go to http://inmysocks.tiddlyspot.com/#How%20to%20add%20to%20the%20Dashboard for instructions and a list of the available plugins''\n\n~TiddlyWiki is a personal organizer or personal wiki. This is a version designed specifically so that there is almost no learning required to use it. There will (hopefully) be versions that just accomplish individual tasks, such as a task list or contacts database. This wiki contains all of the available content for the no learning required versions.\n\n!!To get started\n\nIf you just want to get started working then you can click on one of the options to the left. Currently `Introduction` is highlighted to show that you are looking at the introduction tab. If you click on another option on the list than you will see the content for that option.\n\nCurrently the options are:\n\n*`Citation Library` - a simple citation database\n*`Contacts` - a contact database with a simple interface\n*`Create or Edit Tiddlers` - a simple interface for adding more tiddlers to this wiki\n*`Dictionary` - a searchable and editable dictionary\n*`Manage Table of Contents` - a TOC manager for tiddlywiki\n*`Minimal Task List` - a task list that just lists tasks and allows you to check them off when they are finished.\n*`Quick Notes` - a simple searchable notepad\n*`Task List` - a more advanced task list that has options for adding short descriptions, deadlines and a more detailed explanation to the task. On this list if you click on a task name it will open up the details you have given that task.\n\n!!What do these words mean?\n\nHere is a list of words and definitions related to this wiki that you may not be familiar with:\n\n*''Wiki'' - a user editable document. Wikipedia is probably the most famous example of a wiki. A wiki contains pages or articles that can link to each other to allow navigation through the different articles. What you are currently reading is an example of a wiki called ~TiddlyWiki\n*''Link'' - A link is a word or phrase that you can click on that will bring you to a new place or open up a new page. Links in this wiki are colored blue and when you hover over one it will become underlined. Clicking on links is one of the main ways to navigate this wiki.\n*''Tiddler'' - A single unit used by ~TiddlyWiki. Everything on this wiki is made up of tiddlers, and when you create something here it will be a tiddler. An article on wikipedia would be equivalent to a tiddler. But a tiddler can be significantly more than what is done on wikipedia. Don't worry too much about specifics if you don't want to, the important thing to know now is that when you open something on this wiki what you open is a tiddler. For examples and more explaination go to www.tiddlywiki.com\n*''~TiddlyWiki'' - ~TiddlyWiki is a program that can be used in many different ways, what you are reading right now is an example of a ~TiddlyWiki, but there are many more things that can be done with one. <!-- add history or something here -->\n\n!!If you want to get rid of this message\nIf you want to prevent this message from appearing anymore you can click on the button below. Once you do this than this message won't appear again, so make sure you understand the basics of how to use this wiki before you press it. \n\nIf you want this message to stay available than just click on one of the options to the left to get started using the wiki. If you click on the word `Introduction` than this message will appear again.\n\nClick the button down below that says `Don't show this again` and this message will no longer appear when you open your wiki.\n\n<$button message='tm-modal' param=RemoveIntroMessageModal>Don't show this again</$button>"
+        },
+        "$:/plugins/inmysocks/Dashboard/RemoveIntroMessageModal": {
+            "created": "20141204205959063",
+            "footer": "",
+            "modified": "20141209213124307",
+            "no_edit": "true",
+            "subtitle": "Remove the Introduction?",
+            "tags": "",
+            "title": "$:/plugins/inmysocks/Dashboard/RemoveIntroMessageModal",
+            "text": "Are you sure you want to remove the introduction message? Even if you remove it here you can still view it by going to the `Table of Contents` tab and clicking on it there.\n\n<$fieldmangler tiddler='$:/plugins/inmysocks/Dashboard/Introduction'><$button><$action-sendmessage $message='tm-remove-tag' $param=Dashboard/><$action-sendmessage $message='tm-close-tiddler'/><$action-sendmessage $message='tm-delete-tiddler' $param='$:/temp/toc/selectedTiddler'/>Yes</$button></$fieldmangler> <$button message='tm-close-tiddler'>No</$button>"
+        },
+        "$:/plugins/inmysocks/Dashboard/Wiki Settings": {
+            "caption": "Wiki Settings",
+            "created": "20141104204758595",
+            "creator": "inmysocks",
+            "modified": "20141206190532660",
+            "modifier": "inmysocks",
+            "no_edit": "true",
+            "tags": "Contents",
+            "title": "$:/plugins/inmysocks/Dashboard/Wiki Settings",
+            "text": "These tiddlers change the behavior or appearance of the other parts of the wiki.\n\n<$list filter='[tag[Wiki Settings]]'>\n\n</$list>"
+        }
+    }
+}

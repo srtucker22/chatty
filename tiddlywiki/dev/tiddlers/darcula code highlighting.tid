@@ -1,0 +1,102 @@
+created: 20180105234307901
+modified: 20180106001613885
+tags: $:/tags/Stylesheet
+title: darcula code highlighting
+type: text/vnd.tiddlywiki
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  background: #282c34;
+  color: #d1d9e1;
+}
+
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+    background: #282c34;
+    color: #ffe19b;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #969896;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-type,
+.hljs-addition {
+  color: #cc99cc;
+}
+
+.hljs-number,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+  color: #f99157;
+}
+
+.hljs-string,
+.hljs-doctag,
+.hljs-regexp {
+  color: #8abeb7;
+}
+
+.hljs-title,
+.hljs-name,
+.hljs-section,
+.hljs-built_in {
+  color: #b5bd68;
+}
+
+.hljs-variable,
+.hljs-template-variable,
+.hljs-selector-id,
+.hljs-class .hljs-title {
+   color: #ffcc66;
+}
+
+.hljs-section,
+.hljs-name,
+.hljs-strong {
+  font-weight: bold;
+}
+
+.hljs-symbol,
+.hljs-bullet,
+.hljs-subst,
+.hljs-meta,
+.hljs-link {
+  color: #f99157;
+}
+
+.hljs-deletion {
+  color: #dc322f;
+}
+
+.hljs-formula {
+  background: #eee8d5;
+}
+
+.hljs-attr,
+.hljs-attribute {
+  color: #c4ff9a;
+  font-weight: normal !important;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-tag, .hljs-tag .hljs-title, .hljs-rule .hljs-property, .django .hljs-tag .hljs-keyword {
+    color: #ff7b6c;
+  font-weight: bold;
+}
+.hljs-string, .hljs-tag .hljs-value, .hljs-phpdoc, .hljs-dartdoc, .tex .hljs-formula {
+    color: #bce0ff;
+  font-weight: bold;
+}

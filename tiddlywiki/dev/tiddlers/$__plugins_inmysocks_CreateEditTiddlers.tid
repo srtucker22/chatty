@@ -1,0 +1,54 @@
+author: inmysocks
+core-version: >=5.1.6
+created: 20180131180113309
+dependents: 
+description: A simple interface for tiddler creation and editing in TiddlyWiki
+modified: 20180131180113309
+plugin-type: plugin
+source: https://github.com/inmysocks/TW5-NoLearningRequired-Full
+title: $:/plugins/inmysocks/CreateEditTiddlers
+type: application/json
+version: 0.1.0
+
+{
+    "tiddlers": {
+        "$:/state/NewTiddlerForm": {
+            "add_or_create_tag": "create",
+            "created": "20141217020105675",
+            "modified": "20141217020732119",
+            "title": "$:/state/NewTiddlerForm",
+            "text": ""
+        },
+        "Create or Edit Tiddlers": {
+            "created": "20141203195445538",
+            "modified": "20141204035055233",
+            "no_edit": "true",
+            "tags": "Dashboard",
+            "title": "Create or Edit Tiddlers",
+            "text": "Do you wish to: <$select tiddler='$:/state/CreateOrEditTiddler'><option value='create'>Create a New Tiddler</option><option value='edit'>Edit an Existing Tiddler</option></$select>\n\n---\n\n<$reveal type='match' state='$:/state/CreateOrEditTiddler' text='create'>\n\n<$transclude tiddler='New Tiddler Form'/>\n\n</$reveal>\n\n<$reveal type='match' state='$:/state/CreateOrEditTiddler' text='edit'>\n\n<$transclude tiddler='Edit Tiddler Form'/>\n\n</$reveal>"
+        },
+        "Edit Tiddler Form": {
+            "created": "20141203202736556",
+            "modified": "20141204013102397",
+            "no_edit": "true",
+            "tags": "Tools",
+            "title": "Edit Tiddler Form",
+            "text": "!!Step 1 - ''Pick the tiddler to edit'' \n\n---\n<$select tiddler='$:/state/EditTiddlerForm'>\n<$list filter='[all[]!is[system]sort[title]!prefix[-]!tag[Templates]!has[no_edit]]'>\n<option><$view field='title'/></option>\n</$list>\n</$select><br>\n\n!!Step 2 - ''Fill in tiddler text''\n\n---\nYou can use any WikiText here, see [[Wiki Formatting - text, tables, etc.]] for some easy examples of text formatting. \nYou can resize the exiting field by clicking and dragging the lower right corner.\n\n<$edit-text class='tc-edit-texteditor' tiddler={{$:/state/EditTiddlerForm}} field='text' placeholder='Tiddler Text' size=100/><br>\n\n!!Step 3 - ''Give the tiddler a description'' (optional)\n\n---\nThis can be used as a short description or summary of what each tiddler is. It can be useful in lists.\n\n<$edit-text class='tc-edit-texteditor' tiddler={{$:/state/EditTiddlerForm}} field='description' placeholder='Tiddler Description' size=70/><br>\n\n!!Step 4 - ''Add a tag or tags to the tiddler'' (optional)\n\n---\nTags are used for the table of contents, so it may be advisable to add tags to new tiddlers. For example, if you wanted to add a tiddler that would be displayed under 'Tools' in the table of contents you would add the 'Tools' tag to the tiddler.\n\n<$select tiddler='$:/state/EditTiddlerForm' field='add_or_create_tag'>\n<option value='existing'>Add existing tag</option>\n<option value='create'>Add a new tag</option>\n</$select>\n<$reveal type=match state='$:/state/EditTiddlerForm!!add_or_create_tag' text='create'>\nNew Tag Name: <$edit-text tiddler='$:/state/EditTiddlerForm' field='tag_to_add' placeholder='New Tag'/><$fieldmangler tiddler={{$:/state/EditTiddlerForm!!text}}>\n<$button>\n<$action-sendmessage $message='tm-add-tag' $param={{$:/state/EditTiddlerForm!!tag_to_add}}/>\n<$action-setfield $tiddler='$:/state/EditTiddlerForm' $field=tag_to_add value=''/>Add Tag\n</$button>\n</$fieldmangler><br>\n</$reveal>\n<$reveal type='match' state='$:/state/EditTiddlerForm!!add_or_create_tag' text='existing'>\nTag to add: <$select tiddler='$:/state/EditTiddlerForm' field='tag_to_add'>\n<$list filter='[tags[]sort[title]]'>\n<option><$view field='title'/></option>\n</$list>\n</$select>\n<$fieldmangler tiddler={{$:/state/EditTiddlerForm!!text}}>\n<$button>\n<$action-sendmessage $message='tm-add-tag' $param={{$:/state/EditTiddlerForm!!tag_to_add}}/>Add Tag\n</$button>\n</$fieldmangler>\n<br>\n</$reveal>\nList of current tags:<br>\n<$fieldmangler tiddler={{$:/state/EditTiddlerForm!!text}}>\n<$set name=tiddlerEditing value={{$:/state/EditTiddlerForm}}>\n<$list filter='[title<tiddlerEditing>tags[]]'><$view field='title'/> <$button>Remove Tag<$action-sendmessage $message='tm-remove-tag' $param=<<currentTiddler>>/></$button><br> </$list>\n</$set>\n</$fieldmangler>\n\n\n!!Step 5 - ''View the tiddler'' (Optional)\n\n---\nPress this button and the tiddler will be opened so you can view it.\n\n<$button>Open Tiddler\n<$action-navigate $to={{$:/state/EditTiddlerForm}}/>\n</$button>\n"
+        },
+        "Example Tiddler": {
+            "description": "Example Description",
+            "modified": "20141204010722516",
+            "tags": "[[Example Tag]]",
+            "title": "Example Tiddler",
+            "text": "Example Text"
+        },
+        "New Tiddler Form": {
+            "created": "20141203165035347",
+            "modified": "20141204035118137",
+            "no_edit": "true",
+            "tags": "Tools",
+            "title": "New Tiddler Form",
+            "text": "!!Step 1 - ''Give the tiddler a name'' \n\n---\n<$edit-text class='tc-edit-texteditor' tiddler='$:/state/NewTiddlerForm' field='name_temp' placeholder='Tiddler Name'/><br>\n\n!!Step 2 - ''Fill in tiddler text''\n\n---\nYou can use any WikiText here, see [[Wiki Formatting - text, tables, etc.]] for some easy examples of text formatting. \nYou can resize the exiting field by clicking and dragging the lower right corner.\n\n<$edit-text class='tc-edit-texteditor' tiddler='$:/state/NewTiddlerForm' field='text' placeholder='Tiddler Text'/><br>\n\n!!Step 3 - ''Give the tiddler a description'' (optional)\n\n---\nThis can be used as a short description or summary of what each tiddler is. It can be useful in lists.\n\n<$edit-text class='tc-edit-texteditor' tiddler='$:/state/NewTiddlerForm' field='description' placeholder='Tiddler Description'/><br>\n\n!!Step 4 - ''Add a tag or tags to the tiddler'' (optional)\n\n---\nTags are used for the table of contents, so it may be advisable to add tags to new tiddlers. For example, if you wanted to add a tiddler that would be displayed under 'Tools' in the table of contents you would add the 'Tools' tag to the tiddler.\n\n<$select tiddler='$:/state/NewTiddlerForm' field='add_or_create_tag'>\n<option value='existing'>Add existing tag</option>\n<option value='create'>Add a new tag</option>\n</$select>\n<$reveal type=match state='$:/state/NewTiddlerForm!!add_or_create_tag' text='create'>\nNew Tag Name: <$edit-text tiddler='$:/state/NewTiddlerForm' field='tag_temp' placeholder='New Tag'/><$fieldmangler tiddler='$:/state/NewTiddlerForm'>\n<$button>\n<$action-sendmessage $message='tm-add-tag' $param={{$:/state/NewTiddlerForm!!tag_temp}}/>\n<$action-setfield $tiddler='$:/state/NewTiddlerForm' $field='tag_temp' $value=''/>Add Tag\n</$button>\n</$fieldmangler><br>\n</$reveal>\n<$reveal type='match' state='$:/state/NewTiddlerForm!!add_or_create_tag' text='existing'>\nTag to add: <$select tiddler='$:/state/NewTiddlerForm' field='tag_temp'>\n<$list filter='[tags[]sort[title]]'>\n<option><$view field='title'/></option>\n</$list>\n</$select>\n<$fieldmangler tiddler='$:/state/NewTiddlerForm'>\n<$button>\n<$action-sendmessage $message='tm-add-tag' $param={{$:/state/NewTiddlerForm!!tag_temp}}/>Add Tag\n</$button>\n</$fieldmangler>\n<br>\n</$reveal>\nList of current tags:<br>\n<$fieldmangler tiddler='$:/state/NewTiddlerForm'>\n<$set name=tiddlerEditing value='$:/state/NewTiddlerForm'>\n<$list filter='[[$:/state/NewTiddlerForm]tags[]]'><$view field='title'/> <$button>Remove Tag<$action-sendmessage $message='tm-remove-tag' $param=<<currentTiddler>>/></$button><br> </$list>\n</$set>\n</$fieldmangler>\n\n!!Step 5 - ''Create the tiddler''\n\n---\nPress this button and the tiddler will be created and opened so you can view it.\n\n<$button>Create Tiddler\n<$action-setfield $tiddler={{$:/state/NewTiddlerForm!!name_temp}} text={{$:/state/NewTiddlerForm!!text}} description={{$:/state/NewTiddlerForm!!description}} tags={{$:/state/NewTiddlerForm!!tags}}/>\n<$action-navigate $to={{$:/state/NewTiddlerForm!!name_temp}}/>\n<$action-setfield $tiddler='$:/state/NewTiddlerForm' name_temp='' text='' description='' tags=''/>\n</$button>\n<$button>Clear Form\n<$action-setfield $tiddler='$:/state/NewTiddlerForm' name_temp='' text='' description='' tags=''/>\n</$button>\n"
+        }
+    }
+}

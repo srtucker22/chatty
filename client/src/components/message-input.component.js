@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     borderWidth: 1,
     color: 'black',
-    height: 32,
+    height: 36,
     paddingHorizontal: 8,
   },
   sendButtonContainer: {
@@ -78,6 +78,7 @@ class MessageInput extends Component {
             onChangeText={text => this.setState({ text })}
             style={styles.input}
             placeholder="Type your message here!"
+            underlineColorAndroid="#dbdbdb"
           />
         </View>
         <View style={styles.sendButtonContainer}>

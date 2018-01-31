@@ -110,7 +110,7 @@ const formatCreatedAt = createdAt => moment(createdAt).calendar(null, {
 
 const Header = ({ onPress }) => (
   <View style={styles.header}>
-    <Button title={'New Group'} onPress={onPress} />
+    <Button title={'New Conversation'} onPress={onPress} />
   </View>
 );
 Header.propTypes = {
@@ -136,7 +136,7 @@ class Group extends Component {
           <Image
             style={styles.groupImage}
             source={{
-              uri: icon || 'https://facebook.github.io/react/img/logo_og.png',
+              uri: icon || 'https://reactjs.org/logo-og.png',
             }}
           />
           <View style={styles.groupTextContainer}>
@@ -202,6 +202,7 @@ class Groups extends Component {
     super(props);
     this.goToMessages = this.goToMessages.bind(this);
     this.goToNewGroup = this.goToNewGroup.bind(this);
+    this.goToNewConversation = this.goToNewConversation.bind(this);
     this.onRefresh = this.onRefresh.bind(this);
   }
 
@@ -222,6 +223,11 @@ class Groups extends Component {
     navigate('NewGroup');
   }
 
+  goToNewConversation() {
+    const { navigate } = this.props.navigation;
+    navigate('NewConversation');
+  }
+
   renderItem = ({ item }) => <Group group={item} goToMessages={this.goToMessages} />;
 
   render() {
@@ -239,7 +245,8 @@ class Groups extends Component {
     if (user && !user.groups.length) {
       return (
         <View style={styles.container}>
-          <Header onPress={this.goToNewGroup} />
+          { /* <Header onPress={this.goToNewGroup} /> */ }
+          <Header onPress={this.goToNewConversation} />
           <Text style={styles.warning}>{'You do not have any groups.'}</Text>
         </View>
       );
@@ -252,7 +259,7 @@ class Groups extends Component {
           data={user.groups}
           keyExtractor={this.keyExtractor}
           renderItem={this.renderItem}
-          ListHeaderComponent={() => <Header onPress={this.goToNewGroup} />}
+          ListHeaderComponent={() => <Header onPress={this.goToNewConversation} />}
           onRefresh={this.onRefresh}
           refreshing={networkStatus === 4}
         />

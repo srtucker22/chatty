@@ -1,0 +1,99 @@
+author: inmysocks
+core-version: >=5.1.6
+created: 20180131175437564
+dependents: 
+description: A basic citation tracker for TiddlyWiki
+modified: 20180131175437564
+plugin-type: plugin
+source: https://github.com/inmysocks/TW5-NoLearningRequired-Full
+title: $:/plugins/inmysocks/Citations
+type: application/json
+version: 0.2.15
+
+{
+    "tiddlers": {
+        "$:/plugins/inmysocks/Citations/Add Citation": {
+            "caption": "Add Citation",
+            "created": "20141205193053640",
+            "creator": "inmysocks",
+            "modified": "20141209013200270",
+            "modifier": "inmysocks",
+            "no_edit": "true",
+            "title": "$:/plugins/inmysocks/Citations/Add Citation",
+            "text": "\\define thisGetIndex()\n$:/temp/AddCitation/SubjectsList##$(ThisTiddler)$\n\\end\n\n\\define makeCitationText()\n\nSubjects: \n\n<ul>\n<$list filter='[[$(subjectsTiddler)$]indexes[]]'>\n<li><$view field='title'/></li>\n</$list>\n</ul>\n\nAbstract:<br>\n\n<$view tiddler=\"\"\"$(abstractTiddler)$\"\"\" field='text'/>\n\nBibtex:\n\n---\n\n$(bibTex)$\n\n---\n\n\\end\n\n\\define makeAbstractTiddler()\n$(tiddlerTitle)$_Abstract\n\\end\n\n\\define makeBibTexTiddler()\n$(tiddlerTitle)$_BibTex\n\\end\n\n\\define makeSubjectsTiddler()\n$(tiddlerTitle)$_Subjects\n\\end\n\n\\define getBibTex()\n<$macrocall $name=monoSpacedCodeBlock src={{$(bibTexTiddler)$}}/>\n\\end\n\nPaper Title: <$edit-text class='tc-edit-texteditor' tiddler='$:/state/addcitation' field='paper_title' placeholder='papertitle' size=70/><br>\n\nAbstract:<br> <$edit-text class='tc-edit-texteditor' tiddler='$:/state/addcitation' placeholder='Abstract'/>\n\nBibtex Citation:<br> <$edit-text class='tc-edit-texteditor' tiddler='$:/state/addcitation/bibtex' placeholder='BibTex Citation'/>\n\n<$set name=tiddlerTitle value={{$:/state/addcitation!!paper_title}}>\n<$set name=abstractTiddler value=<<makeAbstractTiddler>>>\n<$set name=bibTexTiddler value=<<makeBibTexTiddler>>>\n<$set name=subjectsTiddler value=<<makeSubjectsTiddler>>>\n<$set name=bibTex value=<<getBibTex>>>\n\n<$reveal type='nomatch' state='$:/state/addcition/addsubject' text='newsubject'>\nSubject: <$select tiddler='$:/state/addcitation/subject' default='No Subject'>\n<$list filter='[tag[CitationsSubject]]'>\n<option value=<<currentTiddler>>><$view field='title'/></option>\n</$list>\n</$select>\n<$button>Add Subject\n<$action-setfield $tiddler='$:/temp/AddCitation/SubjectsList' $index={{$:/state/addcitation/subject}} $value='1'/>\n</$button>\n<$button set='$:/state/addcition/addsubject' setTo='newsubject'>New Subject</$button>\n</$reveal>\n<$reveal type='match' state='$:/state/addcition/addsubject' text='newsubject'>\nSubject Name: <$edit-text class='tc-edit-texteditor' tiddler='$:/state/addcition/addsubject' field='newsubjectname'/><br>\n<$button>Add Subject\n<$action-setfield $tiddler={{$:/state/addcition/addsubject!!newsubjectname}} tags=CitationsSubject/>\n<$action-setfield $tiddler='$:/state/addcition/addsubject' $field='newsubjectname' $value=''/>\n</$button>\n<$button set='$:/state/addcition/addsubject' setTo='nonewsubject'>Done</$button>\n</$reveal>\n\nCurrent Subjects:\n\n<ul>\n<$list filter='[[$:/temp/AddCitation/SubjectsList]indexes[]]'>\n<$set name=ThisTiddler value=<<currentTiddler>>>\n<li><$view field='title'/> <$button set=<<thisGetIndex>>>Remove Subject</$button></li>\n</$set>\n</$list>\n</ul>\n\n<$button>Add Citation\n<$action-setfield $tiddler=<<abstractTiddler>> text={{$:/state/addcitation}}/>\n<$action-setfield $tiddler=<<bibTexTiddler>> text={{$:/state/addcitation/bibtex}}/>\n<$action-setfield $tiddler='$:/temp/AddCitation/SubjectsList' $field='title' $value=<<makeSubjectsTiddler>>/>\n<$action-setfield $tiddler=<<tiddlerTitle>> text=<<makeCitationText>>/>\n<$action-setfield $tiddler=<<tiddlerTitle>> tags='Citations'/>\n<$action-setfield $tiddler=<<tiddlerTitle>> subject_tiddler=<<subjectsTiddler>> bibtex_tiddler=<<bibTexTiddler>> abstract_tiddler=<<abstractTiddler>>/>\n<$action-setfield $tiddler='$:/state/addcitation' text=''/><$action-setfield $tiddler='$:/state/addcitation' $field='paper_title' $value=''/><$action-setfield $tiddler='$:/state/addcitation/bibtex' text=''/>\n</$button>\n<$button>Clear Form\n<$action-setfield $tiddler='$:/state/addcitation' text=''/>\n<$action-setfield $tiddler='$:/state/addcitation' $field='paper_title' $value=''/>\n<$action-setfield $tiddler='$:/state/addcitation/bibtex' text=''/>\n<$action-setfield $tiddler=\"\"\"I hope you don't name a tiddler this\"\"\" $field='title' $value=\"\"\"$:/temp/AddCitation/SubjectsList\"\"\"/>\n</$button>\n\n</$set>\n</$set>\n</$set>\n</$set>\n</$set>"
+        },
+        "$:/plugins/inmysocks/Citations/Citation Library": {
+            "caption": "Citation Library",
+            "created": "20141205200355907",
+            "modified": "20141206180629653",
+            "no_edit": "true",
+            "tags": "Dashboard",
+            "title": "$:/plugins/inmysocks/Citations/Citation Library",
+            "text": "<<tabs \"[[$:/plugins/inmysocks/Citations/Citations]] [[$:/plugins/inmysocks/Citations/Add Citation]] [[$:/plugins/inmysocks/Citations/Selected Citations]] [[$:/plugins/inmysocks/Citations/Selected Citations BibTex]] [[$:/plugins/inmysocks/Citations/View Citation]] [[$:/plugins/inmysocks/Citations/Edit Citations]]\" [[$:/plugins/inmysocks/Citations/Citations]]>>"
+        },
+        "$:/plugins/inmysocks/Citations/Citations Macros": {
+            "tags": "$:/tags/Macro",
+            "title": "$:/plugins/inmysocks/Citations/Citations Macros",
+            "text": "\\define monoSpacedCodeBlock(src)\n```\n$src$\n```\n\\end"
+        },
+        "$:/plugins/inmysocks/Citations/Citations": {
+            "caption": "Citations",
+            "created": "20141111191625685",
+            "creator": "inmysocks",
+            "modified": "20141209194846383",
+            "modifier": "inmysocks",
+            "no_edit": "true",
+            "title": "$:/plugins/inmysocks/Citations/Citations",
+            "text": "\\define thisCitationEntry()\n<tr style='width:100%'>\n\t<td>\n\t\t<$checkbox tiddler=<<currentCitation>> field='on_list' checked='true' unchecked='false'/>\n\t</td>\n\t<td style='width:100%'>\n\t\t<$link to=<<currentCitation>>><$view tiddler=<<currentCitation>> field='title'/></$link>\n\t</td>\n</tr>\n\\end\n\n\\define thisCitationsList()\n<$reveal state='$:/state/viewcitation/subject' type='nomatch' text='alltitle'>\n<$reveal state='$:/state/viewcitation/subject' type='nomatch' text='allsubject'>\n\n<table>\n\t<$list filter='[tag[Citations]regexp[(?i)$(searchString)$]]' variable=currentCitation>\n\t\t<$list filter='[title<currentCitation>get[subject_tiddler]]' variable=subjectsTiddler>\n\t\t\t<$list filter='[title<subjectsTiddler>indexes[]]' variable=currentSubject>\n\t\t\t\t<$reveal type='match' state='$:/state/viewcitation/subject' text=<<currentSubject>>>\n\t\t\t\t\t<<thisCitationEntry>>\n\t\t\t\t</$reveal>\n\t\t\t</$list>\n\t\t</$list>\n\t</$list>\n</table>\n\n</$reveal>\n</$reveal>\n\n<$reveal state='$:/state/viewcitation/subject' type='match' text='alltitle'>\n\n<table>\n\t<$list filter='[tag[Citations]regexp[(?i)$(searchString)$]sort[title]]'>\n\t\t<<thisCitationEntry>>\n\t</$list>\n</table>\n\n</$reveal>\n\n<$reveal state='$:/state/viewcitation/subject' type='match' text='allsubject'>\n\n<table>\n\t<$list filter='[tag[Citations]regexp[(?i)$(searchString)$]get[subject_tiddler]indexes[]]' variable=subjectsTiddler>\n\t\t<tr style='width:100%'>\n\t\t\t<th>\n\t\t\t\tAdd to list\n\t\t\t</th>\n\t\t\t<th>\n\t\t\t\t<<subjectsTiddler>>\n\t\t\t</th>\n\t\t</tr>\n\t\t<$list filter='[tag[Citations]regexp[(?i)$(searchString)$]sort[title]]' variable=currentCitation>\n\t\t\t<$list filter='[title<currentCitation>get[subject_tiddler]]' variable=innerSubjectsTiddler>\n\t\t\t\t<$list filter='[title<innerSubjectsTiddler>indexes[]]'>\n\t\t\t\t\t<$list filter='[title<subjectsTiddler>is[current]]'>\n\t\t\t\t\t\t<<thisCitationEntry>>\n\t\t\t\t\t</$list>\n\t\t\t\t</$list>\n\t\t\t</$list>\n\t\t</$list>\n\t</$list>\n</table>\n\n</$reveal>\n\\end\n\nList Citations:\n\nSubject: \n<$select tiddler='$:/state/viewcitation/subject' default='All'>\n\t<option value='alltitle'>\n\t\tAll (sort by title)\n\t</option>\n\t<option value='allsubject'>\n\t\tAll (sort by subject)\n\t</option>\n\t<$list filter='[tag[CitationsSubject]]'>\n\t\t<option value=<<currentTiddler>>><$view field='title'/></option>\n\t</$list>\n</$select>\n(Search by Citation Name: <$edit-text tiddler='$:/temp/Citations/CitationSearch' field=search_text/>)<br>\n\n<$set name=searchString value={{$:/temp/Citations/CitationSearch!!search_text}}>\n\n<<thisCitationsList>>\n\n</$set>"
+        },
+        "$:/plugins/inmysocks/Citations/Edit Citations": {
+            "caption": "Edit Citations",
+            "creator": "inmysocks",
+            "no_edit": "true",
+            "title": "$:/plugins/inmysocks/Citations/Edit Citations",
+            "text": "\\define thisEditSubjects()\n<li><$view field='title'/> <$button set='$(subjectTiddler)$##$(currentSubject)$'>Remove Subject</$button></li>\n\\end\n\n<table>\n<tr><th>List of all tiddlers </th></tr>\n<tr>\n<td>\n<$select tiddler='$:/state/CitationsLibrary/EditCitations/SelectedCitation'>\n<$list filter='[tag[Citations]]'>\n<option><$view field='title'/></option>\n</$list>\n</$select>\n</td>\n</tr>\n<tr><th>List by subject</th></tr>\n<tr>\n<td>\n<$select tiddler='$:/state/CitationsLibrary/EditCitations/SelectedCitation'>\n<$list filter='[tag[Citations]get[subject_tiddler]indexes[]]' variable=subjectsTiddler>\n<optgroup label=<<subjectsTiddler>>>\n<$list filter='[tag[Citations]]' variable=currentCitation>\n<$list filter='[title<currentCitation>get[subject_tiddler]]' variable=innerSubjectsTiddler>\n<$list filter='[title<innerSubjectsTiddler>indexes[]]'>\n<$list filter='[title<subjectsTiddler>is[current]]'>\n<option><$view tiddler=<<currentCitation>> field='title'/></option>\n</$list>\n</$list>\n</$list>\n</$list>\n</optgroup>\n</$list>\n</$list>\n</$select>\n</td>\n</tr>\n<tr><th>Abstract Tiddler</th></tr>\n<tr><td><$edit-text tiddler={{$:/state/CitationsLibrary/EditCitations/SelectedCitation}} field='abstract_tiddler' class='tc-edit-texteditor'/></td></tr>\n<tr><th>Bibtex Tiddler</th></tr>\n<tr><td><$edit-text tiddler={{$:/state/CitationsLibrary/EditCitations/SelectedCitation}} field='bibtex_tiddler' class='tc-edit-texteditor'/></td></tr>\n<tr><th>Note Tiddler</th></tr>\n<tr><td><$edit-text tiddler={{$:/state/CitationsLibrary/EditCitations/SelectedCitation}} field='note_tiddler' class='tc-edit-texteditor'/></td></tr>\n<tr><th>Subject Tiddler</th></tr>\n<tr><td><$edit-text tiddler={{$:/state/CitationsLibrary/EditCitations/SelectedCitation}} field='subject_tiddler' class='tc-edit-texteditor'/></td></tr>\n</table>\n\nCitation Title: {{$:/state/CitationsLibrary/EditCitations/SelectedCitation}}\n\n<$tiddler tiddler={{$:/state/CitationsLibrary/EditCitations/SelectedCitation}}>\nAbstract:\n<$edit-text tiddler={{!!abstract_tiddler}} class='tc-edit-texteditor'/>\n\nBibtex:\n<$edit-text tiddler={{!!bibtex_tiddler}} class='tc-edit-texteditor'/>\n\nNotes:\n<$edit-text tiddler={{!!note_tiddler}} class='tc-edit-texteditor'/>\n\nSubjects:\n\n<$reveal type='nomatch' state='$:/state/editcition/addsubject' text='newsubject'>\nSubject: <$select tiddler='$:/state/editcitation/subject' default='No Subject'>\n<$list filter='[tag[CitationsSubject]]'>\n<option value=<<currentTiddler>>><$view field='title'/></option>\n</$list>\n</$select>\n<$button>Add Subject\n<$action-setfield $tiddler={{!!subject_tiddler}} $index={{$:/state/editcitation/subject}} $value='1'/>\n</$button>\n<$button set='$:/state/editcition/addsubject' setTo='newsubject'>New Subject</$button>\n</$reveal>\n<$reveal type='match' state='$:/state/editcition/addsubject' text='newsubject'>\nSubject Name: <$edit-text class='tc-edit-texteditor' tiddler='$:/state/editcition/addsubject' field='newsubjectname'/><br>\n<$button>Add Subject\n<$action-setfield $tiddler={{$:/state/editcition/addsubject!!newsubjectname}} tags=CitationsSubject/>\n<$action-setfield $tiddler='$:/state/editcition/addsubject' $field='newsubjectname' $value=''/>\n</$button>\n<$button set='$:/state/editcition/addsubject' setTo='nonewsubject'>Done</$button>\n</$reveal>\n\n<$set name=subjectTiddler value={{!!subject_tiddler}}>\n<ul>\n<$list filter='[{!!subject_tiddler}indexes[]]'>\n<$set name=currentSubject value=<<currentTiddler>>>\n<<thisEditSubjects>>\n</$set>\n</$list>\n</ul>\n</$set>\n\n</$tiddler>"
+        },
+        "$:/plugins/inmysocks/Citations/Selected Citations BibTex": {
+            "caption": "Selected Citations BibTex",
+            "created": "20150211015009814",
+            "modified": "20150211020128946",
+            "tags": "",
+            "title": "$:/plugins/inmysocks/Citations/Selected Citations BibTex",
+            "text": "<textarea rows=\"20\" style='width:100%'><$list filter='[tag[Citations]on_list[true]]'><$list filter='[{!!bibtex_tiddler}get[text]]'><<currentTiddler>>\n\n</$list></$list>\n</textarea>\n"
+        },
+        "$:/plugins/inmysocks/Citations/Selected Citations": {
+            "caption": "Selected Citations",
+            "created": "20150211014749620",
+            "modified": "20150211020337930",
+            "tags": "",
+            "title": "$:/plugins/inmysocks/Citations/Selected Citations",
+            "text": "\\define thisCitationEntry()\n<tr><td><$checkbox tiddler=<<currentCitation>> field='on_list' checked='true' unchecked='false'/></td><td><$link to=<<currentCitation>>><$view tiddler=<<currentCitation>> field='title'/></$link></td></tr>\n\\end\n\nThis is the list of currently selected citations whose ~BibTex entries will be displayed in the ~BibTex List tab.\n\n<table>\n<tr><th>Remove from list</th><th>Citation</th></tr>\n<$list filter='[tag[Citations]on_list[true]]'>\n<<thisCitationEntry>>\n</$list>\n</table>"
+        },
+        "$:/plugins/inmysocks/Citations/Upgrade Citations from 0.1.x to 0.2.x": {
+            "no_edit": "true",
+            "title": "$:/plugins/inmysocks/Citations/Upgrade Citations from 0.1.x to 0.2.x",
+            "text": "\\define makeCitationText()\n\nSubjects: \n\n<ul>\n<$list filter='[[$(subjectsTiddler)$]indexes[]]'>\n<li><$view field='title'/></li>\n</$list>\n</ul>\n\nAbstract:<br>\n\n<$view tiddler=\"\"\"$(abstractTiddler)$\"\"\" field='text'/>\n\nBibtex:\n\n---\n\n$(bibTex)$\n\n---\n\n\\end\n\n\\define thisMakeBibtexTiddler()\n\n$(currentTitle)$_BibTex\n\n\\end\n\n\\define thisMakeAbstractTiddler()\n\n$(currentTitle)$_Abstract\n\n\\end\n\n\\define thisMakeSubjectTiddler()\n\n$(currentTitle)$_Subject\n\n\\end\n\n\\define getBibTex()\n<$macrocall $name=monoSpacedCodeBlock src={{$(bibTexTiddler)$}}/>\n\\end\n\n<$select tiddler='$:/state/UpgradeCitation/selectedtiddler'>\n<$list filter='[tag[Citations]has[subject]]'>\n<option><$view field='title'/></option>\n</$list>\n</$select>\n\n<$tiddler tiddler={{$:/state/UpgradeCitation/selectedtiddler}}>\n<$set name=currentTitle value=<<currentTiddler>>>\n<$set name=bibTexTiddler value=<<thisMakeBibtexTiddler>>>\n<$set name=subjectsTiddler value=<<thisMakeSubjectTiddler>>>\n<$set name=bibTex value=<<getBibTex>>>\n<$set name=abstractTiddler value=<<thisMakeAbstractTiddler>>>\n<$button>Upgrade\n<$action-setfield bibtex_tiddler=<<thisMakeBibtexTiddler>> abstract_tiddler=<<thisMakeAbstractTiddler>> subject_tiddler=<<thisMakeSubjectTiddler>>/>\n<$action-setfield $tiddler=<<thisMakeSubjectTiddler>> $index={{!!subject}} $value=1/>\n<$action-setfield text=<<makeCitationText>>/>\n</$button>\n</$set>\n</$set>\n</$set>\n</$set>\n</$set>\n</$tiddler>"
+        },
+        "$:/plugins/inmysocks/Citations/View Citation by Subject": {
+            "caption": "View Citation by Subject",
+            "creator": "inmysocks",
+            "no_edit": "true",
+            "title": "$:/plugins/inmysocks/Citations/View Citation by Subject",
+            "text": "\\define thisNoteTiddler()\n<$list filter='[<CitationTiddler>!has[note_tiddler]]'>\n<$button>Create Note Tiddler\n<$action-setfield $tiddler=<<thisNoteTiddlerName>> text=''/>\n<$action-setfield $tiddler=<<CitationTiddler>> note_tiddler=<<thisNoteTiddlerName>>/>\n</$button>\n</$list>\n<$list filter='[<CitationTiddler>has[note_tiddler]]'>\n<$edit-text tiddler={{!!note_tiddler}} class='tc-edit-texteditor' minHeight={{$:/state/viewcitation/noteheight}} placeholder='Citation Notes'/>\n</$list>\n\\end\n\n\\define thisNoteTiddlerName()\n$(CitationTiddler)$_notes\n\\end\n\nSubject: <$select tiddler='$:/state/viewcitation/subject' default='No Subject'>\n<$list filter='[tag[CitationsSubject]sort[title]]'>\n<option value=<<currentTiddler>>><$view field='title'/></option>\n</$list>\n</$select> Note area height: <$select tiddler='$:/state/viewcitation/noteheight'><$list filter='50px 100px 200px 300px 400px 500px 600px 700px'><option><<currentTiddler>></option></$list></$select>\n\nCitation: <$select tiddler='$:/state/viewcitation/citationbysubject'>\n<$list filter='[tag[Citations]sort[title]]' variable=currentCitation>\n<$list filter='[title<currentCitation>get[subject_tiddler]]' variable=subjectsTiddler>\n<$list filter='[title<subjectsTiddler>indexes[]]'><!-- variable=currentSubject>-->\n<$list filter='[title{$:/state/viewcitation/subject}is[current]]'>\n<option><$view tiddler=<<currentCitation>> field='title'/></option>\n</$list>\n</$list>\n</$list>\n</$list>\n</$select>\n\n<$set name=CitationTiddler value={{$:/state/viewcitation/citationbysubject}}>\n<table style='width:100%'>\n<tr><td style='width:50%;height:100%;'><<thisNoteTiddler>></td><td><$transclude tiddler=<<CitationTiddler>> mode='block'/></td></tr>\n</table>\n</$set>"
+        },
+        "$:/plugins/inmysocks/Citations/View Citation by Title": {
+            "caption": "View Citation by Title",
+            "creator": "inmysocks",
+            "no_edit": "true",
+            "title": "$:/plugins/inmysocks/Citations/View Citation by Title",
+            "text": "\\define thisNoteTiddler()\n<$list filter='[<CitationTiddler>!has[note_tiddler]]'>\n<$button>Create Note Tiddler\n<$action-setfield $tiddler=<<thisNoteTiddlerName>> text=''/>\n<$action-setfield $tiddler=<<CitationTiddler>> note_tiddler=<<thisNoteTiddlerName>>/>\n</$button>\n</$list>\n<$list filter='[<CitationTiddler>has[note_tiddler]]'>\n<$edit-text tiddler={{!!note_tiddler}} class='tc-edit-texteditor' minHeight={{$:/state/viewcitation/noteheight}} placeholder='Citation Notes'/>\n</$list>\n\\end\n\n\\define thisNoteTiddlerName()\n$(CitationTiddler)$_notes\n\\end\n\nCitation: <$select tiddler='$:/state/viewcitation/citationbytitle'>\n<$list filter='[tag[Citations]sort[title]]'>\n<option><$view tiddler=<<currentTiddler>> field='title'/></option>\n</$list>\n</$select>\n\n<$set name=CitationTiddler value={{$:/state/viewcitation/citationbytitle}}>\n<table style='width:100%'>\n<tr><td style='width:50%;height:100%;'><<thisNoteTiddler>></td><td><$transclude tiddler=<<CitationTiddler>> mode='block'/></td></tr>\n</table>\n</$set>"
+        },
+        "$:/plugins/inmysocks/Citations/View Citation": {
+            "caption": "View Citation",
+            "creator": "inmysocks",
+            "no_edit": "true",
+            "title": "$:/plugins/inmysocks/Citations/View Citation",
+            "text": "<<tabs \"[[$:/plugins/inmysocks/Citations/View Citation by Subject]][[$:/plugins/inmysocks/Citations/View Citation by Title]]\" \"[[$:/plugins/inmysocks/Citations/View Citation by Subject]]\">>"
+        }
+    }
+}
