@@ -3,3 +3,6 @@ npm-debug.log
 yarn-error.log 
 .vscode
 chatty.sqlite
+.idea
+rootkey.csv
+.env

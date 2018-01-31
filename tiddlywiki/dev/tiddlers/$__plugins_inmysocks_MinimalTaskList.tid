@@ -1,0 +1,25 @@
+author: inmysocks
+core-version: >=5.1.6
+created: 20180131180242766
+dependents: 
+description: A simple task list for TiddlyWiki
+modified: 20180131180242766
+plugin-type: plugin
+source: https://github.com/inmysocks/TW5-NoLearningRequired-Full
+title: $:/plugins/inmysocks/MinimalTaskList
+type: application/json
+version: 0.1.2
+
+{
+    "tiddlers": {
+        "$:/plugins/inmysocks/MinimalTaskList/Minimal Task List": {
+            "caption": "Minimal Task List",
+            "created": "20141204050605595",
+            "modified": "20141206180802021",
+            "no_edit": "true",
+            "tags": "Dashboard",
+            "title": "$:/plugins/inmysocks/MinimalTaskList/Minimal Task List",
+            "text": "<$edit-text tiddler='$:/state/Basic Task List' field='task_name' class='tc-edit-texteditor' placeholder='Task Name'/><$button>New Task\n<$action-setfield $tiddler={{$:/state/Basic Task List!!task_name}} tags='task'/>\n<$action-setfield $tiddler='$:/state/Basic Task List' task_name=''/>\n</$button>\n\n! Outstanding tasks\n\n<$list filter=\"[!has[draft.of]tag[task]!tag[done]sort[created]!title[TiddlerTaskTemplate]]\">\n\n<$checkbox tag=\"done\"> <$link to={{!!title}}><$view field=\"title\"/></$link></$checkbox>\n\n</$list>\n\n! Completed tasks\n\nLimit list size: <$edit-text tiddler='$:/plugins/inmysocks/MinimalTaskList/Minimal Task List' field='finished_list_size'/>\n\n<$reveal type='nomatch' state='$:/plugins/inmysocks/MinimalTaskList/Minimal Task List!!finished_list_size' text=''>\n\n<$list filter=\"[!has[draft.of]tag[task]tag[done]sort[created]limit{$:/plugins/inmysocks/MinimalTaskList/Minimal Task List!!finished_list_size}]\">\n\n<$checkbox tag=\"done\"> ~~<$link to={{!!title}}><$view field=\"title\"/></$link>~~</$checkbox>\n\n</$list>\n\n</$reveal>\n\n<$reveal type='match' state='$:/plugins/inmysocks/MinimalTaskList/Minimal Task List!!finished_list_size' text=''>\n\n<$list filter=\"[!has[draft.of]tag[task]tag[done]sort[created]]\">\n\n<$checkbox tag=\"done\"> ~~<$link to={{!!title}}><$view field=\"title\"/></$link>~~</$checkbox>\n\n</$list>\n\n</$reveal>"
+        }
+    }
+}

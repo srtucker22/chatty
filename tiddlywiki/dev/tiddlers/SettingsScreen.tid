@@ -1,0 +1,8 @@
+created: 20180106004014195
+modified: 20180106004027934
+order: 5
+tags: MainScreenTab
+title: SettingsScreen
+type: text/vnd.tiddlywiki
+
+<<tabs "[tag[SettingsScreenTab]nsort[order]]" "SettingsScreenTab.actions" "$:/state/tab1" "tc-vertical">>

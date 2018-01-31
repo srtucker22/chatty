@@ -1,0 +1,63 @@
+author: Thomas Elmiger
+core-version: >=5.1.14
+created: 20170715124812734
+description: rpn – Basic Math in Reverse Polish Notation
+list: readme usage examples
+modified: 20180130010421691
+name: rpn
+plugin-type: plugin
+source: https://tid.li/tw5/plugins.html
+title: $:/plugins/telmiger/rpn
+type: application/json
+version: 0.6.2
+
+{
+    "tiddlers": {
+        "$:/plugins/telmiger/rpn/examples": {
+            "created": "20170715121619734",
+            "creator": "Thomas Elmiger",
+            "text": "!! Examples\n\n`<<rpn pi 2 * 3>>` results in <<rpn pi 2 * 3>>\n\n`<<rpn Pi \" was the name.\" &>>`  \n\n<<<\n<<rpn Pi \" was the name.\" &>>\n<<<\n\n\n`<<rpn a:100 b:200 precision:\"r\">>`  creates a random number in the range from a to b:\n\n<<<\nYour lucky number is <<rpn a:100 b:200 precision:\"r\">>.\n<<<\n\nCalculate the area of a circle with radius 2:\n\n```\n<$macrocall $name=\"rpn\" a=<<rpn 2 2 *>> b=pi operation=\"*\" decimals=\"4\"/>\n```\n<<<\n<$macrocall $name=\"rpn\" a=<<rpn 2 2 *>> b=pi operation=\"*\" decimals=\"4\"/>\n<<<\n\nA 50% discount price, rounded downwards with Swiss formatting applied: \n\n```\n<$macrocall $name=\"rpn\" a=<<rpn 2123.45 50 * 0 f>> b=100 operation=\"/\" decimals=\"2\" precision=\"p\" locale=\"de-CH\"/>\n```\n<<<\n<$macrocall $name=\"rpn\" a=<<rpn 2123.45 50 * 0 f>> b=100 operation=\"/\" decimals=\"2\" precision=\"p\" locale=\"de-CH\"/>\n<<<\n\nFor more examples see https://tid.li/tw5/hacks.html#rpnTest.",
+            "title": "$:/plugins/telmiger/rpn/examples",
+            "tags": "[[ToDo Addons]]",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170814063737796"
+        },
+        "$:/plugins/telmiger/rpn/icon": {
+            "created": "20170715123511072",
+            "text": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64.003\" height=\"64.003\" viewBox=\"-500.5 395.5 64.003 64.003\"><path d=\"M-468.5 396.5l26.426 15.5v31l-26.425 15.5-26.426-15.5v-31l26.427-15.5z\"/><path fill=\"#FFF\" d=\"M-485.996 419.088h34.99v16.824h-34.99z\"/><path fill=\"#E2001A\" d=\"M-468.5 405.5c-12.15 0-22 9.85-22 22s9.85 22 22 22 22-9.85 22-22-9.85-22-22-22zm13.11 21.637c-1.022.682-2.674 1.023-4.954 1.023h-2.838c-1.505 0-2.598.3-3.28.9-.68.6-1.22 1.804-1.622 3.615 0 0-.063.526-.178.526s-.13-.31-.184-.562c-.056-.263-.14-.59-.256-.977-.224-.758-.447-1.332-.67-1.72-.27-.482-.613-.87-1.024-1.165-.412-.294-.883-.47-1.413-.528l-.74-.088h-3.637c-2.178 0-3.796-.343-4.855-1.024-1.764-1.12-2.71-3.24-2.842-6.357-.01-.25 0-.48.047-.772h.208c.142 1.41 1.304 2.502 2.158 3.274.853.77 2.222 1.155 4.104 1.155h3.3c1.896 0 3.28.436 4.158 1.306.79.786 1.31 2.017 1.56 3.69.028.183.012.263.064.263.053 0 .04-.09.06-.278.253-2.173 1.094-3.627 2.522-4.363.88-.46 2.28-.676 4.196-.652l2.257.035c1.527.023 2.814-.278 3.86-.908 1.046-.63 2.285-1.803 2.425-3.52h.21c.065.17.057.56.045.828-.13 3.105-1.023 5.206-2.68 6.3z\"/></svg>",
+            "type": "image/svg+xml",
+            "title": "$:/plugins/telmiger/rpn/icon",
+            "tags": "",
+            "modified": "20170715123532555"
+        },
+        "$:/plugins/telmiger/rpn/readme": {
+            "text": "!! Simple calculations\n\nrpn is a lightweight Javascript macro for basic math operations in TiddlyWiki. It is inspired by formerly popular calculators using Reverse Polish Notation (see [[Wikipedia|https://en.wikipedia.org/wiki/Reverse_Polish_notation]] for more info).\n\n`<<rpn 50 2.5 * 2 p>>` output: <<rpn 50 2.5 * 2 p>>\n\n* takes two operands (//a// and //b//) as input – this may be macros or transclusions\n** operands are sent through a simplified [[wikify|http://tiddlywiki.com/#WikifyWidget]] function before calculation starts\n** use //pi// to get π (Math.PI)\n* basic operations: +, -, /, * \n** advanced operations: modulus (%) and rounding (optional: Math.floor or Math.ceil)\n* output formatting\n** limit digits after comma (//decimals//), force //precision// display with //precision:\"p\"// (.toPrecision)\n** //locale// formatting (.toLocaleString)\n* string concatenation (&)\n** the resulting string is sent through the internal [[wikify|http://tiddlywiki.com/#WikifyWidget]] function \n* random numbers in a range from a to b with //precision:\"r\"// (including both a and b)\n\n!!! Installation\nThe plugin available on https://tid.li/tw5/plugins.html includes the documentation.<br>\nIf you want the functionality only, you can drag this tiddler to your wiki: $:/plugins/telmiger/rpn/rpn.js – then save and reload. \n\n!!! Alternatives\n* http://mathcell.tiddlyspot.com/ – tries to replace spreadsheet applications and uses some identical operators as rpn\n* http://tobibeer.github.io/tb5/#calc – does calculations based on tiddler fields\n* eval, calc combined with ''math.js'' – a heavy math library\n** http://mklauber.github.io/tiddly-mathjs/ \n** http://tobibeer.github.io/tw5-plugins/#math.js",
+            "title": "$:/plugins/telmiger/rpn/readme",
+            "tags": "[[ToDo Addons]]",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170814052054496",
+            "creator": "Thomas Elmiger",
+            "created": "20170714205116352"
+        },
+        "$:/plugins/telmiger/rpn/rpn.js": {
+            "text": "/*\\\ntitle: $:/plugins/telmiger/lib/rpn.js\ntype: application/javascript\nmodule-type: macro\n\nMacro to execute simple calculations in reverse Polish notation\nDocumentation see https://tid.li/tw5/plugins.html\nVersion 0.6.2\n\\*/\n(function(){\n\n/*jslint node: true, browser: true */\n/*global $tw: false */\n\"use strict\";\n\n/*\nInformation about this macro\n*/\n\nexports.name = \"rpn\";\n\nexports.params = [\n\t{name: \"a\"},\n\t{name: \"b\"},\n        {name: \"operation\", default: \"+\"},\n        {name: \"decimals\", default: \"\"},\n        {name: \"precision\", default: \"\"},\n        {name: \"locale\", default: \"false\"},\n        {name: \"sd\", default: \".\"},\n        {name: \"st\", default: \"\"}\n];\n\n/*\nWikify\n*/\nfunction wikifyText(t) {\n\tvar Parser = $tw.wiki.parseText(\"text/vnd.tiddlywiki\",t,{\n\t\t\tparseAsInline: true\n\t\t});\n\tvar WidgetNode = $tw.wiki.makeWidget(Parser,{\n\t\t\tdocument: $tw.fakeDocument\n\t\t});\n\tvar Container = $tw.fakeDocument.createElement(\"div\");\n\tWidgetNode.render(Container,null);\n\treturn Container.textContent;\n}\n\n/*\nFormat decimals and (TODO!) thousands\n*/\nfunction formatNumber(value,sd,st) {\n\tlet string = value.toString();\n\t// string = string; // TODO separator for thousands\n\treturn string.replace(\".\",sd); // separator for decimals\n}\n\n/*\nFormatting with locale\n*/\nfunction formatLocale(value,decimals,precision,locale) { \n\tlet result = \"NaN\";\n\tif(decimals == \"\" || decimals >= 0) {\n\t\tlet minFracDig = (precision == \"p\" ? decimals : \"\");\n\t\tresult = value.toLocaleString(locale, { minimumFractionDigits: minFracDig });\n\t}\n\telse {\n\t\tresult = \"invalid decimals\";\n\t}\n\treturn result;\n}\n\n/*\nPrecision for decimals\n*/\nfunction addPrecisionDecimals(result,decimals) { \n    let di = parseInt(decimals);\n    let rInteger = result.toString().split('.')[0].length;\n    let p = rInteger + di;\n    if(p > 0 && p < 101) {\n\tresult = result.toPrecision(p);\n    }\n    else {\n        result = \"invalid decimals\";\n    }\n    return result;\n}\n\n/*\nRandom numbers including a and b\n*/\nfunction randomInteger(a,b) {\n\tlet min = Math.ceil(a);\n\tlet max = Math.floor(b + 1);\n\treturn Math.floor(Math.random() * (max - min)) + min; \n}\n\n/*\nMath\n*/\nfunction calculate(a,b,operation) {\n    let result = \"NaN\";\n    switch(operation) {\n        case \"-\":\n            result = a - b;\n            break;\n        case \"*\":\n            result = a * b;\n            break;\n        case \"/\":\n            result = a / b;\n            break;\n        case \"%\":\n            result = a % b;\n            break;\n        default:\n            result = a + b;\n    }\n    return result;\n}\n\n/*\nRun the macro\n*/\nexports.run = function(a,b,operation,decimals,precision,locale,sd,st) {\n\tlet aw = wikifyText(a);\n\tlet bw = wikifyText(b);\n\tlet result = \"\";\n\tif(operation == \"&\") {\n\t\tresult = wikifyText(a + b);\n\t}\n\telse {\n\t\t// prepare values\n\t\tvar af = aw.replace(\",\",\".\");\n\t\tvar bf = bw.replace(\",\",\".\");\n\t\taf = (af == \"pi\" ? Math.PI : parseFloat(af));\n\t\tbf = (bf == \"pi\" ? Math.PI : parseFloat(bf));\n\t\t// do the math\n\t\tresult = calculate(af,bf,operation);\n\t\t// precision modes\n\t\tif(precision == \"r\") {\n\t\t\tresult = randomInteger(af,bf); \n\t\t}\n\t\telse if(precision == \"p\" && locale == \"false\") {\n\t\t\tresult = addPrecisionDecimals(result,decimals);\n\t\t}\n\t\telse if(precision == \"c\") {\n\t\t\tresult = Math.ceil(result);\n\t\t}\n\t\telse if(precision == \"f\") {\n\t\t\tresult = Math.floor(result);\n\t\t}\n\t\telse if(precision != \"\" && locale == \"false\") {\n\t\t// formatLocale ignores precision values other than p\n\t\t\tresult = \"invalid precision\";\n\t\t}\n\t\t// if precision is not defined, round based on (max.) decimals\n\t\telse if(decimals != \"\") {\n\t\t\tvar di = parseInt(decimals);\n\t\t\tresult = Math.round(result * Math.pow(10, di)) / Math.pow(10, di);            \n\t\t}\n\t\t// format output\n\t\tif(locale != \"false\") {\n\t\t\tresult = formatLocale(result,decimals,precision,locale);\n\t\t}\n\t\telse {\n\t\t\tresult = formatNumber(result,sd,st);\n\t\t}\n\t}\n\treturn result;\n};\n\n})();\n",
+            "type": "application/javascript",
+            "title": "$:/plugins/telmiger/rpn/rpn.js",
+            "tags": "[[ToDo Addons]]",
+            "module-type": "macro",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170814062342206",
+            "creator": "Thomas Elmiger",
+            "created": "20170626211546891"
+        },
+        "$:/plugins/telmiger/rpn/usage": {
+            "text": "!! Usage\n\n`<<rpn 5000 200 * 2 p en-GB>>` output: <<rpn 5000 200 * 2 p en-US>>\n\nThe following operations can be used with two operands:\n\n|Operation |Description |h\n|+ |Addition |\n|- |Subtraction |\n|* |Multiplication |\n|/ |Division |\n|% |Modulo (remains after division) |\n|& |Concatenation of two strings^^1^^ |\n| |[none] when generating random numbers, any value would be ignored |\n\n<small>1 – The list of operators found at Stephen Kimmel’s Mathcell project (see readme section) inspired me to implement this easter egg – it has nothing to do with math.</small>\n\n|Parameter |Description |h\n|a |first operand |\n|b |second operand |\n|operation |see above |\n|decimals |digits after comma (number) |\n|precision |defaults to \"\"<br>\"p\" to show all digits after comma (precision)<br>\"f\" to round downwards to the next integer (Math.floor)<br>\"c\" to round upwards to the next integer (Math.ceil) <br>\"r\" to get a random integer in the range from a to b, a and b included (Math.random) |\n|locale |Formatting according to language or country specific standards, e.g. \"en\", \"de-DE\" or \"de-CH\" – [[toLocaleString|https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Number/toLocaleString#Browser_compatibility]] is used, including minimumFractionDigits option if decimals and precision \"p\" are provided. |\n|sd |separator for decimals if //locale// is not used, defaults to \".\" |\n|st |TODO separator for thousands if //locale// is not used, defaults to \"\" |\n\n!!! Known limitations\n* //st// is not implemented yet",
+            "title": "$:/plugins/telmiger/rpn/usage",
+            "tags": "[[ToDo Addons]]",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170813210218755",
+            "creator": "Thomas Elmiger",
+            "created": "20170715121502832"
+        }
+    }
+}

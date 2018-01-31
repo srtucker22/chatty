@@ -1,0 +1,41 @@
+author: inmysocks
+core-version: >=5.1.6
+created: 20180131180230297
+dependents: 
+description: A table of contents manager for TiddlyWiki
+modified: 20180131180230297
+plugin-type: plugin
+source: https://github.com/inmysocks/TW5-NoLearningRequired-Full
+title: $:/plugins/inmysocks/ManageTOC
+type: application/json
+version: 0.1.1
+
+{
+    "tiddlers": {
+        "$:/plugins/inmysocks/ManageTOC/Manage Table of Contents": {
+            "caption": "Manage Table of Contents",
+            "created": "20141203180455809",
+            "modified": "20141210055531239",
+            "no_edit": "true",
+            "tags": "Tools Dashboard",
+            "title": "$:/plugins/inmysocks/ManageTOC/Manage Table of Contents",
+            "text": "You can use this to rearrange the table of contents displayed above under the `Table of Contents` tab. (To display the table of contents click on the tab).\n\n''How to use this'':\n\nFind the tiddler that you want to move in the table of contents and click the `Update Location` button next to its name. This will open up a small drop down that will list the current location of the tiddler in the table of contents and a dropdown menu you can use to select the new location. Once you have selected the new location press the `Move Tiddler` button. The tiddler will be immediately moved to the new location in the table of contents, so you will need to look in the new location to find it.\n\n<$set name='above' value=Contents>\n<$list filter='[plugintiddlers[]tag[Contents]][tag[Contents]]' template='$:/plugins/inmysocks/ManageTOC/TOCArrangeTemplate'>\n</$list>\n</$set>"
+        },
+        "$:/plugins/inmysocks/ManageTOC/TOCArrangeTemplate": {
+            "created": "20141203180901049",
+            "modified": "20141204014147830",
+            "no_edit": "true",
+            "tags": "Templates",
+            "title": "$:/plugins/inmysocks/ManageTOC/TOCArrangeTemplate",
+            "text": "<ul>\n<li><$link to=<<currentTiddler>>><$view field='title'/></$link>\n<$reveal type='nomatch' state=<<qualify>> text='update'>\n<$button set=<<qualify>> setTo='update'>Update Location</$button>\n</$reveal>\n<$reveal type='match' state=<<qualify>> text='update'>\n<$button set=<<qualify>> setTo='noupdate'>Done</$button>\n<$fieldmangler tiddler=<<currentTiddler>>>\n<$button>Move Tiddler\n<$action-sendmessage $message='tm-add-tag' $param={{$:/state/temporaryTocLocation}}/>\n<$action-sendmessage $message='tm-remove-tag' $param=<<above>>/>\n</$button><br>\n</$fieldmangler>\nCurrent location: <<above>> <br>\nSelect New Location: <$select tiddler='$:/state/temporaryTocLocation'>\n<$list filter='[tag[Contents]]' template='$:/plugins/inmysocks/ManageTOC/TOCArrangeTemplate2'>\n<option value=<<currentTiddler>>><$view field='title'/></option>\n</$list>\n</$select>\n</$reveal>\n</li>\n<ul>\n<$set name=above value=<<currentTiddler>>>\n<$list filter='[tag<currentTiddler>]' template='$:/plugins/inmysocks/ManageTOC/TOCArrangeTemplate'>\n<$view field='title'/><br>\n</$list>\n</$set>\n</ul>\n</ul>"
+        },
+        "$:/plugins/inmysocks/ManageTOC/TOCArrangeTemplate2": {
+            "created": "20141203184430377",
+            "modified": "20141204013515997",
+            "no_edit": "true",
+            "tags": "",
+            "title": "$:/plugins/inmysocks/ManageTOC/TOCArrangeTemplate2",
+            "text": "<option value=<<currentTiddler>>><$view field='title'/></option>\n<$list filter='[tag<currentTiddler>]' template='$:/plugins/inmysocks/ManageTOC/TOCArrangeTemplate2'>\n<$view field='title'/><br>\n</$list>"
+        }
+    }
+}

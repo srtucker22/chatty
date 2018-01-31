@@ -1,0 +1,350 @@
+author: Thomas Elmiger
+core-version: 5.1.13
+created: 20170216203601360
+description: Clipboard
+list: readme settings
+modified: 20180130010421730
+name: Editor Clipboard
+plugin-type: plugin
+source: https://tid.li/tw5/plugins.html
+title: $:/plugins/telmiger/Clipboard
+type: application/json
+version: 0.4.5
+
+{
+    "tiddlers": {
+        "$:/plugins/telmiger/Clipboard/EditorToolbar/cb": {
+            "created": "20170214204617746",
+            "creator": "Thomas Elmiger",
+            "text": "<$reveal state=\"$:/plugins/telmiger/Clipboard/settings/show\" type=\"match\" text=\"yes\" tag=\"span\">\n{{$:/plugins/telmiger/Clipboard/icons/fold}}\n<$action-setfield $tiddler=\"$:/plugins/telmiger/Clipboard/settings/show\" $value=\"no\"/>\n</$reveal>\n<$reveal state=\"$:/plugins/telmiger/Clipboard/settings/show\" type=\"nomatch\" text=\"yes\" tag=\"span\">\n{{$:/plugins/telmiger/Clipboard/icons/unfold}}\n<$action-setfield $tiddler=\"$:/plugins/telmiger/Clipboard/settings/show\" $value=\"yes\"/>\n</$reveal>\n",
+            "title": "$:/plugins/telmiger/Clipboard/EditorToolbar/cb",
+            "tags": "$:/tags/EditorToolbar Clipboard",
+            "shortcuts": "((clipboard))",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170917211104268",
+            "icon": "$:/plugins/telmiger/Clipboard/icons/unfold",
+            "description": "Show/Hide clipboard",
+            "custom-icon": "yes",
+            "condition": "[<targetTiddler>]",
+            "caption": "Clipboard",
+            "button-classes": "tc-text-editor-toolbar-item-start-group te-cb-btn"
+        },
+        "$:/plugins/telmiger/Clipboard/EditorToolbar/cb-dropdown": {
+            "created": "20170214221240856",
+            "creator": "Thomas Elmiger",
+            "text": "<div class=\"tc-text-editor-toolbar-clipboard\">\n<$set name=\"clipboard\" filter=\"\"\"[[$:/plugins/telmiger/Clipboard/cb]get[text]]\"\"\" value=\"{{$:/plugins/telmiger/Clipboard/cb}}\" emptyValue=\"Clipboard is empty.\">\n\n<<clipboard>>\n\n</$set>\n</div>\n",
+            "title": "$:/plugins/telmiger/Clipboard/EditorToolbar/cb-dropdown",
+            "tags": "Clipboard",
+            "modified": "20170216202249855",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/plugins/telmiger/Clipboard/EditorToolbar/cb-insert": {
+            "created": "20170215174235845",
+            "creator": "Thomas Elmiger",
+            "text": "<$action-sendmessage\n\t$message=\"tm-edit-text-operation\"\n\t$param=\"replace-selection\"\n\ttext={{$:/plugins/telmiger/Clipboard/cb}}\n/>\n",
+            "title": "$:/plugins/telmiger/Clipboard/EditorToolbar/cb-insert",
+            "tags": "$:/tags/EditorToolbar Clipboard",
+            "shortcuts": "((clipboard-insert-text))",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170917210407689",
+            "icon": "$:/plugins/telmiger/Clipboard/icons/clip",
+            "description": "Insert text from clipboard",
+            "condition": "[<targetTiddler>]",
+            "caption": "Insert text from clipboard",
+            "button-classes": "te-cb-btn"
+        },
+        "$:/plugins/telmiger/Clipboard/EditorToolbar/cb-insert-title-link": {
+            "created": "20170215221611123",
+            "creator": "Thomas Elmiger",
+            "text": "<$wikify name=\"cbTitle\" text={{$:/plugins/telmiger/Clipboard/cb!!te-cb-title}}>\n<$action-sendmessage\n\t$message=\"tm-edit-text-operation\"\n\t$param=\"replace-selection\"\n\ttext=<<cbTitle>>\n/>\n\n<$action-sendmessage\n\t$message=\"tm-edit-text-operation\"\n\t$param=\"wrap-selection\"\n\tprefix=\"[[\"\n\tsuffix=\"]]\"\n/>\n</$wikify>\n",
+            "title": "$:/plugins/telmiger/Clipboard/EditorToolbar/cb-insert-title-link",
+            "tags": "$:/tags/EditorToolbar Clipboard",
+            "shortcuts": "((clipboard-insert-title-link))",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170917210428939",
+            "icon": "$:/plugins/telmiger/Clipboard/icons/link",
+            "description": "Insert clipboard title as link",
+            "condition": "[<targetTiddler>]",
+            "caption": "Insert clipboard title as link",
+            "button-classes": "te-cb-btn"
+        },
+        "$:/plugins/telmiger/Clipboard/EditorToolbar/cb-insert-title-transclude": {
+            "created": "20170215230349818",
+            "creator": "Thomas Elmiger",
+            "text": "<$wikify name=\"cbTitle\" text={{$:/plugins/telmiger/Clipboard/cb!!te-cb-title}}>\n<$action-sendmessage\n\t$message=\"tm-edit-text-operation\"\n\t$param=\"replace-selection\"\n\ttext=<<cbTitle>>\n/>\n\n<$action-sendmessage\n\t$message=\"tm-edit-text-operation\"\n\t$param=\"wrap-selection\"\n\tprefix=\"{{\"\n\tsuffix=\"}}\"\n/>\n</$wikify>\n",
+            "title": "$:/plugins/telmiger/Clipboard/EditorToolbar/cb-insert-title-transclude",
+            "tags": "$:/tags/EditorToolbar Clipboard",
+            "shortcuts": "((clipboard-insert-title-transclude))",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170917210521487",
+            "icon": "$:/plugins/telmiger/Clipboard/icons/transclude",
+            "description": "Insert clipboard title as transclusion",
+            "condition": "[<targetTiddler>]",
+            "caption": "Insert clipboard title as transclusion",
+            "button-classes": "te-cb-btn"
+        },
+        "$:/plugins/telmiger/Clipboard/EditorToolbar/cb-preview": {
+            "created": "20170214223304030",
+            "creator": "Thomas Elmiger",
+            "text": "",
+            "title": "$:/plugins/telmiger/Clipboard/EditorToolbar/cb-preview",
+            "tags": "$:/tags/EditorToolbar Clipboard",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170917211720649",
+            "list-after": "$:/plugins/telmiger/Clipboard/EditorToolbar/cb",
+            "icon": "$:/plugins/telmiger/Clipboard/icons/file",
+            "dropdown": "$:/plugins/telmiger/Clipboard/EditorToolbar/cb-dropdown",
+            "description": "Show/Hide clipboard preview",
+            "condition": "[<targetTiddler>]",
+            "caption": "Show clipboard preview",
+            "button-classes": "te-cb-btn",
+            "shortcuts": "((clipboard-preview))"
+        },
+        "$:/plugins/telmiger/Clipboard/EditTemplate": {
+            "text": "<$reveal type=\"match\" text=\"yes\" state=\"$:/plugins/telmiger/Clipboard/settings/show\" class=\"te-cb-clipboard\" tag=\"div\">\n<$reveal type=\"match\" text=\"yes\" state=\"$:/plugins/telmiger/Clipboard/settings/show-text\">\n   <$edit-text tiddler=\"$:/plugins/telmiger/Clipboard/cb\" placeholder=\"Clipboard\" default=\"This is your clipboard.\" rows=\"2\" minHeight=\"2em\" class=\"te-cb-edittext\"/>\n</$reveal>\n<$reveal type=\"match\" text=\"yes\" state=\"$:/plugins/telmiger/Clipboard/settings/show-list\">\n   <$edit-text tiddler=\"$:/plugins/telmiger/Clipboard/cb\" field=\"list\" placeholder=\"Title Clipboard\" default=\"Title Clipboard\" rows=\"1\" minHeight=\"1em\" class=\"te-cb-edittext\"/>\n</$reveal>\n</$reveal>\n\n<!--\nShow the clipboard\n-->",
+            "title": "$:/plugins/telmiger/Clipboard/EditTemplate",
+            "tags": "$:/tags/EditTemplate Clipboard",
+            "modifier": "Thomas Elmiger",
+            "modified": "20171225170827044",
+            "list-after": "$:/core/ui/EditTemplate/tags",
+            "creator": "Thomas Elmiger",
+            "created": "20170214212009656"
+        },
+        "$:/plugins/telmiger/Clipboard/icon": {
+            "text": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64.003\" height=\"64.003\" viewBox=\"-500.5 395.5 64.003 64.003\"><path fill=\"#ddd\" d=\"M-468.5 396.5l26.426 15.5v31l-26.425 15.5-26.426-15.5v-31l26.427-15.5z\"/><path fill=\"#FFF\" d=\"M-485.996 419.088h34.99v16.824h-34.99z\"/><path fill=\"#E2001A\" d=\"M-468.5 405.5c-12.15 0-22 9.85-22 22s9.85 22 22 22 22-9.85 22-22-9.85-22-22-22zm13.11 21.637c-1.022.682-2.674 1.023-4.954 1.023h-2.838c-1.505 0-2.598.3-3.28.9-.68.6-1.22 1.804-1.622 3.615 0 0-.063.526-.178.526s-.13-.31-.184-.562c-.056-.263-.14-.59-.256-.977-.224-.758-.447-1.332-.67-1.72-.27-.482-.613-.87-1.024-1.165-.412-.294-.883-.47-1.413-.528l-.74-.088h-3.637c-2.178 0-3.796-.343-4.855-1.024-1.764-1.12-2.71-3.24-2.842-6.357-.01-.25 0-.48.047-.772h.208c.142 1.41 1.304 2.502 2.158 3.274.853.77 2.222 1.155 4.104 1.155h3.3c1.896 0 3.28.436 4.158 1.306.79.786 1.31 2.017 1.56 3.69.028.183.012.263.064.263.053 0 .04-.09.06-.278.253-2.173 1.094-3.627 2.522-4.363.88-.46 2.28-.676 4.196-.652l2.257.035c1.527.023 2.814-.278 3.86-.908 1.046-.63 2.285-1.803 2.425-3.52h.21c.065.17.057.56.045.828-.13 3.105-1.023 5.206-2.68 6.3z\"/></svg>",
+            "type": "image/svg+xml",
+            "title": "$:/plugins/telmiger/Clipboard/icon",
+            "tags": "",
+            "modified": "20171217214934904",
+            "created": "20170215233105652"
+        },
+        "$:/plugins/telmiger/Clipboard/settings": {
+            "created": "20170214201824205",
+            "creator": "Thomas Elmiger",
+            "text": "!! Settings\n!!! Editor: Show Clipboard Fields\n<div class=\"te-settings-list\">\n\n* <$checkbox tiddler=\"$:/plugins/telmiger/Clipboard/settings/show\" field=\"text\" checked=\"yes\" unchecked=\"no\"> Show clipboard</$checkbox>\n** <$checkbox tiddler=\"$:/plugins/telmiger/Clipboard/settings/show-text\" field=\"text\" checked=\"yes\" unchecked=\"no\"> text field</$checkbox>\n** <$checkbox tiddler=\"$:/plugins/telmiger/Clipboard/settings/show-list\" field=\"text\" checked=\"yes\" unchecked=\"no\"> title clipboard</$checkbox>\n\n</div>\n\n!!! Editor Toolbar: Activate Buttons for the Clipboard\n<div class=\"te-settings-list\">\n\n* <$checkbox tiddler=\"$:/config/EditorToolbarButtons/Visibility/$:/plugins/telmiger/Clipboard/EditorToolbar/cb\" field=\"text\" checked=\"show\" unchecked=\"hide\" default=\"show\"> fold/unfold</$checkbox>\n* <$checkbox tiddler=\"$:/config/EditorToolbarButtons/Visibility/$:/plugins/telmiger/Clipboard/EditorToolbar/cb-preview\" field=\"text\" checked=\"show\" unchecked=\"hide\" default=\"show\"> clipboard preview popup</$checkbox>\n* <$checkbox tiddler=\"$:/config/EditorToolbarButtons/Visibility/$:/plugins/telmiger/Clipboard/EditorToolbar/cb-insert\" field=\"text\" checked=\"show\" unchecked=\"hide\" default=\"show\"> insert text</$checkbox>\n* <$checkbox tiddler=\"$:/config/EditorToolbarButtons/Visibility/$:/plugins/telmiger/Clipboard/EditorToolbar/cb-insert-title-link\" field=\"text\" checked=\"show\" unchecked=\"hide\" default=\"show\"> insert title as link</$checkbox>\n* <$checkbox tiddler=\"$:/config/EditorToolbarButtons/Visibility/$:/plugins/telmiger/Clipboard/EditorToolbar/cb-insert-title-transclude\" field=\"text\" checked=\"show\" unchecked=\"hide\" default=\"show\"> insert title as transclusion</$checkbox>\n\n</div>\n\n!!! Editor Title: Show Copy-Button\n<div class=\"te-settings-list\">\n\n* <$checkbox tiddler=\"$:/plugins/telmiger/Clipboard/settings/title-button\" field=\"text\" checked=\"yes\" unchecked=\"no\"> Show copy-title button</$checkbox>\n\n</div>\n\n<$button message=\"tm-save-wiki\" param={{$:/config/SaveWikiButton/Template}} tooltip={{$:/language/Buttons/SaveWiki/Hint}} aria-label={{$:/language/Buttons/SaveWiki/Caption}} class=<<tv-config-toolbar-class>>>\n<span class=\"tc-dirty-indicator\">\n<$list filter=\"[<tv-config-toolbar-icons>prefix[yes]]\">\n{{$:/core/images/save-button}} {{$:/language/Buttons/SaveWiki/Hint}}\n</$list>\n<$list filter=\"[<tv-config-toolbar-text>prefix[yes]]\">\n<span class=\"tc-btn-text\"><$text text={{$:/language/Buttons/SaveWiki/Caption}}/></span>\n</$list>\n</span>\n</$button>\n",
+            "title": "$:/plugins/telmiger/Clipboard/settings",
+            "tags": "Clipboard",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170216202713718"
+        },
+        "$:/plugins/telmiger/Clipboard/settings/show": {
+            "created": "20170215233218443",
+            "text": "yes",
+            "title": "$:/plugins/telmiger/Clipboard/settings/show",
+            "modified": "20171225171517804"
+        },
+        "$:/plugins/telmiger/Clipboard/settings/show-list": {
+            "text": "yes",
+            "title": "$:/plugins/telmiger/Clipboard/settings/show-list",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170215205859173",
+            "creator": "Thomas Elmiger",
+            "created": "20170215203943180"
+        },
+        "$:/plugins/telmiger/Clipboard/settings/show-text": {
+            "text": "yes",
+            "title": "$:/plugins/telmiger/Clipboard/settings/show-text",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170215221111986",
+            "creator": "Thomas Elmiger",
+            "created": "20170215221111986"
+        },
+        "$:/plugins/telmiger/Clipboard/settings/title-button": {
+            "text": "yes",
+            "title": "$:/plugins/telmiger/Clipboard/settings/title-button",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170215221158098",
+            "creator": "Thomas Elmiger",
+            "created": "20170215211123226"
+        },
+        "$:/plugins/telmiger/Clipboard/style/cb.css": {
+            "text": "/* buttons */\n\n.tc-editor-toolbar button.te-cb-btn, button.te-cb-title {\n\tbackground-color: {{$:/plugins/telmiger/Clipboard/style/colors##button-background}};\n}\n\n.tc-editor-toolbar button.te-cb-btn:hover, button.te-cb-title:hover {\n\tbackground-color: {{$:/plugins/telmiger/Clipboard/style/colors##button-background-hover}};\n}\n\n.te-cb-title:hover {\n\tfill: #ffffff;\n}\n\n/* icons */\n\n.te-rotate-icon svg {\n\ttransform: rotate(180deg);\n}\n\n/* readme */\n\n.te-btn-list svg {\n\tmax-height: 1em;\n}\n\n.te-btn-list li {\n\tmargin-bottom: 0.5em;\n\tlist-style: none;\n\tmargin-left: 0em;\n\ttext-indent: -2.25em;\n}\n\n/* preview */\n\n.tc-text-editor-toolbar-clipboard {\n\tmax-width: 40em;\n\twhite-space: initial;\n}\n\n.tc-text-editor-toolbar-clipboard textarea {\n\twidth: 100%;\n}\n\n/* settings */\n\n.te-settings-list ul {\n\tlist-style: none;\n\tmargin-left: 0;\n\tpadding-left: 1.25em;\n\tline-height: 2;\n}\n\n/* editor */\n\n.tc-edit-tags {\n\tmargin-bottom: 1rem;\n}\n\n.te-cb-clipboard {\n\tmargin-bottom: .5rem;\n}\n\nbutton.te-cb-title {\n\tposition: absolute;\n\tright: 1rem;\n\tmargin-top: -.875rem;\n\tpadding-bottom: .25rem;\n\twidth: 2rem;\n\theight: 2rem;\n\tfont-size: 1.33em;\n\tfill: <<colour tiddler-controls-foreground-selected>>;\n\tborder-radius: .5rem;\n\ttext-align: center;\n}\n\n@media (min-width: 30em) {\n\tbutton.te-cb-title { right: .125rem; margin-top: -3.25rem; }\n}\n@media (min-width: 42em) {\n\tbutton.te-cb-title { right: 1rem; margin-top: -3.25rem; }\n}\n\n.te-cb-edittext {\n\twidth: 100%;\n\tmargin-bottom: .5rem;\n\tpadding: .5rem;\n\tborder: 1px solid <<colour tiddler-editor-border>>;\n}\n\n.te-cb-select-title {\n\tmargin-top: .5rem;\n\tmargin-bottom: .5rem;\n\tfont-size: .875rem;\n}\n\n.tc-btn-invisible.te-cb-reset-titles {\n\tpadding-left: .5rem;\n\tfont-size: 1rem;\n}",
+            "title": "$:/plugins/telmiger/Clipboard/style/cb.css",
+            "tags": "$:/tags/Stylesheet Clipboard",
+            "modifier": "Thomas Elmiger",
+            "modified": "20171225171922163",
+            "creator": "Thomas Elmiger",
+            "created": "20170215224423410"
+        },
+        "$:/plugins/telmiger/Clipboard/style/colors": {
+            "text": "button-background: #f3e4bb\nbutton-background-hover: #c8b992",
+            "type": "application/x-tiddler-dictionary",
+            "title": "$:/plugins/telmiger/Clipboard/style/colors",
+            "tags": "Clipboard",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170215225942804",
+            "creator": "Thomas Elmiger",
+            "created": "20170215224015656"
+        },
+        "$:/plugins/telmiger/Clipboard/TitleTemplate": {
+            "text": "\\define draft-title() [<currentTiddler>get[draft.title]]\n\\define draft-title-text() {{!!draft.title}}\n\n<$reveal type=\"match\" text=\"yes\" state=\"$:/plugins/telmiger/Clipboard/settings/title-button\">\n<$button tooltip={{$:/plugins/telmiger/Clipboard/TitleTemplate!!description}} class=\"tc-btn-invisible te-cb-btn te-cb-title\">\n<$wikify name=\"d-title\" text=<<draft-title-text>>>\n<$action-setfield $tiddler=\"$:/plugins/telmiger/Clipboard/cb\" $field=\"te-cb-title\" $value=<<d-title>>/>\n</$wikify>\n<$action-listops $tiddler=\"$:/plugins/telmiger/Clipboard/cb\" $field=\"te-cb-titles\" $subfilter=<<draft-title>>/>\n{{$:/plugins/telmiger/Clipboard/icons/clone}}\n</$button>\n</$reveal>\n\n<!--\nAdd the draft title to the title clipboard/to the titles list\n-->",
+            "title": "$:/plugins/telmiger/Clipboard/TitleTemplate",
+            "tags": "$:/tags/EditTemplate Clipboard",
+            "shortcuts": "((clipboard-copy-title))",
+            "modifier": "Thomas Elmiger",
+            "modified": "20171112000818423",
+            "list-before": "$:/core/ui/EditTemplate/tags",
+            "icon": "{{$:/plugins/telmiger/Clipboard/icons/clone}}",
+            "description": "Copy tiddler title to the clipboard’s title list",
+            "creator": "Thomas Elmiger",
+            "created": "20170215210047960",
+            "caption": "Copy to clipboard"
+        },
+        "$:/plugins/telmiger/Clipboard/icons/clip": {
+            "created": "20170216193941574",
+            "creator": "Thomas Elmiger",
+            "text": "{{$:/core/images/import-button}}",
+            "title": "$:/plugins/telmiger/Clipboard/icons/clip",
+            "tags": "",
+            "modified": "20170216193952593",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/plugins/telmiger/Clipboard/icons/clone": {
+            "created": "20170216195905987",
+            "creator": "Thomas Elmiger",
+            "text": "<span class=\"te-rotate-icon\">{{$:/core/images/clone-button}}</span>",
+            "title": "$:/plugins/telmiger/Clipboard/icons/clone",
+            "tags": "",
+            "modified": "20170216200053066",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/plugins/telmiger/Clipboard/icons/file": {
+            "created": "20170216193254841",
+            "creator": "Thomas Elmiger",
+            "text": "{{$:/core/images/file}}",
+            "title": "$:/plugins/telmiger/Clipboard/icons/file",
+            "tags": "",
+            "modified": "20170216193517958",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/plugins/telmiger/Clipboard/icons/fold": {
+            "created": "20170216193714119",
+            "creator": "Thomas Elmiger",
+            "text": "{{$:/core/images/fold-button}}",
+            "title": "$:/plugins/telmiger/Clipboard/icons/fold",
+            "tags": "",
+            "modified": "20170216193726793",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/plugins/telmiger/Clipboard/icons/link": {
+            "created": "20170216194654940",
+            "creator": "Thomas Elmiger",
+            "text": "{{$:/core/images/link}}",
+            "title": "$:/plugins/telmiger/Clipboard/icons/link",
+            "tags": "",
+            "modified": "20170216194710125",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/plugins/telmiger/Clipboard/icons/transclude": {
+            "created": "20170216194928137",
+            "creator": "Thomas Elmiger",
+            "text": "<span class=\"te-rotate-icon\">{{$:/core/images/excise}}</span>",
+            "title": "$:/plugins/telmiger/Clipboard/icons/transclude",
+            "tags": "",
+            "modified": "20170216195247510",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/plugins/telmiger/Clipboard/icons/unfold": {
+            "created": "20170216191747840",
+            "creator": "Thomas Elmiger",
+            "text": "{{$:/core/images/unfold-button}}",
+            "title": "$:/plugins/telmiger/Clipboard/icons/unfold",
+            "tags": "",
+            "modified": "20170216191941222",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/plugins/telmiger/Clipboard/readme": {
+            "created": "20170216155009811",
+            "creator": "Thomas Elmiger",
+            "text": "!! Clipboard Plugin\nThis plugin adds some handy elements to the editor interface of TiddlyWiki. Via settings you can control the appearance of:\n\n* two additional fields to store universally accessible information\n* five editor toolbar buttons (with friendly background color)\n** show/hide clipboard: ctrl+shift+C\n** show/hide preview: ctrl+shift+V\n** insert text: ctrl+shift+1\n** insert title link: ctrl+shift+2\n** insert title transclusion: ctrl+shift+3\n* a copy-title button\n** {{$:/plugins/telmiger/Clipboard/TitleTemplate!!description}}: ctrl+shift+T\n\nVia the plugin’s settings you have full control over all elements, so you can use a selection that fits in your workflow. Now see what they can do for you!\n\n!!! Clipboard Field\nBelow the tags of the tiddler you can access the //Clipboard//. Here you store information you wish to access from other tiddlers you will edit later. This field is like a window to another independent tiddler: the clipboard tiddler. It is saved whenever the wiki is saved. It’s content can be inserted in the tiddlers text by clicking a button (see below).\n\n!!! Title Clipboard Field\nHere you can store – well, the title of a tiddler. You can insert it in any other tiddler you edit later on with the click of a single button – as a link or as a transclusion (see below). \n\n!!! Copy-Title Button\nNext to the title input field resides a button that copies the title of your draft to the //Title Clipboard//. \n\n!!! Editor Toolbar Buttons\nShow up to five buttons in the editor toolbar:\n\n<span class=\"te-btn-list\">\n\n* {{$:/plugins/telmiger/Clipboard/icons/unfold}} Show/Hide clipboard fields \n* {{$:/plugins/telmiger/Clipboard/icons/file}} Show/Hide clipboard preview: if you have stored a transclusion in your //Clipboard//, this button will produce a preview of the rendered content. Maybe you want to copy from there? Ort try to transclude `{{$:/AdvancedSearch}}` in the //Clipboard//. Very useful.\n* {{$:/plugins/telmiger/Clipboard/icons/clip}} Insert text from clipboard: transfers the //Clipboard’s// content to the position of the cursor in the editor.\n* {{$:/plugins/telmiger/Clipboard/icons/link}} Insert clipboard title as link: puts the content of the //Title Clipboard// in double square brackets and places the result at the cursor position.\n* {{$:/plugins/telmiger/Clipboard/icons/transclude}} Insert clipboard title as transclusion: the same as above, but with curly brackets.\n\n</span>\n\n!!! Tips for Advanced Users\n* Want to test a filter? Put `{{$:/AdvancedSearch}}` in your clipboard and use the fully functional preview. No need to leave your workspace.\n* Want to see the source (wikitext) of another tiddler? Put an `<$edit-text …/>` widget in the clipboard and preview … \n* Would you rather have a preview of your work as an overlay instead of side-by-side? Write `{{Draft of 'Your Tiddler Title'}}` in the clipboard – et voilà!",
+            "title": "$:/plugins/telmiger/Clipboard/readme",
+            "tags": "Clipboard",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170917220330821"
+        },
+        "$:/config/ShortcutInfo/clipboard-insert-text": {
+            "created": "20170917204424510",
+            "creator": "Thomas Elmiger",
+            "text": "{{$:/plugins/telmiger/Clipboard/EditorToolbar/cb-insert!!description}} ",
+            "title": "$:/config/ShortcutInfo/clipboard-insert-text",
+            "tags": "",
+            "modified": "20170917211509012",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/config/shortcuts/clipboard-insert-title-transclude": {
+            "created": "20170917211403173",
+            "creator": "Thomas Elmiger",
+            "title": "$:/config/shortcuts/clipboard-insert-title-transclude",
+            "text": "ctrl-shift-3",
+            "modified": "20170917211403173",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/config/shortcuts/clipboard-insert-title-link": {
+            "created": "20170917205632133",
+            "creator": "Thomas Elmiger",
+            "title": "$:/config/shortcuts/clipboard-insert-title-link",
+            "text": "ctrl-shift-2",
+            "modified": "20170917211325383",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/config/shortcuts/clipboard-insert-text": {
+            "created": "20170917204649757",
+            "creator": "Thomas Elmiger",
+            "title": "$:/config/shortcuts/clipboard-insert-text",
+            "text": "ctrl-shift-1",
+            "modified": "20170917211304564",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/config/shortcuts/clipboard": {
+            "created": "20170917195814602",
+            "creator": "Thomas Elmiger",
+            "text": "ctrl+shift+c",
+            "title": "$:/config/shortcuts/clipboard",
+            "tags": "",
+            "modified": "20170917211246753",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/config/ShortcutInfo/clipboard-insert-title-transclude": {
+            "created": "20170917210718697",
+            "creator": "Thomas Elmiger",
+            "text": "{{$:/plugins/telmiger/Clipboard/EditorToolbar/cb-insert-title-transclude!!description}}",
+            "title": "$:/config/ShortcutInfo/clipboard-insert-title-transclude",
+            "tags": "",
+            "modified": "20170917210948729",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/config/ShortcutInfo/clipboard": {
+            "created": "20170917200920825",
+            "creator": "Thomas Elmiger",
+            "text": "{{$:/plugins/telmiger/Clipboard/EditorToolbar/cb!!description}}",
+            "title": "$:/config/ShortcutInfo/clipboard",
+            "tags": "",
+            "modified": "20170917210646267",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/config/ShortcutInfo/clipboard-insert-title-link": {
+            "created": "20170917204944259",
+            "creator": "Thomas Elmiger",
+            "title": "$:/config/ShortcutInfo/clipboard-insert-title-link",
+            "modified": "20170917210615765",
+            "modifier": "Thomas Elmiger",
+            "text": "{{$:/plugins/telmiger/Clipboard/EditorToolbar/cb-insert-title-link!!description}}"
+        },
+        "$:/config/ShortcutInfo/clipboard-preview": {
+            "created": "20170917211855259",
+            "creator": "Thomas Elmiger",
+            "title": "$:/config/ShortcutInfo/clipboard-preview",
+            "modified": "20170917212007727",
+            "modifier": "Thomas Elmiger",
+            "text": "{{$:/plugins/telmiger/Clipboard/EditorToolbar/cb-preview!!description}}"
+        },
+        "$:/config/shortcuts/clipboard-preview": {
+            "created": "20170917212054765",
+            "creator": "Thomas Elmiger",
+            "title": "$:/config/shortcuts/clipboard-preview",
+            "text": "ctrl-shift-V",
+            "modified": "20170917212054765",
+            "modifier": "Thomas Elmiger"
+        }
+    }
+}

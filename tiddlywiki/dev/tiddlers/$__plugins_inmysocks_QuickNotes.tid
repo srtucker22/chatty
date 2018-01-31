@@ -1,0 +1,42 @@
+author: inmysocks
+core-version: >=5.1.6
+created: 20180131180254873
+dependents: 
+description: A basic note taking tool for TiddlyWiki
+modified: 20180131180254873
+plugin-type: plugin
+source: https://github.com/inmysocks/TW5-NoLearningRequired-Full
+title: $:/plugins/inmysocks/QuickNotes
+type: application/json
+version: 0.1.1
+
+{
+    "tiddlers": {
+        "$:/plugins/inmysocks/QuickNotes/Note List": {
+            "caption": "Note List",
+            "created": "20141217001538052",
+            "modified": "20141217014925474",
+            "no_edit": "true",
+            "tags": "",
+            "title": "$:/plugins/inmysocks/QuickNotes/Note List",
+            "text": "\\define thisSearchMacro()\n<ul>\n<$list filter=\"[tag[Note]regexp:title[(?i)$(thisSearch)$]]\">\n<li><$link to=<<currentTiddler>>><<currentTiddler>></$link></li>\n</$list>\n</ul>\n\\end\n\n\\define thisEditMacro()\n<ul>\n<$list filter=\"[tag[Note]regexp:title[(?i)$(thisSearch)$]]\">\n<$set name=thisItem value=<<currentTiddler>>>\n<li><$button message='tm-delete-tiddler' param=<<currentTiddler>>>{{$:/core/images/delete-button}}</$button><$link to=<<currentTiddler>>><<currentTiddler>></$link></li>\n</$set>\n</$list>\n</ul>\n\\end\n\n\\define thisRegEx()\n$(thisSearch)$(?i)\n\\end\n\nSearch: <$edit-text tiddler='$:/temp/notelist' field='search'/>(\n<$reveal type='nomatch' state='$:/state/notelist/editreveal' text='edit'>\n<$button set='$:/state/notelist/editreveal' setTo='edit'>Edit List</$button>\n</$reveal>\n<$reveal type='match' state='$:/state/notelist/editreveal' text='edit'>\n<$button set='$:/state/notelist/editreveal' setTo='noedit'>Done Editing</$button>\n</$reveal>)<br>\n<$reveal type='nomatch' state='$:/state/notelist/editreveal' text='edit'>\nType in the search box to search by name\n</$reveal>\n<$reveal type='match' state='$:/state/notelist/editreveal' text='edit'>\nClick on the trashcan icon to remove a note\n</$reveal>\n<$set name='thisSearch' value={{$:/temp/notelist!!search}}>\n<$reveal type='nomatch' state='$:/state/notelist/editreveal' text='edit'>\n<<thisSearchMacro>>\n</$reveal>\n<$reveal type='match' state='$:/state/notelist/editreveal' text='edit'>\n<<thisEditMacro>>\n</$reveal>\n</$set>"
+        },
+        "$:/plugins/inmysocks/QuickNotes/Quick Notes": {
+            "caption": "Quick Notes",
+            "created": "20141217001437415",
+            "modified": "20141217014943477",
+            "no_edit": "true",
+            "tags": "Dashboard",
+            "title": "$:/plugins/inmysocks/QuickNotes/Quick Notes",
+            "text": "<<tabs \"[[$:/plugins/inmysocks/QuickNotes/Write Quick Note]] [[$:/plugins/inmysocks/QuickNotes/Note List]]\" [[$:/plugins/inmysocks/QuickNotes/Write Quick Note]]>>"
+        },
+        "$:/plugins/inmysocks/QuickNotes/Write Quick Note": {
+            "caption": "Write Quick Note",
+            "created": "20141216223509853",
+            "modified": "20141217014933961",
+            "no_edit": "true",
+            "title": "$:/plugins/inmysocks/QuickNotes/Write Quick Note",
+            "text": "\\define thisTempTiddler(stateNumber)\n$:/temp/$(someName)$$stateNumber$\n\\end\n\n<$set name=someName value=<<qualify>>>\n<$tiddler tiddler=<<thisTempTiddler>>>\nNote Name: <$edit-text tiddler=<<thisTempTiddler>> field='name' class='tc-edit-texteditor' placeholder='Note Name'/>\n<$edit-text tiddler=<<thisTempTiddler>> field='text' class='tc-edit-texteditor' placeholder='Note Text'/>\n<$button>Create Note\n<$action-setfield $tiddler={{!!name}} $field='text' $value={{!!text}} tags='Note'/>\n<$action-setfield $tiddler=<<thisTempTiddler>> $field='text' $value=''/>\n<$action-setfield $tiddler=<<thisTempTiddler>> $field='name' $value=''/>\n</$button>\n<$button>Reset\n<$action-setfield $tiddler=<<thisTempTiddler>> $field='text' $value=''/>\n<$action-setfield $tiddler=<<thisTempTiddler>> $field='name' $value=''/>\n</$button>\n</$tiddler>\n</$set>"
+        }
+    }
+}

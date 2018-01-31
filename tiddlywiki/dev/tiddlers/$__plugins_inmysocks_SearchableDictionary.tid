@@ -1,0 +1,36 @@
+author: inmysocks
+core-version: >=5.1.6
+created: 20180131180304149
+dependents: 
+description: A simple searchable dictionary for TiddlyWiki
+modified: 20180131180304149
+plugin-type: plugin
+source: https://github.com/inmysocks/TW5-NoLearningRequired-Full
+title: $:/plugins/inmysocks/SearchableDictionary
+type: application/json
+version: 0.1.1
+
+{
+    "tiddlers": {
+        "$:/data/Dictionary": {
+            "created": "20141212201657131",
+            "modified": "20141212201721939",
+            "modifier": "inmysocks",
+            "title": "$:/data/Dictionary",
+            "type": "application/json",
+            "text": "{\n    \"Example\": \"Delete this entry\",\n}"
+        },
+        "$:/plugins/inmysocks/SearchableDictionary/Dictionary": {
+            "caption": "Dictionary",
+            "blurb": "A list of acronyms that I should remember",
+            "created": "20141212164759301",
+            "creator": "inmysocks",
+            "modified": "20141213041059044",
+            "modifier": "inmysocks",
+            "no_edit": "true",
+            "tags": "Dashboard",
+            "title": "$:/plugins/inmysocks/SearchableDictionary/Dictionary",
+            "text": "\\define thisListMacro()\n<$view field=title/> - {{$:/data/Dictionary##$(thisIndex)$}}<br>\n\\end\n\n\\define thisEditListMacro()\n<$view field=title/> - {{$:/data/Dictionary##$(thisIndex)$}} <$button>Remove<$action-deletefield $tiddler='$:/data/Dictionary' $field=$(thisIndex)$ $value=''/></$button><br>\n\\end\n\n\\define thisRegEx()\n$(thisSearch)$(?i)\n\\end\n\n\\define thisSearchMacro()\n<ul>\n<$list filter=\"[[$:/data/Dictionary]indexes[]regexp:title[(?i)$(thisSearch)$]]\">\n<li><<currentTiddler>> - <$transclude tiddler=\"$:/data/Dictionary\" index=<<currentTiddler>>/></li>\n</$list>\n</ul>\n\\end\n\n\\define thisEditMacro()\n<ul>\n<$list filter=\"[[$:/data/Dictionary]indexes[]regexp:title[(?i)$(thisSearch)$]]\">\n<$set name=thisItem value=<<currentTiddler>>>\n<li><<thisDeleteButton>> <<currentTiddler>> - <$transclude tiddler=\"$:/data/Dictionary\" index=<<currentTiddler>>/></li>\n\n</$set>\n</$list>\n</ul>\n\\end\n\n\\define thisDeleteButton()\n<$button set='$:/data/Dictionary##$(thisItem)$'>{{$:/core/images/delete-button}}</$button>\n\\end\n\nTerm: <$edit-text class='tc-edit-texteditor' tiddler='$:/temp/dictionary' field='name'/><br>\nMeaning: <$edit-text class='tc-edit-texteditor' tiddler='$:/temp/dictionary' field='meaning'/><br>\n<$reveal type='match' state='$:/temp/dictionary!!name' text=''>\n<$button>Add Term</$button>\n</$reveal>\n<$reveal type='nomatch' state='$:/temp/dictionary!!name' text=''>\n<$button>Add Term\n<$action-setfield $tiddler='$:/data/Dictionary' $index={{$:/temp/dictionary!!name}} $value={{$:/temp/dictionary!!meaning}}/>\n<$action-setfield $tiddler='$:/temp/dictionary' name='' meaning=''/>\n</$button>\n</$reveal>\n<$reveal type='nomatch' state='$:/state/dictionary/editreveal' text='edit'>\n<$button set='$:/state/dictionary/editreveal' setTo='edit'>Edit Dictionary</$button>\n</$reveal>\n<$reveal type='match' state='$:/state/dictionary/editreveal' text='edit'>\n<$button set='$:/state/dictionary/editreveal' setTo='noedit'>Done Editing</$button>\n</$reveal>\n\nSearch: <$edit-text tiddler='$:/temp/dictionary' field='search'/><br>\n<$reveal type='nomatch' state='$:/state/dictionary/editreveal' text='edit'>\nType in the search box to find specific items on the list\n</$reveal>\n<$reveal type='match' state='$:/state/dictionary/editreveal' text='edit'>\nClick on the trashcan icon to remove an item\n</$reveal>\n<$set name='thisSearch' value={{$:/temp/dictionary!!search}}>\n<$reveal type='nomatch' state='$:/state/dictionary/editreveal' text='edit'>\n<<thisSearchMacro>>\n</$reveal>\n<$reveal type='match' state='$:/state/dictionary/editreveal' text='edit'>\n<<thisEditMacro>>\n</$reveal>\n</$set>"
+        }
+    }
+}

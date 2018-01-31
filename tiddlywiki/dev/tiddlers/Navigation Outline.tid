@@ -1,0 +1,38 @@
+created: 20180106004656642
+modified: 20180106013121144
+tags: 
+title: Navigation Outline
+type: text/vnd.tiddlywiki
+
+
+0 MainScreen
+
+0.1 'Universe' FollowedsFeedScreen $user
+
+0.2 'Youniverse' FollowersFeedScreen $user
+
+0.3 PositiveHeadScreen
+
+0.4 'Inbox' ConversationsScreen 
+
+0.5 'Settings' SettingsScreen
+
+1 SigninScreen
+
+2 MessagesScreen
+
+3 ConversationDetailsScreen
+
+4 UsernameSearchScreen
+
+5 UsernameProfileScreen
+
+6 UsernameProfileFollowedsScreen
+
+7 UsernameProfileFollowersScreen
+
+8 NewPostScreen
+
+9 NewMessageScreen
+
+10 NotificationsScreen

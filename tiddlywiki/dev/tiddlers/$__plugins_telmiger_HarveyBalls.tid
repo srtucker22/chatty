@@ -1,0 +1,331 @@
+author: Thomas Elmiger
+core-version: 
+created: 20171005214018768
+description: HarveyBalls
+list: readme alternatives credits
+modified: 20180130010421736
+plugin-type: plugin
+source: https://tid.li/tw5/plugins.html
+title: $:/plugins/telmiger/HarveyBalls
+type: application/json
+version: 0.0.6
+
+{
+    "tiddlers": {
+        "$:/plugins/telmiger/HarveyBalls/empty/icon.svg": {
+            "created": "20171001102215819",
+            "creator": "Thomas Elmiger",
+            "text": "<svg class=\"em-icon harvey-ball ball-empty\" xmlns=\"http://www.w3.org/2000/svg\" fill-rule=\"evenodd\" viewBox=\"0 0 128 128\" role=\"img\" aria-labelledby=\"title desc\"><title id=\"title\">{{$:/language/HarveyBalls/empty/title}}</title><desc id=\"desc\">{{$:/language/HarveyBalls/empty/desc}}</desc><path d=\"M64 128c35.346 0 64-28.654 64-64 0-35.346-28.654-64-64-64C28.654 0 0 28.654 0 64c0 35.346 28.654 64 64 64zm0-16c26.51 0 48-21.49 48-48S90.51 16 64 16 16 37.49 16 64s21.49 48 48 48z\"/></svg>",
+            "title": "$:/plugins/telmiger/HarveyBalls/empty/icon.svg",
+            "tags": "$:/tags/Image",
+            "modifier": "Thomas Elmiger",
+            "modified": "20171001205727758"
+        },
+        "$:/plugins/telmiger/HarveyBalls/full/icon.svg": {
+            "created": "20171001110625517",
+            "creator": "Thomas Elmiger",
+            "text": "<svg class=\"em-icon harvey-ball ball-full\" xmlns=\"http://www.w3.org/2000/svg\" fill-rule=\"evenodd\" viewBox=\"0 0 128 128\" role=\"img\" aria-labelledby=\"title desc\"><title id=\"title\">{{$:/language/HarveyBalls/full/title}}</title><desc id=\"desc\">{{$:/language/HarveyBalls/full/desc}}</desc><path d=\"M64 128c35.346 0 64-28.654 64-64 0-35.346-28.654-64-64-64C28.654 0 0 28.654 0 64c0 35.346 28.654 64 64 64z\"/></svg>",
+            "title": "$:/plugins/telmiger/HarveyBalls/full/icon.svg",
+            "tags": "$:/tags/Image",
+            "modifier": "Thomas Elmiger",
+            "modified": "20171001203909143"
+        },
+        "$:/plugins/telmiger/HarveyBalls/half/icon.svg": {
+            "text": "<svg class=\"em-icon harvey-ball ball-half\" xmlns=\"http://www.w3.org/2000/svg\" fill-rule=\"evenodd\" viewBox=\"0 0 128 128\" role=\"img\" aria-labelledby=\"title desc\"><title id=\"title\">{{$:/language/HarveyBalls/half/title}}</title><desc id=\"desc\">{{$:/language/HarveyBalls/half/desc}}</desc><path d=\"M64 128c35.346 0 64-28.654 64-64 0-35.346-28.654-64-64-64C28.654 0 0 28.654 0 64c0 35.346 28.654 64 64 64zm0-16V16c-26.51 0-48 21.49-48 48s21.49 48 48 48z\"/></svg>",
+            "title": "$:/plugins/telmiger/HarveyBalls/half/icon.svg",
+            "tags": "$:/tags/Image",
+            "modifier": "Thomas Elmiger",
+            "modified": "20171108194705981",
+            "creator": "Thomas Elmiger",
+            "created": "20171001113351829"
+        },
+        "$:/plugins/telmiger/HarveyBalls/icons.css": {
+            "created": "20171001103035127",
+            "creator": "Thomas Elmiger",
+            "text": "/* Size  and position \n– inspired by https://blog.prototypr.io/align-svg-icons-to-text-and-say-goodbye-to-font-icons-d44b3d7b26b4\n*/\n\nsvg.em-icon {\n    width: 1em;\n    height: 1em;\n    margin-bottom: -0.125em;\n}\n\n/* Colours */\n\nsvg.em-icon.ball-empty {\n    fill: rgba(255,0,0,0.95);\n}\nsvg.em-icon.ball-full {\n    fill: green;\n}\nsvg.em-icon.ball-quarter {\n    fill: orange;\n}\nsvg.em-icon.ball-half {\n    fill: #000;\n}\nsvg.em-icon.ball-quarter-empty {\n    fill: blue;\n}",
+            "title": "$:/plugins/telmiger/HarveyBalls/icons.css",
+            "tags": "$:/tags/Stylesheet",
+            "modifier": "Thomas Elmiger",
+            "modified": "20171001120510304"
+        },
+        "$:/plugins/telmiger/HarveyBalls/quarter-empty/icon.svg": {
+            "created": "20171001114641516",
+            "creator": "Thomas Elmiger",
+            "text": "<svg class=\"em-icon harvey-ball ball-quarter-empty\" xmlns=\"http://www.w3.org/2000/svg\" fill-rule=\"evenodd\" viewBox=\"0 0 128 128\" role=\"img\" aria-labelledby=\"title desc\"><title id=\"title\">{{$:/language/HarveyBalls/quarter-empty/title}}</title><desc id=\"desc\">{{$:/language/HarveyBalls/quarter-empty/desc}}</desc><path d=\"M64 128c35.346 0 64-28.654 64-64 0-35.346-28.654-64-64-64C28.654 0 0 28.654 0 64c0 35.346 28.654 64 64 64zM16 64c0 .19 48 0 48 0V16c-26.51 0-48 21.49-48 48z\"/></svg>",
+            "title": "$:/plugins/telmiger/HarveyBalls/quarter-empty/icon.svg",
+            "tags": "$:/tags/Image",
+            "modifier": "Thomas Elmiger",
+            "modified": "20171001205536194"
+        },
+        "$:/plugins/telmiger/HarveyBalls/quarter/icon.svg": {
+            "created": "20171001112413825",
+            "creator": "Thomas Elmiger",
+            "text": "<svg class=\"em-icon harvey-ball ball-quarter\" xmlns=\"http://www.w3.org/2000/svg\" fill-rule=\"evenodd\" viewBox=\"0 0 128 128\" role=\"img\" aria-labelledby=\"title desc\"><title id=\"title\">{{$:/language/HarveyBalls/quarter/title}}</title><desc id=\"desc\">{{$:/language/HarveyBalls/quarter/desc}}</desc><path d=\"M64 128c35.346 0 64-28.654 64-64 0-35.346-28.654-64-64-64C28.654 0 0 28.654 0 64c0 35.346 28.654 64 64 64zm0-16c26.51 0 48-21.49 48-48 0-0-48 0-48 0s.25-48 0-48c-26.51 0-48 21.49-48 48s21.49 48 48 48z\"/>\n</svg>",
+            "title": "$:/plugins/telmiger/HarveyBalls/quarter/icon.svg",
+            "tags": "$:/tags/Image",
+            "modifier": "Thomas Elmiger",
+            "modified": "20171001205410250"
+        },
+        "$:/plugins/telmiger/HarveyBalls/readme": {
+            "text": "\\define tr(variant,nr:\"\")\n<$vars tit=\"$:/language/HarveyBalls/$variant$/title\" desc=\"$:/language/HarveyBalls/$variant$/desc\" nr=\"\"\"$nr$\"\"\">\n<tr><td>{{$:/plugins/telmiger/HarveyBalls/$variant$/icon.svg}} </td><td><<nr>></td><td><$link to=<<tit>>><$transclude tiddler=<<tit>>/></$link> </td><td><$link to=<<desc>>><$transclude tiddler=<<desc>>/></$link></td></tr>\n</$vars>\n\\end\n\n!! Harvey Balls\n\nHarvey Balls are round ideograms used for visual communication of qualitative information. They are commonly used in comparison tables to indicate the degree to which a particular item meets a particular criterion.\n\n!!! Macros for display\nThe same as `{{$:/plugins/telmiger/HarveyBalls/half/icon.svg}}` – the Harvey ball <<HB2>> – would be displayed for all three of the following macros:\n\n`<<HarveyBall half>>`\n`<<HB2>>`\n`<<HB 2>>`\n\nTitles or numbers of the following tables can be used.\n\n!!! Available ideograms\n\n//1) more colour is better//\n\n<table>\n<tr><th>icon </th><th># </th><th>title </th><th>desc </th></tr>\n<<tr empty 0>>\n<<tr quarter 1>>\n<<tr half 2>>\n<<tr quarter-empty 3>>\n<<tr full 4>>\n</table>\n\n//2) less colour is better//\n\n<table>\n<tr><th>icon </th><th># </th><th>title </th><th>desc </th></tr>\n<<tr chaotic 34>>\n<<tr complex 21>>\n<<tr complicated 13>>\n<<tr obvious 8>>\n<<tr simple 5>>\n</table>\n\n!!! Adapt or translate for better accessibility\nTo convey another meaning with your Harvey Balls, it is possible to adapt or translate titles and descriptions. So it is possible to use them e.g. for a performance ratings or a score like:\n\n* poor\n* fair\n* good\n* very good\n* excellent\n\nJust click the text in the table above and adapt the content to your needs. The warning is just a reminder that you are overwriting the standard text. You can always delete your own version to return to the original.\n\n!!! Control dimensions via font size\n\nInside surrounding text, the Harvey balls adapt themselves in size. Examples:\n\n! Title H1 {{$:/plugins/telmiger/HarveyBalls/empty/icon.svg}}\n\n!! Title H2 {{$:/plugins/telmiger/HarveyBalls/full/icon.svg}} more text\n\n!!! Title H3 {{$:/plugins/telmiger/HarveyBalls/quarter/icon.svg}} more text\n\n!!!! Title H4 {{$:/plugins/telmiger/HarveyBalls/half/icon.svg}} more text\n\nNormal text paragraph {{$:/plugins/telmiger/HarveyBalls/quarter-empty/icon.svg}} more text or apply [[styling via Wikitext|http://tiddlywiki.com/#Styles%20and%20Classes%20in%20WikiText]]: \n\n@@font-size:2em; \nYou will need some text {{$:/plugins/telmiger/HarveyBalls/full/icon.svg}} to make this big.\n@@\n\n!!! Adjust colours via CSS\nThe styling of the balls can be changed \n\n# by adapting the style sheet $:/plugins/telmiger/HarveyBalls/icons.css\n# by adapting surrounding text color in case of the //less colour is better// version (it uses fill=\"currentColor\")\n\n\n<style>\nth {\n   text-align: left;\n}\n</style>",
+            "title": "$:/plugins/telmiger/HarveyBalls/readme",
+            "tags": "",
+            "modifier": "Thomas Elmiger",
+            "modified": "20171108195527207",
+            "creator": "Thomas Elmiger",
+            "created": "20171001103302730"
+        },
+        "$:/language/HarveyBalls/simple/title": {
+            "created": "20171004221927784",
+            "creator": "Thomas Elmiger",
+            "text": "simple",
+            "title": "$:/language/HarveyBalls/simple/title",
+            "tags": "",
+            "modified": "20171004221945951",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/plugins/telmiger/HarveyBalls/alternatives": {
+            "created": "20171005185418327",
+            "creator": "Thomas Elmiger",
+            "text": "!! Alternatives\n\n!!! SVG from Wikipedia\nOn https://en.wikipedia.org/wiki/Harvey_Balls you will find alternative graphics in one single SVG file. There are neither tiltes nor descriptions in this image.\n\n!!! Fonts\nSome fonts like Arial Unicode MS contain symbols similar to Harvey balls:\n\n@@font-size:2em; \n○●◯◔◑◕◐◒◓◖◗◝◞◟◜◝◡◉◌◍◎☹☺☻\n@@\n\nThese are found starting around U+25CB (white circle). I don’t know if or how a screenreader would announce them. Other dedicated fonts with Harvey balls are available, I found some using the numbers from 0 to 9 and I guess a screenreader would announce them as such. Would numbers from 0 to 9 convey enough meaning to your users? Then you should use numbers instead of Harvey balls if you ask me.\n\n!! Accessibility\n\nIn general font solutions as well as monolithic SVG graphics lack the ability to control or adapt the meaning of the symbols/characters.\n\nThere is no hint popping up from a font if a user hovers over the icon with the pointer of the mouse. \n\nWith my SVG solution, the title is shown as a hint and ~VoiceOver on the Mac announces both title and desc attributes.\n",
+            "title": "$:/plugins/telmiger/HarveyBalls/alternatives",
+            "tags": "",
+            "modified": "20171005202525815",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/simple/desc": {
+            "created": "20171004222018780",
+            "creator": "Thomas Elmiger",
+            "text": "circle (not filled)",
+            "title": "$:/language/HarveyBalls/simple/desc",
+            "tags": "",
+            "modified": "20171004222033585",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/quarter/title": {
+            "created": "20171001211836428",
+            "creator": "Thomas Elmiger",
+            "text": "quarter",
+            "title": "$:/language/HarveyBalls/quarter/title",
+            "tags": "",
+            "modified": "20171001211853501",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/quarter/desc": {
+            "created": "20171001211324859",
+            "creator": "Thomas Elmiger",
+            "text": "circle with upper right quadrant filled",
+            "title": "$:/language/HarveyBalls/quarter/desc",
+            "tags": "",
+            "modified": "20171004215019485",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/quarter-empty/title": {
+            "created": "20171001212013679",
+            "creator": "Thomas Elmiger",
+            "text": "quarter empty",
+            "title": "$:/language/HarveyBalls/quarter-empty/title",
+            "tags": "",
+            "modified": "20171001212350753",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/quarter-empty/desc": {
+            "created": "20171001212131114",
+            "creator": "Thomas Elmiger",
+            "text": "circle filled with colour exempt upper left quadrant",
+            "title": "$:/language/HarveyBalls/quarter-empty/desc",
+            "tags": "",
+            "modified": "20171004215003298",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/obvious/title": {
+            "created": "20171005183754671",
+            "creator": "Thomas Elmiger",
+            "text": "obvious",
+            "title": "$:/language/HarveyBalls/obvious/title",
+            "tags": "",
+            "modified": "20171005183813367",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/obvious/desc": {
+            "created": "20171005183829060",
+            "creator": "Thomas Elmiger",
+            "text": "circle with upper left quadrant filled",
+            "title": "$:/language/HarveyBalls/obvious/desc",
+            "tags": "",
+            "modified": "20171005183844489",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/half/title": {
+            "created": "20171001213417585",
+            "creator": "Thomas Elmiger",
+            "text": "half",
+            "title": "$:/language/HarveyBalls/half/title",
+            "tags": "",
+            "modified": "20171001213430063",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/half/desc": {
+            "created": "20171001211939192",
+            "creator": "Thomas Elmiger",
+            "text": "circle with right half filled",
+            "title": "$:/language/HarveyBalls/half/desc",
+            "tags": "",
+            "modified": "20171001211959853",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/full/title": {
+            "created": "20171001204350059",
+            "creator": "Thomas Elmiger",
+            "text": "full",
+            "title": "$:/language/HarveyBalls/full/title",
+            "tags": "",
+            "modified": "20171001210037845",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/full/desc": {
+            "created": "20171001201844602",
+            "creator": "Thomas Elmiger",
+            "text": "circle filled with colour",
+            "title": "$:/language/HarveyBalls/full/desc",
+            "tags": "",
+            "modified": "20171004214903154",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/empty/title": {
+            "created": "20171001210047885",
+            "creator": "Thomas Elmiger",
+            "text": "empty",
+            "title": "$:/language/HarveyBalls/empty/title",
+            "tags": "",
+            "modified": "20171001210107150",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/empty/desc": {
+            "created": "20171001210121157",
+            "creator": "Thomas Elmiger",
+            "text": "circle (not filled)",
+            "title": "$:/language/HarveyBalls/empty/desc",
+            "tags": "",
+            "modified": "20171001210231109",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/complicated/title": {
+            "created": "20171005182951452",
+            "creator": "Thomas Elmiger",
+            "text": "complicated",
+            "title": "$:/language/HarveyBalls/complicated/title",
+            "tags": "",
+            "modified": "20171005183002581",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/complicated/desc": {
+            "created": "20171005182907849",
+            "creator": "Thomas Elmiger",
+            "text": "circle with left half filled",
+            "title": "$:/language/HarveyBalls/complicated/desc",
+            "tags": "",
+            "modified": "20171005182928468",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/complex/title": {
+            "created": "20171005182745229",
+            "creator": "Thomas Elmiger",
+            "text": "complex",
+            "title": "$:/language/HarveyBalls/complex/title",
+            "tags": "",
+            "modified": "20171005182807204",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/complex/desc": {
+            "created": "20171005182623257",
+            "creator": "Thomas Elmiger",
+            "text": "circle filled with colour exempt upper right quadrant",
+            "title": "$:/language/HarveyBalls/complex/desc",
+            "tags": "",
+            "modified": "20171005182701817",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/chaotic/title": {
+            "created": "20171004221542587",
+            "creator": "Thomas Elmiger",
+            "text": "chaotic",
+            "title": "$:/language/HarveyBalls/chaotic/title",
+            "tags": "",
+            "modified": "20171004221602537",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/language/HarveyBalls/chaotic/desc": {
+            "created": "20171004221642521",
+            "creator": "Thomas Elmiger",
+            "text": "circle filled with colour",
+            "title": "$:/language/HarveyBalls/chaotic/desc",
+            "tags": "",
+            "modified": "20171004221655515",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/plugins/telmiger/HarveyBalls/chaotic/icon.svg": {
+            "text": "<svg class=\"em-icon harvey-ball ball-chaotic\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"currentColor\" viewBox=\"0 0 128 128\" role=\"img\" aria-labelledby=\"title desc\"><title id=\"title\">{{$:/language/HarveyBalls/chaotic/title}}</title><desc id=\"desc\">{{$:/language/HarveyBalls/chaotic/desc}}</desc><path d=\"M64 128c35.346 0 64-28.654 64-64 0-35.346-28.654-64-64-64C28.654 0 0 28.654 0 64c0 35.346 28.654 64 64 64z\"/></svg>",
+            "title": "$:/plugins/telmiger/HarveyBalls/chaotic/icon.svg",
+            "tags": "$:/tags/Image",
+            "modifier": "Thomas Elmiger",
+            "modified": "20171108192118467",
+            "creator": "Thomas Elmiger",
+            "created": "20171004221325017"
+        },
+        "$:/plugins/telmiger/HarveyBalls/complex/icon.svg": {
+            "text": "<svg class=\"em-icon harvey-ball ball-complex\" xmlns=\"http://www.w3.org/2000/svg\" fill-rule=\"evenodd\" fill=\"currentColor\" viewBox=\"0 0 128 128\" role=\"img\" aria-labelledby=\"title desc\"><title id=\"title\">{{$:/language/HarveyBalls/complex/title}}</title><desc id=\"desc\">{{$:/language/HarveyBalls/complex/desc}}</desc><path d=\"M64 128C28.654 128 0 99.346 0 64 0 28.654 28.654 0 64 0c35.346 0 64 28.654 64 64 0 35.346-28.654 64-64 64zm48-64c0 .19-48 0-48 0V16c26.51 0 48 21.49 48 48z\"/></svg>",
+            "title": "$:/plugins/telmiger/HarveyBalls/complex/icon.svg",
+            "tags": "$:/tags/Image",
+            "modifier": "Thomas Elmiger",
+            "modified": "20171108192625239",
+            "creator": "Thomas Elmiger",
+            "created": "20171005184808610"
+        },
+        "$:/plugins/telmiger/HarveyBalls/complicated/icon.svg": {
+            "text": "<svg class=\"em-icon harvey-ball ball-complicated\" xmlns=\"http://www.w3.org/2000/svg\" fill-rule=\"evenodd\" fill=\"currentColor\" viewBox=\"0 0 128 128\" role=\"img\" aria-labelledby=\"title desc\"><title id=\"title\">{{$:/language/HarveyBalls/complicated/title}}</title><desc id=\"desc\">{{$:/language/HarveyBalls/complicated/desc}}</desc><path d=\"M64 128C28.654 128 0 99.346 0 64 0 28.654 28.654 0 64 0c35.346 0 64 28.654 64 64 0 35.346-28.654 64-64 64zm0-16V16c26.51 0 48 21.49 48 48s-21.49 48-48 48z\"/></svg>",
+            "title": "$:/plugins/telmiger/HarveyBalls/complicated/icon.svg",
+            "tags": "$:/tags/Image",
+            "modifier": "Thomas Elmiger",
+            "modified": "20171108192607117",
+            "creator": "Thomas Elmiger",
+            "created": "20171005184612869"
+        },
+        "$:/plugins/telmiger/HarveyBalls/credits": {
+            "created": "20171005185503725",
+            "creator": "Thomas Elmiger",
+            "text": "!!! Credits\nInspired by ~RunningUtes in a [[Google Group discussion|https://groups.google.com/d/msg/tiddlywiki/utsLmgHZAhM/bxKkdwT2CAAJ]] and these great articles:\n\n* https://blog.prototypr.io/align-svg-icons-to-text-and-say-goodbye-to-font-icons-d44b3d7b26b4\n* https://developer.paciellogroup.com/blog/2013/12/using-aria-enhance-svg-accessibility/",
+            "title": "$:/plugins/telmiger/HarveyBalls/credits",
+            "tags": "",
+            "modified": "20171005185517065",
+            "modifier": "Thomas Elmiger"
+        },
+        "$:/plugins/telmiger/HarveyBalls/macros": {
+            "created": "20171005202753767",
+            "creator": "Thomas Elmiger",
+            "text": "\\define HarveyBall(variant:\"empty\")\n<$vars ball=\"\"\"$:/plugins/telmiger/HarveyBalls/$variant$/icon.svg\"\"\"><$transclude tiddler=<<ball>>/></$vars>\n\\end\n\n\\define HB0() <<HarveyBall empty>>\n\\define HB1() <<HarveyBall quarter>>\n\\define HB2() <<HarveyBall half>>\n\\define HB3() <<HarveyBall quarter-empty>>\n\\define HB4() <<HarveyBall full>>\n\n\\define HB5() <<HarveyBall simple>>\n\\define HB8() <<HarveyBall obvious>>\n\\define HB13() <<HarveyBall complicated>>\n\\define HB21() <<HarveyBall complex>>\n\\define HB34() <<HarveyBall chaotic>>\n\n\\define HB(nr:\"0\")\n<$vars macro=\"\"\"HB$nr$\"\"\"><$macrocall $name=<<macro>>/></$vars>\n\\end\n\n<<HB 4>>\n",
+            "title": "$:/plugins/telmiger/HarveyBalls/macros",
+            "tags": "$:/tags/Macro",
+            "modifier": "Thomas Elmiger",
+            "modified": "20171005204845512"
+        },
+        "$:/plugins/telmiger/HarveyBalls/obvious/icon.svg": {
+            "text": "<svg class=\"em-icon harvey-ball ball-obvious\" xmlns=\"http://www.w3.org/2000/svg\" \nfill-rule=\"evenodd\" fill=\"currentColor\" viewBox=\"0 0 128 128\" role=\"img\" aria-labelledby=\"title desc\"><title id=\"title\">{{$:/language/HarveyBalls/obvious/title}}</title><desc id=\"desc\">{{$:/language/HarveyBalls/obvious/desc}}</desc><path d=\"M64 128C28.654 128 0 99.346 0 64 0 28.654 28.654 0 64 0c35.346 0 64 28.654 64 64 0 35.346-28.654 64-64 64zm0-16c-26.51 0-48-21.49-48-48 0-.026 48 0 48 0s-.25-48 0-48c26.51 0 48 21.49 48 48s-21.49 48-48 48z\"/></svg>",
+            "title": "$:/plugins/telmiger/HarveyBalls/obvious/icon.svg",
+            "tags": "$:/tags/Image",
+            "modifier": "Thomas Elmiger",
+            "modified": "20171108194123156",
+            "creator": "Thomas Elmiger",
+            "created": "20171005184306362"
+        },
+        "$:/plugins/telmiger/HarveyBalls/simple/icon.svg": {
+            "text": "<svg class=\"em-icon harvey-ball ball-simple\" xmlns=\"http://www.w3.org/2000/svg\" fill-rule=\"evenodd\" fill=\"currentColor\" viewBox=\"0 0 128 128\" role=\"img\" aria-labelledby=\"title desc\"><title id=\"title\">{{$:/language/HarveyBalls/simple/title}}</title><desc id=\"desc\">{{$:/language/HarveyBalls/simple/desc}}</desc><path d=\"M64 128c35.346 0 64-28.654 64-64 0-35.346-28.654-64-64-64C28.654 0 0 28.654 0 64c0 35.346 28.654 64 64 64zm0-16c26.51 0 48-21.49 48-48S90.51 16 64 16 16 37.49 16 64s21.49 48 48 48z\"/></svg>",
+            "title": "$:/plugins/telmiger/HarveyBalls/simple/icon.svg",
+            "tags": "$:/tags/Image",
+            "modifier": "Thomas Elmiger",
+            "modified": "20171108194551146",
+            "creator": "Thomas Elmiger",
+            "created": "20171004221820081"
+        }
+    }
+}

@@ -1,0 +1,120 @@
+author: Thomas & Jed
+core-version: 5.1.13
+created: 20170303231300931
+description: EditorCounter & Autosaver
+list: settings readme credits
+modified: 20180130010421725
+name: EditorCounter
+plugin-type: plugin
+source: https://tid.li/tw5/plugins.html
+title: $:/plugins/telmiger/EditorCounter
+type: application/json
+version: 0.6.3
+
+{
+    "tiddlers": {
+        "$:/plugins/telmiger/EditorCounter/counter.js": {
+            "created": "20170207230719552",
+            "creator": "Thomas Elmiger",
+            "text": "/*\\\ntitle: $:/plugins/telmiger/EditorCounter/counter.js\ntype: application/javascript\nmodule-type: widget\n\nversion: 0.6.3\n\nCount the number of words or characters in a tiddler/field/input string – Autosave while editing\n\nUsage: see the plugin’s readme.\n\n\\*/\n(function(){\n\n/*jslint node: true, browser: true */\n/*global $tw: false */\n\"use strict\";\n\nvar Widget = require(\"$:/core/modules/widgets/widget.js\").widget;\n\nvar CounterWidget = function(parseTreeNode,options) {\n\tthis.initialise(parseTreeNode,options);\n};\n\n/*\nInherit from the base widget class\n*/\nCounterWidget.prototype = new Widget();\n\n/*\nRender this widget into the DOM – reset autosave attributes\n*/\nCounterWidget.prototype.render = function(parent,nextSibling) {\n\tthis.parentDomNode = parent;\n\tthis.computeAttributes();\n\t// autosave attributes\n\tthis.diffTotal = 0;\n\tthis.saveNow = false;\n\t// calculate state \n\tthis.execute();\n\tif(this.mode == \"autosave\") {\n\t\t// store the number of last saved characters\n\t\tthis.lastSavedCount = this.currentCount;\n\t\tthis.diffLastCount = this.currentCount;\n\t} \n\tvar textNode = this.document.createTextNode(this.currentCount);\n\tvar domNode = this.document.createElement(\"span\");\n\tparent.insertBefore(domNode,nextSibling);\n\tthis.renderChildren(domNode,null);\n\tthis.domNodes.push(domNode);\n};\n\n/*\nCalculate the numbers\n*/\nCounterWidget.prototype.getLength = function(text) {\n\tvar result = 0;\n\tswitch(this.mode) {\n\t\tcase \"character\":\n\t\t\tresult = text.length.toString();\n\t\t\tbreak;\n\t\tcase \"autosave\":\n\t\t\tresult = text.length.toString();\n\t\t\t// sum up difference since last count\n\t\t\tthis.diffTotal += this.checkAutosave(result);\n\t\t\t// check saving limit\n\t\t\tthis.saveNow = (this.diffTotal >= this.saveLimit) ? true : false;\n\t\t\tbreak;\n\t\tcase \"word\":\n\t\t\tif(text.match(/\\w+/g)) {\n\t\t\t\tresult = text.match(/\\w+/g).length.toString();\n\t\t\t} else {\n\t\t\t\tresult = 0;\n\t\t\t}\n\t\t\tbreak;\n\t\tdefault: // \"?!\"\n\t\t\tresult = \"mode undefined\";\n\t}\n\treturn result;\n}\n\n/*\nSet autosave \n*/\nCounterWidget.prototype.checkAutosave = function(textlength) {\n\t// calculate difference since last count\n\tthis.diffChars = Math.abs(textlength - this.diffLastCount);\n\t// store text length\n\tthis.diffLastCount = textlength;\n\treturn this.diffChars;\n}\n\n/*\nGet the colors as an array\n*/\nCounterWidget.prototype.getColors = function() {\n\tvar color_array1 = this.colors.split(',');\n\tvar i;\n\tcolor_array1.sort(function sortfunction(a, b){\n\t\treturn a.split(':')[1] - b.split(':')[1];\n\t});\n\tfor(i = 0; i < color_array1.length; i++) {\n\t\tthis.color_array[i] = color_array1[i].split(':')[0];\n\t\tthis.count_array[i] = color_array1[i].split(':')[1];\n\t}\n}\n\n/*\nGet the numbers\n*/\nCounterWidget.prototype.getNumber = function() {\n\t// Count letters or words as appropriate.\n\tvar result = 0;\n\tif(this.countText) {\n\t\t// text supplied as parameter \n\t\tresult = this.getLength(this.countText);\n\t} else {\n\t\tvar tiddler = this.wiki.getTiddler(this.tiddler);\n\t\tvar fieldContent = tiddler.getFieldString(this.field);\n\t\tif(fieldContent) {\n\t\t\tresult = this.getLength(fieldContent);\n\t\t} else {\n\t\t\tresult = 0;\n\t\t}\n\t}\n\treturn result;\n}\n\n/*\nCompute the internal state of the widget\n*/\nCounterWidget.prototype.execute = function() {\n\t// Get parameters from our attributes\n\tthis.mode = this.getAttribute(\"mode\",\"character\");\n\tthis.saveLimit = this.getAttribute(\"savelimit\",200);\n\tthis.tiddler = this.getAttribute(\"tiddler\",this.getVariable(\"currentTiddler\"));\n\tthis.field = this.getAttribute(\"field\",\"text\");\n\tthis.countText = this.getAttribute(\"text\");\n\tthis.colors = this.getAttribute(\"colors\");\n\tthis.stateTiddler = this.getAttribute(\"colorState\");\n\t// Count letters or words as appropriate.\n\tthis.currentCount = this.getNumber();\n\tthis.diffChars = 0;\n\t//Find the color cut-offs, if any.\n\tif(this.colors) {\n\t\tthis.color_array = [];\n\t\tthis.count_array = [];\n\t\tvar i;\n\t\tthis.getColors();\n\n\t\t// set the color if the counter is high enough. The color with the largest value that is less than this.currentCount wins.\n\t\tfor(i = 0; i < this.color_array.length; i++) {\n\t\t\tif(Number(this.currentCount) >= Number(this.count_array[this.color_array.length - 1 - i])) {\n\t\t\t\tif(this.stateTiddler) {\n\t\t\t\t\tthis.wiki.setText(this.stateTiddler,\"text\",undefined,this.color_array[this.color_array.length -1 - i]);\n\t\t\t\t}\n\t\t\t\tthis.currentCount = '@@color:' + this.color_array[this.color_array.length -1 - i] + ';' \n\t\t\t\t\t+ this.currentCount + '@@';\n\t\t\t\tbreak;\n\t\t\t}\n\t\t\tif(this.stateTiddler && i === this.color_array.length-1) {\n\t\t\t\tthis.wiki.setText(this.stateTiddler,\"text\",undefined,'');\n\t\t\t}\n\t\t}\n\t}\n\tvar parser = this.wiki.parseText(\"text/vnd.tiddlywiki\",this.currentCount,{parseAsInline: true});\n\tvar parseTreeNodes = parser ? parser.tree : [];\n\tthis.makeChildWidgets(parseTreeNodes);\n};\n\n/*\nSelectively refreshes the widget if needed. Returns true if the widget or any of its children needed re-rendering\n*/\nCounterWidget.prototype.refresh = function(changedTiddlers) {\n\tvar refreshed = false;\n\t// Re-execute the filter to get the count\n\tthis.computeAttributes();\n\tvar oldCount = this.currentCount;\n\tthis.execute();\n\tif(this.currentCount !== oldCount && this.mode !== \"autosave\") {\n\t\t// Regenerate and rerender the widget and replace the existing DOM node\n\t\tthis.refreshSelf();\n\t\trefreshed = true;\n\t}\n\tif(this.saveNow) {\n\t\t// Trigger an autosave and refresh\n\t\t$tw.rootWidget.dispatchEvent({type: \"tm-auto-save-wiki\"});\n\t\tthis.refreshSelf();\n\t\trefreshed = true;\n\t} \n\treturn refreshed;\n};\n\nexports[\"editor-counter\"] = CounterWidget;\n\n})();\n",
+            "type": "application/javascript",
+            "title": "$:/plugins/telmiger/EditorCounter/counter.js",
+            "tags": "EditorCounter",
+            "module-type": "widget",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170513200904421"
+        },
+        "$:/plugins/telmiger/EditorCounter/icon": {
+            "created": "20170209074404836",
+            "text": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64.003\" height=\"64.003\" viewBox=\"-500.5 395.5 64.003 64.003\"><path d=\"M-468.5 396.5l26.426 15.5v31l-26.425 15.5-26.426-15.5v-31l26.427-15.5z\"/><path fill=\"#FFF\" d=\"M-485.996 419.088h34.99v16.824h-34.99z\"/><path fill=\"#E2001A\" d=\"M-468.5 405.5c-12.15 0-22 9.85-22 22s9.85 22 22 22 22-9.85 22-22-9.85-22-22-22zm13.11 21.637c-1.022.682-2.674 1.023-4.954 1.023h-2.838c-1.505 0-2.598.3-3.28.9-.68.6-1.22 1.804-1.622 3.615 0 0-.063.526-.178.526s-.13-.31-.184-.562c-.056-.263-.14-.59-.256-.977-.224-.758-.447-1.332-.67-1.72-.27-.482-.613-.87-1.024-1.165-.412-.294-.883-.47-1.413-.528l-.74-.088h-3.637c-2.178 0-3.796-.343-4.855-1.024-1.764-1.12-2.71-3.24-2.842-6.357-.01-.25 0-.48.047-.772h.208c.142 1.41 1.304 2.502 2.158 3.274.853.77 2.222 1.155 4.104 1.155h3.3c1.896 0 3.28.436 4.158 1.306.79.786 1.31 2.017 1.56 3.69.028.183.012.263.064.263.053 0 .04-.09.06-.278.253-2.173 1.094-3.627 2.522-4.363.88-.46 2.28-.676 4.196-.652l2.257.035c1.527.023 2.814-.278 3.86-.908 1.046-.63 2.285-1.803 2.425-3.52h.21c.065.17.057.56.045.828-.13 3.105-1.023 5.206-2.68 6.3z\"/></svg>",
+            "type": "image/svg+xml",
+            "title": "$:/plugins/telmiger/EditorCounter/icon",
+            "tags": "",
+            "modified": "20170209074423973"
+        },
+        "$:/plugins/telmiger/EditorCounter/readme": {
+            "created": "20170209064758307",
+            "creator": "Thomas Elmiger",
+            "text": "!! Count Your Texts & Autosave\nThe [[EditorCounter plugin|https://tid.li/tw5/plugins.html#EditorCounter]] provides counters for words and characters in the edit view of your tiddlers. And it can save your texts automagically in the background while you work.\n\n!!! The counters\n* In edit mode users can see stats concerning the tiddler’s text and title fields. The numbers are updated whenever they pause typing.\n* Counters for words and characters can be activated in the [[plugin settings|$:/plugins/telmiger/EditorCounter/settings]].\n* The colours of the counters change at some predefined numbers.\n** Settings for colors and color limits are not available in the plugin configuration. <br>Workaround: edit [[the template|$:/plugins/telmiger/EditorCounter/EditTemplate]].\n\n!!! Autosave\n* When activated in the [[plugin settings|$:/plugins/telmiger/EditorCounter/settings]], //autosave// will try to save the wiki in the background during editing: whenever a predefined number of characters has been added or removed, a save is triggered.\n** As an option you can show a checkbox in the editor to pause/activate automatic saving.\n\n!!! Parameters\n\n|!Parameter |!Description |\n|colors |Optionally, define an array of color and number pairs to set minimal color limits. |\n|colorState |Optional state tiddler to save the color value. |\n|field |Calculate for the text in this field. |\n|mode |Entity to calculate: //word// or //character// or //autosave//. Defaults to \"character\". |\n|savelimit |A number of character changes after which //autosave// is performed. Default value: 200 |\n|text |Calculate this text. |\n|tiddler |Optional title of a tiddler to take the field from. Defaults to current tiddler. |\n\n!!! Widget usage\nThis plugin is based on a similar [[solution by Jed Carty|$:/plugins/telmiger/EditorCounter/credits]] – many thanks! \n\nThe widget can be used in other contexts than the plugin. The usage would be very similar to [[Jed’s examples on ooktech.com|http://ooktech.com/jed/ExampleWikis/WordCount/#%24%3A%2Fplugins%2Finmysocks%2FWordCount%2FWord%20Count%20Widget]] \n\nKnown differences: instead of `<$word-count` start with `<$editor-counter`. Default mode is //character//.\n\n!!!! Widget examples\n\n```\n<$editor-counter tiddler=SomeTiddler field=some_field mode=word/>\n<$editor-counter tiddler=SomeTiddler mode=character colors=\"blue:10,green:50,red:100\"/>\n<$editor-counter text=\"some text string\" mode=character colorState=\"$:/state/someTextColor\" colors=\"blue:10,green:50\"/>\n<$editor-counter mode=autosave savelimit=300/>\n```\n",
+            "title": "$:/plugins/telmiger/EditorCounter/readme",
+            "tags": "EditorCounter",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170513193917595"
+        },
+        "$:/plugins/telmiger/EditorCounter/settings": {
+            "text": "!! Counter Settings\nActivate counters here. Your choice will be visible below the text field in edit mode.\n\n<$checkbox tiddler=\"$:/plugins/telmiger/EditorCounter/settings/characters\" field=\"text\" checked=\"yes\" unchecked=\"no\"> Character counter</$checkbox>\n\n<$checkbox tiddler=\"$:/plugins/telmiger/EditorCounter/settings/words\" field=\"text\" checked=\"yes\" unchecked=\"no\" default=\"no\"> Word counter</$checkbox>\n\n<$checkbox tiddler=\"$:/plugins/telmiger/EditorCounter/settings/title\" field=\"text\" checked=\"yes\" unchecked=\"no\"> Title characters counter</$checkbox>\n\n!! Autosave Settings\nAutosave will try to save your wiki in the background after adding or removing 200 characters. You can change this value below.\n\n<$checkbox tiddler=\"$:/plugins/telmiger/EditorCounter/settings/autosave\" field=\"text\" checked=\"yes\" unchecked=\"no\" default=\"no\"> Autosave</$checkbox>\n every <$edit-text tiddler=\"$:/plugins/telmiger/EditorCounter/settings/autosave\" field=\"limit\" size=\"4\"/> characters.\n\n<$checkbox tiddler=\"$:/plugins/telmiger/EditorCounter/settings/autosave-pause\" field=\"text\" checked=\"yes\" unchecked=\"no\" default=\"no\"> Show checkbox to start/pause autosave in editor</$checkbox>\n\n<br>''\n\n<$button message=\"tm-save-wiki\" param={{$:/config/SaveWikiButton/Template}} tooltip={{$:/language/Buttons/SaveWiki/Hint}} aria-label={{$:/language/Buttons/SaveWiki/Caption}} class=<<tv-config-toolbar-class>>>\n<span class=\"tc-dirty-indicator\">\n<$list filter=\"[<tv-config-toolbar-icons>prefix[yes]]\">\n{{$:/core/images/save-button}} {{$:/language/Buttons/SaveWiki/Hint}}\n</$list>\n<$list filter=\"[<tv-config-toolbar-text>prefix[yes]]\">\n<span class=\"tc-btn-text\"><$text text={{$:/language/Buttons/SaveWiki/Caption}}/></span>\n</$list>\n</span>\n</$button>\n\n''<br>\n\nNote: ''All'' characters are counted as entered in the editor, regardless if they are invisible in the result or if they produce more text based on data or transclusion.",
+            "title": "$:/plugins/telmiger/EditorCounter/settings",
+            "tags": "EditorCounter",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170513185158209",
+            "creator": "Thomas Elmiger",
+            "created": "20170208062643245"
+        },
+        "$:/plugins/telmiger/EditorCounter/settings/characters": {
+            "created": "20170208063042363",
+            "creator": "Thomas Elmiger",
+            "text": "yes",
+            "title": "$:/plugins/telmiger/EditorCounter/settings/characters",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170209071527563",
+            "tags": "EditorCounter"
+        },
+        "$:/plugins/telmiger/EditorCounter/settings/title": {
+            "created": "20170208211524752",
+            "creator": "Thomas Elmiger",
+            "text": "yes",
+            "title": "$:/plugins/telmiger/EditorCounter/settings/title",
+            "modified": "20170209071517463",
+            "modifier": "Thomas Elmiger",
+            "tags": "EditorCounter"
+        },
+        "$:/plugins/telmiger/EditorCounter/settings/words": {
+            "text": "no",
+            "title": "$:/plugins/telmiger/EditorCounter/settings/words",
+            "tags": "EditorCounter",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170216003921105",
+            "creator": "Thomas Elmiger",
+            "created": "20170208063040756"
+        },
+        "$:/plugins/telmiger/EditorCounter/EditTemplate": {
+            "text": "<span style=\"display:block; margin-top:-18px; margin-bottom:18px;\">\n<$reveal type=\"match\" text=\"yes\" state=\"$:/plugins/telmiger/EditorCounter/settings/characters\">\n<$editor-counter tiddler=<<currentTiddler>> colors='black:0,gray:140,green:300,indianred:800,red:1600'/> characters </$reveal>\n<$reveal type=\"match\" text=\"yes\" state=\"$:/plugins/telmiger/EditorCounter/settings/autosave\">\n<span class=\"tc-muted\"><span class=\"tc-dirty-indicator\">•</span> <$editor-counter mode=autosave savelimit={{$:/plugins/telmiger/EditorCounter/settings/autosave!!limit}}/> saved</span>\n</$reveal>\n<$reveal type=\"match\" text=\"yes\" state=\"$:/plugins/telmiger/EditorCounter/settings/characters\"> &nbsp;&nbsp; \n</$reveal>\n<$reveal type=\"match\" text=\"yes\" state=\"$:/plugins/telmiger/EditorCounter/settings/words\">\n<$editor-counter mode=word colors='black:0,gray:200,green:300,indianred:1000,red:2000'/> words &nbsp;&nbsp; \n</$reveal>\n<$reveal type=\"match\" text=\"yes\" state=\"$:/plugins/telmiger/EditorCounter/settings/autosave-pause\">\n<$checkbox tiddler=\"$:/plugins/telmiger/EditorCounter/settings/autosave\" field=\"text\" checked=\"yes\" unchecked=\"no\" default=\"no\"> Autosave</$checkbox>\n<$reveal type=\"match\" text=\"yes\" state=\"$:/plugins/telmiger/EditorCounter/settings/autosave\">\n (uncheck to pause)\n</$reveal>\n</$reveal>\n</span>\n\n<!--\n* Show the number of characters and/or words entered in edit mode.\n* Show the number of characters at last autosave (autosave at a character difference as defined in settings).\n-->",
+            "title": "$:/plugins/telmiger/EditorCounter/EditTemplate",
+            "tags": "$:/tags/EditTemplate EditorCounter",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170513184811368",
+            "list-before": "$:/core/ui/EditTemplate/type",
+            "creator": "Thomas Elmiger",
+            "created": "20170126185919666"
+        },
+        "$:/plugins/telmiger/EditorCounter/TitleTemplate": {
+            "text": "<$reveal type=\"match\" text=\"yes\" state=\"$:/plugins/telmiger/EditorCounter/settings/title\">\n<span title=\"Title length\" style=\"display:block; text-align:right; margin: -22px 3px 2px 0; opacity:0.6;\">\n<$editor-counter tiddler=<<currentTiddler>> field=\"draft.title\" colors='green:20,indianred:30,red:40'/> chars\n</span>\n</$reveal>\n\n<!--\nShow the number of characters in the title\n-->",
+            "title": "$:/plugins/telmiger/EditorCounter/TitleTemplate",
+            "tags": "$:/tags/EditTemplate EditorCounter",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170303172302480",
+            "list-before": "$:/core/ui/EditTemplate/tags",
+            "creator": "Thomas Elmiger",
+            "created": "20170213190419968"
+        },
+        "$:/plugins/telmiger/EditorCounter/settings/autosave": {
+            "created": "20170303132537685",
+            "creator": "Thomas Elmiger",
+            "text": "no",
+            "title": "$:/plugins/telmiger/EditorCounter/settings/autosave",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170304110651863",
+            "limit": "200",
+            "tags": "EditorCounter"
+        },
+        "$:/plugins/telmiger/EditorCounter/credits": {
+            "text": "!! Credits\n\nMany thanks to Jed for his blueprint widget and demo site, originally on http://ooktech.com/jed/ExampleWikis/WordCount/ as well as to Skeeve who obviousliy contributed the original macro version Jed based his solution on.\n\n* http://ooktech.com/TiddlyWiki/\n* http://ooktech.com/TiddlyWiki/WordCount/\n\n//Powered by the fantastic TiddlyWiki community.//\n",
+            "title": "$:/plugins/telmiger/EditorCounter/credits",
+            "tags": "EditorCounter",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170304104718649",
+            "creator": "Thomas Elmiger",
+            "created": "20170304102433909"
+        }
+    }
+}

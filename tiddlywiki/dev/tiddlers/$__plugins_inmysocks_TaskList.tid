@@ -1,0 +1,102 @@
+author: inmysocks
+core-version: >=5.1.6
+created: 20180131180315374
+dependents: 
+description: A more advanced task list for TiddlyWiki
+modified: 20180131180315374
+plugin-type: plugin
+source: https://github.com/inmysocks/TW5-NoLearningRequired-Full
+title: $:/plugins/inmysocks/TaskList
+type: application/json
+version: 0.1.2
+
+{
+    "tiddlers": {
+        "$:/plugins/inmysocks/TaskList/BasicFinishedEntryDisplayTemplate": {
+            "caption": "Basic Finished Entry Display Template",
+            "display_name": "Basic Finished Entry",
+            "no_edit": "true",
+            "settings_tiddler": "$:/plugins/inmysocks/TaskList/BasicFinishedTaskDisplayTemplateSettings",
+            "tags": "Templates ToDoEntryDisplayTemplate",
+            "title": "$:/plugins/inmysocks/TaskList/BasicFinishedEntryDisplayTemplate",
+            "text": "<$checkbox tag=\"done\"> ~~<$link to={{!!title}}><$view field=\"title\"/></$link>~~</$checkbox><br>\n"
+        },
+        "$:/plugins/inmysocks/TaskList/BasicFinishedEntryDisplayTemplateSettings": {
+            "caption": "Basic Finished Entry Display Template Settings",
+            "no_edit": "true",
+            "title": "$:/plugins/inmysocks/TaskList/BasicFinishedEntryDisplayTemplateSettings",
+            "text": ""
+        },
+        "$:/plugins/inmysocks/TaskList/BasicTaskDisplayTemplate": {
+            "caption": "Basic Task Display Template",
+            "deadline": "10 March 2525",
+            "description": "An example template",
+            "display_name": "Basic Display Template",
+            "no_edit": "true",
+            "settings_tiddler": "$:/plugins/inmysocks/TaskList/BasicTaskDisplayTemplateSettings",
+            "tags": "Templates ToDoEntryDisplayTemplate",
+            "title": "$:/plugins/inmysocks/TaskList/BasicTaskDisplayTemplate",
+            "text": "<$checkbox tag=\"done\"> <$link to={{!!title}}><$view field=\"title\"/></$link> - <$view field=\"deadline\"/><br><$view field=\"description\"/></$checkbox><br>"
+        },
+        "$:/plugins/inmysocks/TaskList/BasicTaskDisplayTemplateSettings": {
+            "caption": "Basic Task Display Template Settings",
+            "no_edit": "true",
+            "title": "$:/plugins/inmysocks/TaskList/BasicTaskDisplayTemplateSettings",
+            "text": ""
+        },
+        "BasicTaskListTemplate": {
+            "caption": "Basic List",
+            "display_name": "Basic List",
+            "settings_tiddler": "$:/plugins/inmysocks/TaskList/BasicTaskListTemplateSettings",
+            "tags": "Templates TaskListTemplate",
+            "title": "BasicTaskListTemplate",
+            "text": "<$list filter=[tag[task]] template= {{Upgraded Task List!!entry_display_template}}>\n<$checkbox tag=\"done\"> <$link to={{!!title}}><$view field=\"title\"/></$link> - <$view field=\"deadline\"/><br><$view field=\"blurb\"/></$checkbox>\n</$list>"
+        },
+        "$:/plugins/inmysocks/TaskList/BasicTaskListTemplateSettings": {
+            "caption": "Basic Task List Template Settings",
+            "no_edit": "true",
+            "title": "$:/plugins/inmysocks/TaskList/BasicTaskListTemplateSettings",
+            "text": ""
+        },
+        "$:/plugins/inmysocks/TaskList/NewTaskButton": {
+            "caption": "New Task Button",
+            "no_edit": "true",
+            "tags": "",
+            "title": "$:/plugins/inmysocks/TaskList/NewTaskButton",
+            "text": "<$reveal type='nomatch' state='$:/state/NewTaskButton' text='show'>\n<$button set='$:/state/NewTaskButton' setTo='show'>Create New Task</$button>\n</$reveal>\n<$reveal type='match' state='$:/state/NewTaskButton' text='show'>\n<$button set='$:/state/NewTaskButton' setTo='noshow'>Hide Form</$button>\n<$button>Add Task\n<$action-setfield $tiddler={{$:/state/NewTask!!new_task_name}} due_date={{$:/state/NewTask!!due_date}} description={{$:/state/NewTask!!description}} text={{$:/state/NewTask!!text}} tags='task'/>\n<$action-setfield $tiddler='$:/state/NewTask' new_task_name='' due_date='' description='' text=''/>\n</$button>\n<br>\nTask Title: <$edit-text class='tc-edit-texteditor'  tiddler='$:/state/NewTask' field='new_task_name' placeholder='Task Title'/><br>\nDue Date: <$edit-text class='tc-edit-texteditor'  tiddler='$:/state/NewTask' field='due_date' placeholder='Due Date'/><br>\nDescription: <$edit-text class='tc-edit-texteditor'  tiddler='$:/state/NewTask' field='description' placeholder='Description'/><br>\n<$reveal type='nomatch' state='$:/state/NewTaskDetails' text='show'>\n<$button set='$:/state/NewTaskDetails' setTo='show'>Add Details</$button>\n</$reveal>\n<$reveal type='match' state='$:/state/NewTaskDetails' text='show'>\nDetails: (<$button set='$:/state/NewTaskDetails' setTo='noshow'>Cancel</$button>)<br>\n<$edit-text class='tc-edit-texteditor' tiddler='$:/state/NewTask' field='text' placeholder='Task Details'/>\n</$reveal>\n</$reveal>"
+        },
+        "NewTaskButtonSettings": {
+            "caption": "New Task Button Settings",
+            "no_edit": "true",
+            "tags": "",
+            "title": "NewTaskButtonSettings",
+            "text": "This is going to control the configuration for the upgraded task list. It should control both the Create New Task button and how the tasks are displayed (normal list, in groups, show/hide completed tasks, show/hide a delete task button, etc.)"
+        },
+        "$:/plugins/inmysocks/TaskList/Task List Settings": {
+            "blurb": "Settings for the upgraded task list",
+            "caption": "Task List Settings",
+            "no_edit": "true",
+            "tags": "[[Wiki Settings]]",
+            "title": "$:/plugins/inmysocks/TaskList/Task List Settings",
+            "text": "If you leave this blank than all finished tasks will be displayed.\n\nNumber of finished tasks to display: <$edit-text tiddler='$:/settings/TaskList/Task List Settings' field='maximum_finished_tasks'/>\n\n\n!!Unfinished Task Display template to use:\nThis is how each individual task will be displayed in the list<br>\n\n<div class='tc-tiddler-frame' style='width:600px; background-color:#fafafa'>\n<$select tiddler='$:/plugins/inmysocks/TaskList/Upgraded Task List' field='entry_display_template'>\n<$list filter='[plugintiddlers[]tag[ToDoEntryDisplayTemplate]!has[draft.of]][tag[ToDoEntryDisplayTemplate]!has[draft.of]]'>\n<option value={{!!title}}><$view field='display_name'/></option>\n</$list>\n</$select>\n\n<$tiddler tiddler={{$:/plugins/inmysocks/TaskList/Upgraded Task List!!entry_display_template}}>\n<$transclude tiddler={{!!settings_tiddler}}/>\n</$tiddler>\n \n<br>\nPreview: <br>\n<div class='tc-tiddler-frame' style='width:500px; background-color:#f0f0f0'>\n<$tiddler tiddler={{$:/plugins/inmysocks/TaskList/Upgraded Task List!!entry_display_template}}><$transclude/></$tiddler>\n</div>\n</div>\n\n!!Finished Task Display template to use:\nThis is the template used to generate the list of tasks, click on the name to see the template (How it looks changes based on the display template selected above).<br>\n<div class='tc-tiddler-frame' style='width:600px; background-color:#fafafa'>\n\n<$select tiddler='Upgraded Task List' field='finished_task_list_template'>\n<$list filter='[plugintiddlers[]tag[ToDoEntryDisplayTemplate]!has[draft.of]][tag[ToDoEntryDisplayTemplate]!has[draft.of]]'>\n<option value={{!!title}}><$view field=display_name/></option>\n</$list>\n</$select>\n\n<$tiddler tiddler={{$:/plugins/inmysocks/TaskList/Upgraded Task List!!finished_task_list_template}}>\n<$transclude tiddler={{!!settings_tiddler}}/>\n</$tiddler>\n<br>\nPreview:<br>\n<div class='tc-tiddler-frame' style='width:500px; background-color:#f0f0f0'>\n<$tiddler tiddler={{$:/plugins/inmysocks/TaskList/Upgraded Task List!!finished_task_list_template}}>\n<$transclude/>\n</$tiddler>\n</div>\n</div>\n\n!!Unfinished Task List template to use:\nThis is the template used to generate the list of tasks, click on the name to see the template (How it looks changes based on the display template selected above).<br>\n<div class='tc-tiddler-frame' style='width:600px; background-color:#fafafa'>\n\n<$select tiddler='$:/plugins/inmysocks/TaskList/Upgraded Task List' field='task_list_template'>\n<$list filter='[plugintiddlers[]tag[TaskListTemplate]!has[draft.of]][tag[TaskListTemplate]!has[draft.of]]'>\n<option value={{!!title}}><$view field=display_name/></option>\n</$list>\n</$select>\n\n<$tiddler tiddler={{$:/plugins/inmysocks/TaskList/Upgraded Task List!!task_list_template}}>\n<$transclude tiddler={{!!settings_tiddler}}/>\n</$tiddler>\n<br>\nPreview:<br>\n<div class='tc-tiddler-frame' style='width:500px; background-color:#f0f0f0'>\n<$tiddler tiddler={{$:/plugins/inmysocks/TaskList/Upgraded Task List!!task_list_template}}>\n<$transclude/>\n</$tiddler>\n</div>\n</div>\n\n!!Finished Task List template to use:\nThis is the template used to generate the list of tasks, click on the name to see the template (How it looks changes based on the display template selected above).<br>\n<div class='tc-tiddler-frame' style='width:600px; background-color:#fafafa'>\n\n<$select tiddler='$:/plugins/inmysocks/TaskList/Upgraded Task List' field='task_list_template'>\n<$list filter='[plugintiddlers[]tag[TaskListTemplate]!has[draft.of]][tag[TaskListTemplate]!has[draft.of]]'>\n<option value={{!!title}}><$view field=display_name/></option>\n</$list>\n</$select>\n\n<$tiddler tiddler={{$:/plugins/inmysocks/TaskList/Upgraded Task List!!finished_task_list_template}}>\n<$transclude tiddler={{!!settings_tiddler}}/>\n</$tiddler>\n<br>\nPreview:<br>\n<div class='tc-tiddler-frame' style='width:500px; background-color:#f0f0f0'>\n<$tiddler tiddler={{$:/plugins/inmysocks/TaskList/Upgraded Task List!!finished_task_list_template}}>\n<$transclude/>\n</$tiddler>\n</div>\n</div>\n"
+        },
+        "$:/plugins/inmysocks/TaskList/Task List": {
+            "caption": "Task List",
+            "no_edit": "true",
+            "tags": "",
+            "title": "$:/plugins/inmysocks/TaskList/Task List",
+            "text": "<$transclude tiddler=NewTaskButton/>\n\n! Outstanding tasks\n\n<$list filter=\"[!has[draft.of]tag[task]!tag[done]sort[created]!title[TiddlerTaskTemplate]]\" template={{!!entry_display_template}}>\n\n<$checkbox tag=\"done\"> <$link to={{!!title}}><$view field=\"title\"/></$link> - <$view field=\"deadline\"/><br><$view field=\"blurb\"/></$checkbox>\n\n</$list>\n\n! Completed tasks\n\n<$reveal type='match' state='$:/settings/TaskList/Task List Settings!!maximum_finished_tasks' text=''>\n\n<$list filter=\"[!has[draft.of]tag[task]tag[done]sort[created]]\" template={{!!list_template}} template={{!!finished_task_display_template}}>\n\n</$list>\n\n</$reveal>\n\n<$reveal type='nomatch' state='$:/settings/TaskList/Task List Settings!!maximum_finished_tasks' text=''>\n\n<$list filter=\"[!has[draft.of]tag[task]tag[done]sort[created]limit{$:/settings/TaskList/Task List Settings!!maximum_finished_tasks}]\" template={{!!list_template}} template={{!!finished_task_display_template}}>\n\n</$list>\n\n</$reveal>"
+        },
+        "$:/plugins/inmysocks/TaskList/Upgraded Task List": {
+            "caption": "Task List",
+            "entry_display_template": "$:/plugins/inmysocks/TaskList/BasicTaskDisplayTemplate",
+            "finished_task_display_template": "$:/plugins/inmysocks/TaskList/BasicFinishedEntryDisplayTemplate",
+            "finished_task_list_template": "$:/plugins/inmysocks/TaskList/BasicFinishedEntryDisplayTemplate",
+            "no_edit": "true",
+            "tags": "Dashboard",
+            "task_list_template": "BasicTaskListTemplate",
+            "title": "$:/plugins/inmysocks/TaskList/Upgraded Task List",
+            "text": "<$transclude tiddler='$:/plugins/inmysocks/TaskList/NewTaskButton' mode=block/>\n\n<<tabs \"[[$:/plugins/inmysocks/TaskList/Task List]] [[$:/plugins/inmysocks/TaskList/Task List Settings]]\" [[$:/plugins/inmysocks/TaskList/Task List]]>>"
+        }
+    }
+}

@@ -1,0 +1,83 @@
+author: Thomas Elmiger
+core-version: >=5.1.14
+created: 20170714211048778
+dependents: ToDoNow
+description: Reminders for ToDoNow
+list: readme configuration settings
+modified: 20180130010421703
+name: Reminders and Alerts
+plugin-type: plugin
+source: https://tid.li/tw5/tdn.html
+title: $:/plugins/telmiger/reminders
+type: application/json
+version: 0.1.4
+
+{
+    "tiddlers": {
+        "$:/plugins/telmiger/reminders/configuration": {
+            "created": "20170712182809734",
+            "creator": "Thomas Elmiger",
+            "text": "!! Configuration \n\n!!! Reminders\nShow a reminder \n<$edit-text tiddler=\"$:/plugins/telmiger/reminders/settings\" field=\"text\" index=\"show\" tag=\"input\" size=\"3\" class=\"\"/> ''minutes'' before the deadline is reached. – Leave empty if you want to see alerts only. \n\n!!! Disable Alerts\nSet the reminder value above to ''no'' instead of a number if you don’t want to see alerts or reminders at all. You could also disable the plugin in this case.\n\n!!! Timestamp Field and Tag\nThe presets used for alerts and reminders are borrowed from ToDoNow: This plugin saves deadlines in a field named ''todo-deadline'' and the tag <<tag ToDo>> is used for tasks. In case you want to get alerts and reminders for another field and/or tag, enter your values below.\n\n<$edit-text tiddler=\"$:/plugins/telmiger/reminders/settings\" field=\"text\" index=\"field\" tag=\"input\"/> Fieldname\n\n<$edit-text tiddler=\"$:/plugins/telmiger/reminders/settings\" field=\"text\" index=\"tag\" tag=\"input\"/> Tagname",
+            "title": "$:/plugins/telmiger/reminders/configuration",
+            "tags": "[[ToDo Addons]]",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170903214003936"
+        },
+        "$:/plugins/telmiger/reminders/display": {
+            "text": "<$reveal type=\"nomatch\" state=\"$:/plugins/telmiger/reminders/settings##show\" text=\"no\">\n<$set name=\"field\" value={{$:/plugins/telmiger/reminders/settings##field}}>\n<$set name=\"tag\" value={{$:/plugins/telmiger/reminders/settings##tag}}>\n<$set name=\"span\" value={{$:/plugins/telmiger/reminders/settings##show}}>\n<section class=\"te-reminders\">\n<ul class=\"te-list\">\n<$list filter=\"\"\"[has<field>tag<tag>!tag[ToDoNow]!sort<field>]\"\"\" variable=\"tiddler\">\n<li class=\"todo-item te-flex-item\"><$macrocall $name=\"reminderCheck\" reminder-field=<<field>> tiddler=<<tiddler>> reminderspan=<<span>>/></li>\n</$list>\n</ul>\n</section>\n</$set>\n</$set>\n</$set>\n</$reveal>",
+            "title": "$:/plugins/telmiger/reminders/display",
+            "tags": "[[ToDo Addons]] $:/tags/TopRightBar",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170912221645102",
+            "creator": "Thomas Elmiger",
+            "created": "20170708221154319"
+        },
+        "$:/plugins/telmiger/reminders/icon": {
+            "text": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64.003\" height=\"64.003\" viewBox=\"-500.5 395.5 64.003 64.003\"><path d=\"M-468.5 396.5l26.426 15.5v31l-26.425 15.5-26.426-15.5v-31l26.427-15.5z\"/><path fill=\"#FFF\" d=\"M-485.996 419.088h34.99v16.824h-34.99z\"/><path fill=\"#E2001A\" d=\"M-468.5 405.5c-12.15 0-22 9.85-22 22s9.85 22 22 22 22-9.85 22-22-9.85-22-22-22zm13.11 21.637c-1.022.682-2.674 1.023-4.954 1.023h-2.838c-1.505 0-2.598.3-3.28.9-.68.6-1.22 1.804-1.622 3.615 0 0-.063.526-.178.526s-.13-.31-.184-.562c-.056-.263-.14-.59-.256-.977-.224-.758-.447-1.332-.67-1.72-.27-.482-.613-.87-1.024-1.165-.412-.294-.883-.47-1.413-.528l-.74-.088h-3.637c-2.178 0-3.796-.343-4.855-1.024-1.764-1.12-2.71-3.24-2.842-6.357-.01-.25 0-.48.047-.772h.208c.142 1.41 1.304 2.502 2.158 3.274.853.77 2.222 1.155 4.104 1.155h3.3c1.896 0 3.28.436 4.158 1.306.79.786 1.31 2.017 1.56 3.69.028.183.012.263.064.263.053 0 .04-.09.06-.278.253-2.173 1.094-3.627 2.522-4.363.88-.46 2.28-.676 4.196-.652l2.257.035c1.527.023 2.814-.278 3.86-.908 1.046-.63 2.285-1.803 2.425-3.52h.21c.065.17.057.56.045.828-.13 3.105-1.023 5.206-2.68 6.3z\"/></svg>",
+            "type": "image/svg+xml",
+            "title": "$:/plugins/telmiger/reminders/icon",
+            "tags": "",
+            "modified": "20170713205126348",
+            "created": "20170713204826395"
+        },
+        "$:/plugins/telmiger/reminders/messages": {
+            "text": "\\define reminderCheck(reminder-field,tiddler,reminderspan:\"-1\")\n<$vars tid=\"\"\"$tiddler$\"\"\" rmf=\"\"\"$reminder-field$\"\"\">\n<$wikify name=\"checkfilter\" text='<<ldsbra>><<tid>>]!days:<<rmf>>[-1<<rdsbra>>'>\n   <$list filter=<<checkfilter>>>\n<$macrocall $name=\"alertMessage\" tiddler=<<tid>> reminder-field=<<rmf>> class=\"alert yesterday\"/>\n   </$list>\n</$wikify>\n<$wikify name=\"checkfilter\" text=\"\"\"<<ldsbra>><<tid>>]days:<<rmf>>[0<<rdsbra>>\"\"\">\n   <$list filter=<<checkfilter>>>\n<$wikify name=\"timetodeadline\" text=\"\"\"<$macrocall $name=\"minutesTo\" date-field=<<rmf>> tiddler=<<tid>>/>\"\"\">\n<$wikify name=\"reminderspan\" text=\"\"\"<$macrocall $name=\"rpn\" a=$reminderspan$ b=1 operation=\"+\"/>\"\"\">\n<$set name=\"todayMessage\" filter=\"\"\"[<timetodeadline>removeprefix[-]]\"\"\" value=\"alertMessage\" emptyValue=\"reminderMessage\">\n<$wikify name=\"hhmm\" text=\"\"\"<$macrocall $name=\"dateValue\" template=0hh0mm field=<<rmf>> tiddler=<<tid>>/>\"\"\">\n<$wikify name=\"notime\" text=\"\"\"<$list filter=\"[<hhmm>removeprefix[0000]]\" emptyMessage=\"show\"/>\"\"\">\n<$set name=\"zeroClass\" filter=\"[<notime>removeprefix[show]]\" value=\"show\" emptyValue=\"hide notime\">\n<$macrocall $name=<<todayMessage>> tiddler=<<tid>> reminder-field=<<rmf>> class=<<zeroClass>>/>\n</$set>\n</$wikify>\n</$wikify>\n</$set>\n</$wikify>\n</$wikify>\n   </$list>\n</$wikify>\n</$vars>\n\\end\n\n\\define reminderMessage(tiddler,reminder-field,class:\"te-reminder\")\n<$vars tid=\"\"\"$tiddler$\"\"\" rmf=\"\"\"$reminder-field$\"\"\">\n<$wikify name=\"remind\" text='<$macrocall $name=rpn a=<<timetodeadline>> b=<<reminderspan>> operation=\"-\"/>'>\n<$set name=\"myClass\" filter=\"[<remind>removeprefix[-]]\" value=\"te-reminder $class$\" emptyValue=\"te-reminder hide\">\n<div class=<<myClass>>>\n\n!!! <$link to={{!!title}}><$view field=\"title\"/></$link>\n<div class=\"te-flex-item\">\n<<todoShowDeadline>>  <<todoBtnDeadline>> <<todoBtnDoNow>>\n</div>\n\n<$macrocall $name=minutesTo date-field=<<rmf>> tiddler=<<tid>>/> minutes to deadline\n\n</div>\n</$set>\n</$wikify>\n</$vars>\n\\end\n\n\\define alertMessage(tiddler,reminder-field,class:\"alert\")\n<$vars tid=\"\"\"$tiddler$\"\"\" rmf=\"\"\"$reminder-field$\"\"\">\n<div class=\"te-reminder $class$\">\n\n!!! <$link to={{!!title}}><$view field=\"title\"/></$link>\n<div class=\"te-flex-item\">\n<<todoShowDeadline>>  <<todoBtnDeadline>> <<todoBtnDoNow>>\n</div>\n\ndeadline passed <$macrocall $name=\"hoursMinutesSince\" date-field=<<rmf>> tiddler=<<tid>>/> ago\n\n</div>\n</$vars>\n\\end\n\n\n<!-- !! Reminders Plugin: Macros for Message Display\n\n!!! Missing\n* Translations\n\n!!! Macros for Reminders\n* reminderCheck(reminder-field,tiddler,reminderspan)\n** show an alert for tasks with a deadline of yesterday or before\n** show an alert or a reminder for tasks with a deadline of today\n*** show a reminder if a task is due today and the user wants to be reminded\n**** consider a global reminder-span in the user settings\n*** show an alert when the deadline was missed if a time (other than 0:00) was set\n* reminderMessage(reminder-field,class:\"reminder\") – sub-macro for the message content\n* alertMessage(reminder-field,class:\"alert\") – sub-macro for alerts when deadline has been missed\n\n-->",
+            "todo-done": "20160819011650",
+            "title": "$:/plugins/telmiger/reminders/messages",
+            "tags": "[[ToDo Addons]] $:/tags/Macro",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170913061201175",
+            "creator": "Thomas Elmiger",
+            "created": "20170628190548721"
+        },
+        "$:/plugins/telmiger/reminders/reminders.css": {
+            "created": "20170708102934894",
+            "creator": "Thomas Elmiger",
+            "text": "/* reminders */\n\n.te-reminders {\n    height: 1px;\n    max-height: 1px;\n}\n\n.te-reminders .todo-item:hover {\n    color: unset;\n    background-color: unset;\n    border-top: none;\n    border-bottom: none;\n}\n\n.te-reminder {\n    position: fixed;\n    background-color: rgba(255,255,0,0.95);\n    margin: 5em 5em;\n    top: calc(50vh - 15em);\n    padding: 1em 4em 2em 4em;\n    border: 2px dashed;\n    border-radius: 1em;\n    box-shadow: 0.5em 0.5em 1em gray;\n    z-index: 101;\n    text-align: center;\n    right: calc(50vw - 17em);\n    left: calc(50vw - 17em);\n    width: 26em;\n    max-width: 100%;\n}\n\n.te-reminder.reminder {\n    background-color: rgba(150,255,150,0.93);\n}\n\n.te-reminder.yesterday {\n    background-color: rgba(255, 235, 150, 0.97);\n}\n\n.te-reminder.hide {\n    display: none;\n}\n\n.te-reminder h3 a {\n    font-weight: 600;\n    color: #3b5296;\n}\n\n/* icons for reminders */\n\n.tc-topbar button.te-btn-action {\n    height: 1.33em;\n    width: 1.33em;\n    margin: 5px 0 0 0;\n    padding: 0;\n}\n\n.tc-topbar .te-tip button.te-btn-action {\n    margin: 0;\n        margin-left: 0px;\n    padding-bottom: 25px;\n    margin-left: 0.4em;\n}\n\n\n.tc-topbar .te-btn-action svg {\n    fill: #333;\n}\n\n\n/* hide urgent indicator on icon */\n.te-reminder .urgent {\n    display: none;\n}\n\n.te-reminder .te-flex-item {\n    display: inline-flex;\n    padding-top: 0.5em;\n    width: 13em;\n}\n\n/* very small screens */\n\n@media (max-width: 500px) {\n   .te-reminder {\n      padding: 1em 2em 2em 2em;\n   }\n}",
+            "type": "text/vnd.tiddlywiki",
+            "title": "$:/plugins/telmiger/reminders/reminders.css",
+            "tags": "[[ToDo Addons]] $:/tags/Stylesheet",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170714231200705"
+        },
+        "$:/plugins/telmiger/reminders/settings": {
+            "created": "20170712181522862",
+            "creator": "Thomas Elmiger",
+            "text": "<!-- allowed values for show: number [minutes], [empty] for alerts only, \"no\" for off -->\nshow: 15\n<!-- allowed value for field/tag: a field/tag name -->\nfield: todo-deadline\ntag: ToDo",
+            "type": "application/x-tiddler-dictionary",
+            "title": "$:/plugins/telmiger/reminders/settings",
+            "tags": "[[ToDo Addons]] MyMacros",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170714224547086"
+        },
+        "$:/plugins/telmiger/reminders/readme": {
+            "created": "20170903212721502",
+            "creator": "Thomas Elmiger",
+            "text": "!! Readme \n\nThis is a BETA version – there is no guarantee that the plugin works as expected!\n\n!!! Alerts\nWhile you are active in your wiki, an ''alert'' will pop up if …\n\n* a deadline was set in the field specified in the //configuration// tab\n* the deadline of a tiddler tagged \"ToDo\" has been missed.\n\n!!! Reminders\nThis plugin can show a reminder before a deadline is reached. Set the time span for this in the //configuration// tab.\n\n!!! Designed for ToDoNow\n''//No alert or reminder//'' is shown for the task in the ''Do'' section tagged <<tag ToDoNow>> – it is assumed that you are working on it.\n",
+            "title": "$:/plugins/telmiger/reminders/readme",
+            "tags": "[[ToDo Addons]]",
+            "modifier": "Thomas Elmiger",
+            "modified": "20170903213319417"
+        }
+    }
+}

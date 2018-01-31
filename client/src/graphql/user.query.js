@@ -4,12 +4,14 @@ import MESSAGE_FRAGMENT from './message.fragment';
 
 // get the user and all user's groups
 export const USER_QUERY = gql`
-  query user($id: Int) {
+  query user($id: Int, $feedConnection: ConnectionInput = {first: 0}) {
     user(id: $id) {
       id
       avatar
       badgeCount
       email
+      firstName
+      lastName
       registrationId
       username
       groups {
@@ -29,6 +31,72 @@ export const USER_QUERY = gql`
       friends {
         id
         username
+      }
+      followeds {
+        id
+        username
+      }
+      followers {
+        id
+        username
+      }
+      followedsCount
+      followersCount
+      followedsTweetFeed(feedConnection: $feedConnection) {
+        edges {
+          cursor
+          node {
+            id
+            createdAt
+            text
+            favoriteCount
+            isFavorited
+            author {
+              id
+              username
+              firstName
+              lastName
+              avatar              
+            }
+          }
+        }
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+        }
+      }      
+      followersTweetFeed(feedConnection: $feedConnection) {
+        edges {
+          cursor
+          node {
+            id
+            createdAt
+            text
+            author {
+              id
+              username
+              firstName
+              lastName
+              avatar              
+            }
+          }
+        }
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+        }
+      }
+      tweets {
+        id
+        text
+        createdAt
+        author {
+          id
+          username
+          firstName
+          lastName
+          avatar
+        }
       }
     }
   }

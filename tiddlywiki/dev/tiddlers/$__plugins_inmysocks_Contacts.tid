@@ -1,0 +1,215 @@
+author: inmysocks
+core-version: >=5.1.6
+created: 20180131175552732
+dependents: 
+description: A contacts database for TiddlyWiki
+modified: 20180131175552732
+plugin-type: plugin
+source: https://github.com/inmysocks/TW5-contactsdb
+title: $:/plugins/inmysocks/Contacts
+type: application/json
+version: 0.1.3
+
+{
+    "tiddlers": {
+        "$:/plugins/inmysocks/Contacts/Contact Group Selector": {
+            "caption": "Contact Group Selector",
+            "created": "20141109023616493",
+            "creator": "inmysocks",
+            "modified": "20141204013130196",
+            "modifier": "inmysocks",
+            "no_edit": "true",
+            "tags": "[[New Contact Form]]",
+            "title": "$:/plugins/inmysocks/Contacts/Contact Group Selector",
+            "text": "<$select tiddler='$:/plugins/inmysocks/Contacts/ContactTemp' field='group'>\n<$list filter='[tag[ContactGroup]]'>\n<option><$view field='title'/></option>\n</$list>\n</$select>"
+        },
+        "$:/plugins/inmysocks/Contacts/ContactDisplayTemplate1 Settings": {
+            "caption": "Contact Display Template 1 Settings",
+            "created": "20141106185327458",
+            "creator": "inmysocks",
+            "modified": "20141204012800821",
+            "modifier": "inmysocks",
+            "no_edit": "true",
+            "tags": "[[Contacts Settings]]",
+            "title": "$:/plugins/inmysocks/Contacts/ContactDisplayTemplate1 Settings",
+            "text": "<p class='tc-tiddler-frame' style='width:100%; background-color:#f1f1f1'>\n''Settings'':<br>\n__Button Style__:\n<$select tiddler='$:/plugins/inmysocks/Contacts/ContactDisplayTemplate1' field=\"button_type\">\n<option value='tc-btn-invisible'>No button</option>\n<option value=''>Normal button</option></$select>\n<br>\n__Text Style__: \n<$select tiddler='$:/plugins/inmysocks/Contacts/ContactDisplayTemplate1' field=\"text_style\">\n<option value=\"\">Plain text</option>\n<option value=\"''\">Bold text</option>\n<option value=\"//\">Italic text</option>\n<option value=\"__\">Underlined text</option>\n</$select>\n</p>"
+        },
+        "$:/plugins/inmysocks/Contacts/ContactDisplayTemplate1": {
+            "blurb": "One of the templates for displaying contacts",
+            "button_type": "",
+            "caption": "Contact Display Template 1",
+            "created": "20141026211814860",
+            "creator": "inmysocks",
+            "display_name": "Contact Display Template 1",
+            "emailaddress": "eddie@georges.com",
+            "firstname": "Billy",
+            "lastname": "Bob",
+            "modified": "20141204040802806",
+            "modifier": "inmysocks",
+            "nickname": "Joe",
+            "no_edit": "true",
+            "phonenumber": "555-555-5555",
+            "settings_tiddler": "$:/plugins/inmysocks/Contacts/ContactDisplayTemplate1 Settings",
+            "tags": "Templates ContactDisplayTemplate",
+            "text_style": "''",
+            "title": "$:/plugins/inmysocks/Contacts/ContactDisplayTemplate1",
+            "text": "<p>\n<$tiddler tiddler={{!!title}}>\n<$set name=\"tiddlerName\" value={{!!title}}>\n<$set name=\"textstyle1\" value={{$:/plugins/inmysocks/Contacts/ContactDisplayTemplate1!!text_style}}>\n<<contactSlider {{$:/plugins/inmysocks/Contacts/ContactDisplayTemplate1!!button_type}}>>\n</$set>\n</$set>\n</$tiddler>\n</p>"
+        },
+        "$:/plugins/inmysocks/Contacts/ContactTemp": {
+            "blurb": "",
+            "cell_phone_number": "",
+            "cellphonenumber": "",
+            "city": "",
+            "country": "",
+            "created": "20141026211756264",
+            "creator": "inmysocks",
+            "emailaddress": "",
+            "first_name": "",
+            "firstname": "",
+            "group": "Example Group",
+            "home_phone_number": "",
+            "homephonenumber": "",
+            "last_name": "",
+            "lastname": "",
+            "modified": "20141204012931887",
+            "modifier": "inmysocks",
+            "nick_name": "",
+            "nickname": "",
+            "no_edit": "true",
+            "other_email_address": "",
+            "otheremailaddress": "",
+            "personal_email_address": "",
+            "personalemailaddress": "",
+            "phonenumber": "something else",
+            "state_or_provence": "",
+            "stateprovence": "",
+            "street_address": "",
+            "streetaddress": "",
+            "tags": "Templates",
+            "title": "$:/plugins/inmysocks/Contacts/ContactTemp",
+            "work_email_address": "",
+            "work_phone_number": "",
+            "workemailaddress": "",
+            "workphonenumber": "",
+            "zip_code": "",
+            "zipcode": "",
+            "text": ""
+        },
+        "$:/plugins/inmysocks/Contacts/Contacts Settings": {
+            "blurb": "Settings for the Contacts tiddler",
+            "caption": "Contacts Settings",
+            "created": "20141104205012500",
+            "creator": "inmysocks",
+            "modified": "20141204045508244",
+            "modifier": "inmysocks",
+            "no_edit": "true",
+            "tags": "[[Wiki Settings]]",
+            "title": "$:/plugins/inmysocks/Contacts/Contacts Settings",
+            "text": "!!Contact Display template to use:\nThis is how each individual contact will be displayed in the list of contacts<br>\n\n<div class='tc-tiddler-frame' style='width:100%; background-color:#fafafa'>\n<$select tiddler='$:/plugins/inmysocks/Contacts/Contacts' field='contact_display_template'>\n<$list filter='[plugintiddlers[]tag[ContactDisplayTemplate]][tag[ContactDisplayTemplate]]'>\n<option value={{!!title}}><$view field='display_name'/></option>\n</$list>\n</$select>\n\n<$tiddler tiddler={{$:/plugins/inmysocks/Contacts/Contacts!!contact_display_template}}>\n<$transclude tiddler={{!!settings_tiddler}}/>\n</$tiddler>\n \n<br>\nPreview: <br>\n<div class='tc-tiddler-frame' style='width:100%; background-color:#f0f0f0'>\n<$tiddler tiddler={{$:/plugins/inmysocks/Contacts/Contacts!!contact_display_template}}><$transclude/></$tiddler>\n</div>\n</div>\n\n!!Contact List template to use:\nThis is the template used to generate the list of contacts, click on the name to see the template (How it looks changes based on the display template selected above).<br>\n<div class='tc-tiddler-frame' style='width:100%; background-color:#fafafa'>\n\n<$select tiddler='Contacts' field='contact_list_template'>\n<$list filter='[plugintiddlers[]tag[ContactListTemplate]][tag[ContactListTemplate]]'>\n<option value={{!!title}}><$view field=display_name/></option>\n</$list>\n</$select>\n\n<$tiddler tiddler={{$:/plugins/inmysocks/Contacts/Contacts!!contact_list_template}}>\n<$transclude tiddler={{!!settings_tiddler}}/>\n</$tiddler>\n<br>\nPreview:<br>\n<div class='tc-tiddler-frame' style='width:100%; background-color:#f0f0f0'>\n<$tiddler tiddler={{$:/plugins/inmysocks/Contacts/Contacts!!contact_list_template}}>\n<$transclude/>\n</$tiddler>\n</div>\n</div>\n"
+        },
+        "$:/plugins/inmysocks/Contacts/Contacts": {
+            "caption": "Contacts",
+            "contact_display_template": "$:/plugins/inmysocks/Contacts/ContactDisplayTemplate1",
+            "contact_list_template": "$:/plugins/inmysocks/Contacts/GroupContactListTemplate",
+            "created": "20141027054426989",
+            "creator": "inmysocks",
+            "list_macro": "textSliderNoButton",
+            "modified": "20141204202514001",
+            "modifier": "inmysocks",
+            "no_edit": "true",
+            "tags": "Dashboard",
+            "title": "$:/plugins/inmysocks/Contacts/Contacts",
+            "text": "\\define contactsTabsMacro()\n\n<<tabs \"$(thing)$ [[$:/plugins/inmysocks/Contacts/New Contact Form]] [[$:/plugins/inmysocks/Contacts/Contacts Settings]]\" $(thing)$>>\n\n\\end\n\n<$set name=thing value={{!!contact_list_template}}>\n<<contactsTabsMacro {{!!contact_list_template}}>>\n</$set>"
+        },
+        "$:/plugins/inmysocks/Contacts/ContactsMacros": {
+            "caption": "Contacts Macros",
+            "created": "20141109203159734",
+            "creator": "inmysocks",
+            "modified": "20141209181040884",
+            "modifier": "inmysocks",
+            "no_edit": "true",
+            "tags": "$:/tags/Macro",
+            "title": "$:/plugins/inmysocks/Contacts/ContactsMacros",
+            "text": "\\define contactSlider(buttonType)\n\n<$tiddler tiddler=\"\"\"$(tiddlerName)$\"\"\">\n<$reveal type=\"nomatch\" state=\"$:/state/$(tiddlerName)$\" text=\"show\">\n\n<$button set=\"$:/state/$(tiddlerName)$\" setTo=\"show\" class=$buttonType$>{{$:/core/images/right-arrow}}$(textstyle1)$$(tiddlerName)$$(textstyle1)$</$button> - {{$(tiddlerName)$!!blurb}}\n\n</$reveal>\n<$reveal type=\"match\" state=\"$:/state/$(tiddlerName)$\" text=\"show\">\n\n<$button set=\"$:/state/$(tiddlerName)$\" setTo=\"hide\" class=$buttonType$>{{$:/core/images/down-arrow}}$(textstyle1)$$(tiddlerName)$$(textstyle1)$</$button> - {{$(tiddlerName)$!!blurb}}\n\n<$link to=\"$(tiddlerName)$\">Open Contact</$link>\n\n|!Personal Email Address |<<editEmailField1 personal_email_address>> |<<editField2 personal_email_address>> |\n|!Work Email Address |<<editEmailField1 work_email_address>> |<<editField2 work_email_address>> |\n|!Other Email Address |<<editEmailField1 other_email_address>> |<<editField2 other_email_address>> |\n|!Home Phone Number |<<editField1 home_phone_number>> |<<editField2 home_phone_number>> |\n|!Cell Phone Number |<<editField1 cell_phone_number>> |<<editField2 cell_phone_number>> |\n|!Work Phone Number |<<editField1 work_phone_number>> |<<editField2 work_phone_number>> |\n|!Blurb |<<editField1 blurb>> |<<editField2 blurb>> |\n|!Group |<<contactEditGroup group>> |<<editField2 group>> |\n\n<<contactAddress>>\n\n<<contactAbout>>\n\n</$reveal>\n</$tiddler>\n\n\\end\n\n\\define getAddress()\nmailto:$(address)$\n\\end\n\n\\define editEmailField1(fieldName)\n\n<$reveal type=\"nomatch\" state=\"$:/state/$(tiddlerName)$$fieldName$\" text=\"show\">\n<$set name=address value={{$(tiddlerName)$!!$fieldName$}}>\n<a href=<<getAddress>> target=\"_top\">{{$(tiddlerName)$!!$fieldName$}}</a>\n</$set>\n</$reveal>\n<$reveal type=\"match\" state=\"$:/state/$(tiddlerName)$$fieldName$\" text=\"show\">\n<$edit-text tiddler=\"$(tiddlerName)$\" field=\"$fieldName$\"/> \n</$reveal>\n\n\\end\n\n\n\\define editField1(fieldName)\n\n<$reveal type=\"nomatch\" state=\"$:/state/$(tiddlerName)$$fieldName$\" text=\"show\">\n{{$(tiddlerName)$!!$fieldName$}}\n</$reveal>\n<$reveal type=\"match\" state=\"$:/state/$(tiddlerName)$$fieldName$\" text=\"show\">\n<$edit-text tiddler=\"$(tiddlerName)$\" field=\"$fieldName$\"/> \n</$reveal>\n\n\\end\n\n\\define editField2(fieldName)\n\n<$reveal type=\"nomatch\" state=\"$:/state/$(tiddlerName)$$fieldName$\" text=\"show\">\n<$button set=\"$:/state/$(tiddlerName)$$fieldName$\" setTo=\"show\">Edit</$button> \n</$reveal>\n<$reveal type=\"match\" state=\"$:/state/$(tiddlerName)$$fieldName$\" text=\"show\">\n<$button set=\"$:/state/$(tiddlerName)$$fieldName$\" setTo=\"hide\">Edit</$button> \n</$reveal>\n\n\\end\n\n\\define contactAddress()\n\n<$reveal type=\"nomatch\" state=\"$:/state/$(tiddlerName)$Address\" text=\"show\">\nAddress (<$button set=\"$:/state/$(tiddlerName)$Address\" setTo=\"show\">Edit</$button>) :<br>\n\n\n{{$(tiddlerName)$!!street_address}}<br>\n{{$(tiddlerName)$!!city}}, {{$(tiddlerName)$!!state_or_provence}}<br>\n{{$(tiddlerName)$!!zip_code}} {{$(tiddlerName)$!!country}}\n</$reveal>\n<$reveal type=\"match\" state=\"$:/state/$(tiddlerName)$Address\" text=\"show\">\nAddress (<$button set=\"$:/state/$(tiddlerName)$Address\" setTo=\"hide\">Edit</$button>): <br>\n\n<$edit-text tiddler=\"$(tiddlerName)$\" field=\"street_address\" focusPopup=\"Edit\" placeholder=\"Street Address\"/> <br>\n<$edit-text tiddler=\"$(tiddlerName)$\" field=\"city\" focusPopup=\"Edit\" placeholder=\"City\"/>, <$edit-text tiddler=\"$(tiddlerName)$\" field=\"state_or_provence\" focusPopup=\"Edit\" placeholder=\"State or Provence\"/> <br>\n<$edit-text tiddler=\"$(tiddlerName)$\" field=\"zip_code\" focusPopup=\"Edit\" placeholder=\"Zip Code\"/> <$edit-text tiddler=\"$(tiddlerName)$\" field=\"country\" focusPopup=\"Edit\" placeholder=\"Country\"/> \n</$reveal>\n\n\\end\n\n\\define contactAbout()\n\n<$reveal type=\"nomatch\" state=\"$:/state/$(tiddlerName)$About\" text=\"show\">\n\nAbout (<$button set=\"$:/state/$(tiddlerName)$About\" setTo=\"show\">Edit</$button>) :<br>\n\n<$view tiddler=\"$(tiddlerName)$\" field=\"text\"/>\n\n</$reveal>\n\n<$reveal type=\"match\" state=\"$:/state/$(tiddlerName)$About\" text=\"show\">\n\nAbout (<$button set=\"$:/state/$(tiddlerName)$About\" setTo=\"hide\">Edit</$button>): <br>\n\n<$edit-text tiddler=\"$(tiddlerName)$\" field=\"text\" size=\"120\" class='tc-edit-texteditor'/> <br>\n\n</$reveal>\n\n\\end\n\n\\define newContactAddGroup1()\n<$reveal type=\"nomatch\" state=\"$:/state/NewContactFormAddGroup\" text=\"show\">\n<$button set=\"$:/state/NewContactFormAddGroup\" setTo=\"show\">New Group</$button>\n</$reveal>\n<$reveal type=\"match\" state=\"$:/state/NewContactFormAddGroup\" text=\"show\">\n<$button set=\"$:/state/NewContactFormAddGroup\" setTo=\"hide\">\n<$action-setfield $tiddler={{$:/plugins/inmysocks/Contacts/ContactTemp!!group}} tags=\"ContactGroup\" title={{$:/plugins/inmysocks/Contacts/ContactTemp!!group}}/>Add Group</$button>\n<$button set=\"$:/state/NewContactFormAddGroup\" setTo=\"hide\">Cancel</$button>\n</$reveal>\n\\end\n\n\\define newContactAddGroup2()\n<$reveal type=\"nomatch\" state=\"$:/state/NewContactFormAddGroup\" text=\"show\">\n{{$:/plugins/inmysocks/Contacts/Contact Group Selector}}\n</$reveal>\n<$reveal type=\"match\" state=\"$:/state/NewContactFormAddGroup\" text=\"show\">\n<$edit-text tiddler=\"$:/plugins/inmysocks/Contacts/ContactTemp\" field=\"group\" size=\"20\"/>\n</$reveal>\n\\end\n\n\\define contactEditGroup(fieldName)\n\n<$reveal type=\"nomatch\" state=\"$:/state/$(tiddlerName)$$fieldName$\" text=\"show\">\n{{$(tiddlerName)$!!$fieldName$}} \n</$reveal>\n<$reveal type=\"match\" state=\"$:/state/$(tiddlerName)$$fieldName$\" text=\"show\">\n<$select tiddler='$(tiddlerName)$' field='group'>\n<$list filter='[tag[ContactGroup]]'>\n<option><$view field='title'/></option>\n</$list>\n</$select>\n</$reveal>\n\n\\end"
+        },
+        "$:/plugins/inmysocks/Contacts/GroupContactListGroupTemplate": {
+            "button_type": "",
+            "caption": "Group Contact List Group Template",
+            "created": "20141109191357201",
+            "creator": "inmysocks",
+            "group": "test",
+            "group_type": "<<collapsibleGroupContactListTemplate>>",
+            "modified": "20141204013231476",
+            "modifier": "inmysocks",
+            "no_edit": "true",
+            "tags": "Templates",
+            "title": "$:/plugins/inmysocks/Contacts/GroupContactListGroupTemplate",
+            "text": "\\define collapsibleGroupContactListTemplate()\n\n<$reveal type=\"nomatch\" state=\"$:/state/$(tiddlerGroup)$\" text=\"show\">\n\n!!<$button set=\"$:/state/$(tiddlerGroup)$\" setTo=\"show\" class={{$:/plugins/inmysocks/Contacts/GroupContactListTemplate!!button_type}}>{{$:/core/images/right-arrow}}$(textstyle)${{$(tiddlerTitle)$!!group}}$(textstyle)$</$button>\n\n</$reveal>\n\n<$reveal type=\"match\" state=\"$:/state/$(tiddlerGroup)$\"text=\"show\">\n\n!!<$button set=\"$:/state/$(tiddlerGroup)$\" setTo=\"hide\" class={{$:/plugins/inmysocks/Contacts/GroupContactListTemplate!!button_type}}>{{$:/core/images/down-arrow}}$(textstyle)${{$(tiddlerTitle)$!!group}}$(textstyle)$</$button>\n\n<$list filter=\"[tag[Contacts]sort[title]group{$(tiddlerTitle)$!!group}]\" template={{$:/plugins/inmysocks/Contacts/Contacts!!contact_display_template}}>\n\n</$list>\n\n</$reveal>\n\n\\end\n\n\\define groupContactListTemplate()\n\n!!$(textstyle)${{$(tiddlerTitle)$!!group}}$(textstyle)$\n\n<$list filter=\"[tag[Contacts]sort[title]group{$(tiddlerTitle)$!!group}]\" template={{$:/plugins/inmysocks/Contacts/Contacts!!contact_display_template}}>\n\n</$list>\n\n\\end\n\n<$tiddler tiddler={{!!title}}>\n<$set name=\"textstyle\" value={{$:/plugins/inmysocks/Contacts/GroupContactListTemplate!!text_style}}>\n<$set name=\"tiddlerGroup\" value={{!!group}}>\n<$set name=\"tiddlerTitle\" value={{!!title}}>\n\n{{$:/plugins/inmysocks/Contacts/GroupContactListGroupTemplate!!group_type}}\n\n</$set>\n</$set>\n</$set>\n</$tiddler>"
+        },
+        "$:/plugins/inmysocks/Contacts/GroupContactListTemplate Settings": {
+            "button_type": "tc-btn-invisible",
+            "caption": "Group Contact List Template Settings",
+            "created": "20141109194308726",
+            "creator": "inmysocks",
+            "modified": "20141204013252900",
+            "modifier": "inmysocks",
+            "no_edit": "true",
+            "tags": "[[Contacts Settings]]",
+            "title": "$:/plugins/inmysocks/Contacts/GroupContactListTemplate Settings",
+            "text": "<p class='tc-tiddler-frame' style='width:100%; background-color:#f1f1f1'>\n''Settings'':<br>\n__Grouping Type__:\n<$select tiddler='$:/plugins/inmysocks/Contacts/GroupContactListGroupTemplate' field=\"group_type\">\n<option value='<<collapsibleGroupContactListTemplate>>'>Collapsible Groups</option>\n<option value='<<groupContactListTemplate>>'>Static Groups</option></$select>\n<br>\n__Button Style__:\n<$select tiddler='$:/plugins/inmysocks/Contacts/GroupContactListTemplate' field=\"button_type\">\n<option value='tc-btn-invisible'>No button</option>\n<option value=''>Normal button</option></$select>\n<br>\n__Text Style__: \n<$select tiddler='$:/plugins/inmysocks/Contacts/GroupContactListTemplate' field=\"text_style\">\n<option value=\"\">Plain text</option>\n<option value=\"''\">Bold text</option>\n<option value=\"//\">Italic text</option>\n<option value=\"__\">Underlined text</option>\n</$select>\n</p>"
+        },
+        "$:/plugins/inmysocks/Contacts/GroupContactListTemplate": {
+            "button_type": "",
+            "caption": "Contacts List",
+            "created": "20141104210944699",
+            "creator": "inmysocks",
+            "display_name": "Sort Contacts By Group",
+            "modified": "20141204202638404",
+            "modifier": "inmysocks",
+            "no_edit": "true",
+            "settings_tiddler": "$:/plugins/inmysocks/Contacts/GroupContactListTemplate Settings",
+            "tags": "Templates ContactListTemplate",
+            "text_style": "''",
+            "title": "$:/plugins/inmysocks/Contacts/GroupContactListTemplate",
+            "text": "\\define allButtonMacro()\n\n<$reveal type=\"nomatch\" state=\"$:/state/GroupContactListTemplateAll\" text=\"show\">\n\n!!<$button set=\"$:/state/GroupContactListTemplateAll\" setTo=\"show\" class={{$:/plugins/inmysocks/Contacts/GroupContactListTemplate!!button_type}}>{{$:/core/images/right-arrow}}$(textstyle)$All$(textstyle)$</$button>\n</$reveal>\n<$reveal type=\"match\" state=\"$:/state/GroupContactListTemplateAll\" text=\"show\">\n\n!!<$button set=\"$:/state/GroupContactListTemplateAll\" setTo=\"hide\" class={{$:/plugins/inmysocks/Contacts/GroupContactListTemplate!!button_type}}>{{$:/core/images/down-arrow}}$(textstyle)$All$(textstyle)$</$button>\n<$list filter=\"[tag[Contacts]!tag[Templates]]\" template={{$:/plugins/inmysocks/Contacts/Contacts!!contact_display_template}}>\n</$reveal>\n\n</$list>\n\n\\end\n\n<$list filter=\"[tag[Contacts]sort[group]each[group]]\" template=\"$:/plugins/inmysocks/Contacts/GroupContactListGroupTemplate\">\n<$view field=\"group\"/>\n</$list>\n\n<$set name=\"textstyle\" value={{$:/plugins/inmysocks/Contacts/GroupContactListTemplate!!text_style}}>\n<<allButtonMacro>>\n</$set>"
+        },
+        "$:/plugins/inmysocks/Contacts/New Contact Form": {
+            "blurb": "A fillable form to add new contacts",
+            "caption": "New Contact Form",
+            "created": "20141103233147605",
+            "creator": "inmysocks",
+            "modified": "20141204013334831",
+            "modifier": "inmysocks",
+            "no_edit": "true",
+            "tags": "Tools",
+            "title": "$:/plugins/inmysocks/Contacts/New Contact Form",
+            "text": "\\define getFullName() $(FirstName)$ $(LastName)$ ($(NickName)$)\n\n|!First Name |<$edit-text tiddler=\"$:/plugins/inmysocks/Contacts/ContactTemp\" field=\"firstname\" placeholder=\"First Name\"  size=\"40\"/>|\n|!Last Name |<$edit-text tiddler=\"$:/plugins/inmysocks/Contacts/ContactTemp\" field=\"lastname\" placeholder=\"Last Name\"  size=\"40\"/>|\n|!Nick Name |<$edit-text tiddler=\"$:/plugins/inmysocks/Contacts/ContactTemp\" field=\"nickname\" placeholder=\"Nick Name\"  size=\"40\"/>|\n|!Personal Email Address |<$edit-text tiddler=\"$:/plugins/inmysocks/Contacts/ContactTemp\" field=\"personalemailaddress\" placeholder=\"Personal Email Address\"  size=\"40\"/>|\n|!Work Email Address |<$edit-text tiddler=\"$:/plugins/inmysocks/Contacts/ContactTemp\" field=\"workemailaddress\" placeholder=\"Work Email Address\"  size=\"40\"/>|\n|!Other Email Address |<$edit-text tiddler=\"$:/plugins/inmysocks/Contacts/ContactTemp\" field=\"otheremailaddress\" placeholder=\"Other Email Address\"  size=\"40\"/>|\n|!Home Phone Number |<$edit-text tiddler=\"$:/plugins/inmysocks/Contacts/ContactTemp\" field=\"homephonenumber\" placeholder=\"Home Phone Number\"  size=\"40\"/>|\n|!Cell Phone Number |<$edit-text tiddler=\"$:/plugins/inmysocks/Contacts/ContactTemp\" field=\"cellphonenumber\" placeholder=\"Cell Phone Number\"  size=\"40\"/>|\n|!Work Phone Number |<$edit-text tiddler=\"$:/plugins/inmysocks/Contacts/ContactTemp\" field=\"workphonenumber\" placeholder=\"Work Phone Number\"  size=\"40\"/>|\n|!Street Address |<$edit-text tiddler=\"$:/plugins/inmysocks/Contacts/ContactTemp\" field=\"streetaddress\" placeholder=\"Street Address\"  size=\"40\"/>|\n|!City |<$edit-text tiddler=\"$:/plugins/inmysocks/Contacts/ContactTemp\" field=\"city\" placeholder=\"City\"  size=\"40\"/>|\n|!State/Provence |<$edit-text tiddler=\"$:/plugins/inmysocks/Contacts/ContactTemp\" field=\"stateprovence\" placeholder=\"State/Provence\"  size=\"40\"/>|\n|!Zip Code |<$edit-text tiddler=\"$:/plugins/inmysocks/Contacts/ContactTemp\" field=\"zipcode\" placeholder=\"Zip Code\"  size=\"40\"/>|\n|!Country |<$edit-text tiddler=\"$:/plugins/inmysocks/Contacts/ContactTemp\" field=\"country\" placeholder=\"Country\"  size=\"40\"/>|\n|!Blurb |<$edit-text tiddler=\"$:/plugins/inmysocks/Contacts/ContactTemp\" field=\"blurb\" placeholder=\"Quick description\"  size=\"40\"/>|\n|!Group |<<newContactAddGroup2>> <<newContactAddGroup1>>|\n\n<$set name=\"FirstName\" value={{$:/plugins/inmysocks/Contacts/ContactTemp!!firstname}}>\n<$set name=\"LastName\" value={{$:/plugins/inmysocks/Contacts/ContactTemp!!lastname}}>\n<$set name=\"NickName\" value={{$:/plugins/inmysocks/Contacts/ContactTemp!!nickname}}>\n<$set name=\"grouptag\" value={{$:/plugins/inmysocks/Contacts/ContactTemp!!group}}>\n<$fieldmangler>\n<$button>Create Contact\n<$action-setfield $tiddler=<<getFullName>> first_name={{$:/plugins/inmysocks/Contacts/ContactTemp!!firstname}} last_name={{$:/plugins/inmysocks/Contacts/ContactTemp!!lastname}} nick_name={{$:/plugins/inmysocks/Contacts/ContactTemp!!nickname}} personal_email_address={{$:/plugins/inmysocks/Contacts/ContactTemp!!personalemailaddress}} work_email_address={{$:/plugins/inmysocks/Contacts/ContactTemp!!workemailaddress}} other_email_address={{$:/plugins/inmysocks/Contacts/ContactTemp!!otheremailaddress}} home_phone_number={{$:/plugins/inmysocks/Contacts/ContactTemp!!homephonenumber}} work_phone_number={{$:/plugins/inmysocks/Contacts/ContactTemp!!workphonenumber}} cell_phone_number={{$:/plugins/inmysocks/Contacts/ContactTemp!!cellphonenumber}} street_address={{$:/plugins/inmysocks/Contacts/ContactTemp!!streetaddress}} country={{$:/plugins/inmysocks/Contacts/ContactTemp!!country}} state_or_provence={{$:/plugins/inmysocks/Contacts/ContactTemp!!stateprovence}} zip_code={{$:/plugins/inmysocks/Contacts/ContactTemp!!zipcode}} city={{$:/plugins/inmysocks/Contacts/ContactTemp!!city}} blurb={{$:/plugins/inmysocks/Contacts/ContactTemp!!blurb}} group={{$:/plugins/inmysocks/Contacts/ContactTemp!!group}} tags=\"Contacts\"/>\n<$action-setfield $tiddler='$:/plugins/inmysocks/Contacts/ContactTemp' firstname=\"\" lastname=\"\" nickname=\"\" personalemailaddress=\"\" workemailaddress=\"\" otheremailaddress=\"\" homephonenumber=\"\" workphonenumber=\"\" cellphonenumber=\"\" streetaddress=\"\" country=\"\" stateprovence=\"\" zipcode=\"\" city=\"\" blurb=\"\"/>\n</$button>\n<$button>Clear Form\n<$action-setfield $tiddler='$:/plugins/inmysocks/Contacts/ContactTemp' firstname=\"\" lastname=\"\" nickname=\"\" personalemailaddress=\"\" workemailaddress=\"\" otheremailaddress=\"\" homephonenumber=\"\" workphonenumber=\"\" cellphonenumber=\"\" streetaddress=\"\" country=\"\" stateprovence=\"\" zipcode=\"\" city=\"\" blurb=\"\"/>\n</$button>\n</$fieldmangler>\n</$set>\n</$set>\n</$set>"
+        },
+        "$:/plugins/inmysocks/Contacts/SimpleContactDisplayTemplate": {
+            "caption": "Simple Contact Display Template",
+            "created": "20141104205431885",
+            "creator": "inmysocks",
+            "display_name": "Simple Contact Display Template",
+            "home_phone_number": "1-555-555-555",
+            "modified": "20141204013421436",
+            "modifier": "inmysocks",
+            "no_edit": "true",
+            "settings_tiddler": "$:/plugins/inmysocks/Contacts/SimpleContactDisplayTemplate Settings",
+            "tags": "Templates ContactDisplayTemplate",
+            "title": "$:/plugins/inmysocks/Contacts/SimpleContactDisplayTemplate",
+            "text": "<$link to={{!!title}}>{{!!title}}</$link><br>\n{{!!home_phone_number}}<br>"
+        },
+        "$:/plugins/inmysocks/Contacts/SimpleContactListTemplate": {
+            "caption": "Contacts List",
+            "created": "20141104211343768",
+            "creator": "inmysocks",
+            "display_name": "Simple Contacts List",
+            "modified": "20141204202707136",
+            "modifier": "inmysocks",
+            "no_edit": "true",
+            "tags": "Templates ContactListTemplate",
+            "title": "$:/plugins/inmysocks/Contacts/SimpleContactListTemplate",
+            "text": "<$list filter=[tag[Contacts]] template= {{$:/plugins/inmysocks/Contacts/Contacts!!contact_display_template}}>\n\n</$list>"
+        }
+    }
+}

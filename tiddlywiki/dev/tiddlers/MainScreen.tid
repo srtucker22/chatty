@@ -1,0 +1,8 @@
+created: 20180106003453137
+modified: 20180106004134554
+order: 1
+tags: NavigationTab
+title: MainScreen
+type: text/vnd.tiddlywiki
+
+<<tabs "[tag[MainScreenTab]nsort[order]]" "ConversationsScreen" "$:/state/tab1" "tc-vertical">>
