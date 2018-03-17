@@ -58,10 +58,6 @@ const cache = new ReduxCache({ store });
 
 const reduxLink = new ReduxLink(store);
 
-const errorLink = onError((errors) => {
-  console.log(errors);
-});
-
 const httpLink = createHttpLink({ uri: `http://${URL}` });
 
 // middleware for requests
@@ -77,6 +73,31 @@ const middlewareLink = setContext((req, previousContext) => {
   }
 
   return previousContext;
+});
+
+// afterware for responses
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  let shouldLogout = false;
+  if (graphQLErrors) {
+    console.log({ graphQLErrors });
+    graphQLErrors.forEach(({ message, locations, path }) => {
+      console.log({ message, locations, path });
+      if (message === 'Unauthorized') {
+        shouldLogout = true;
+      }
+    });
+
+    if (shouldLogout) {
+      store.dispatch(logout());
+    }
+  }
+  if (networkError) {
+    console.log('[Network error]:');
+    console.log({ networkError });
+    if (networkError.statusCode === 401) {
+      logout();
+    }
+  }
 });
 
 // Create WebSocket client
