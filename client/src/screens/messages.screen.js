@@ -19,6 +19,7 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 
 import { wsClient } from '../app';
+
 import Message from '../components/message.component';
 import MessageInput from '../components/message-input.component';
 import GROUP_QUERY from '../graphql/group.query';

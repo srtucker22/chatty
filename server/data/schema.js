@@ -1,9 +1,6 @@
-import { addMockFunctionsToSchema, makeExecutableSchema } from 'graphql-tools';
+import { gql } from 'apollo-server';
 
-import { Mocks } from './mocks';
-import { Resolvers } from './resolvers';
-
-export const Schema = [`
+export const typeDefs = gql`
   # declare custom scalars
   scalar Date
 
@@ -125,17 +122,6 @@ export const Schema = [`
     mutation: Mutation
     subscription: Subscription
   }
-`];
+`;
 
-export const executableSchema = makeExecutableSchema({
-  typeDefs: Schema,
-  resolvers: Resolvers,
-});
-
-// addMockFunctionsToSchema({
-//   schema: executableSchema,
-//   mocks: Mocks,
-//   preserveResolvers: true,
-// });
-
-export default executableSchema;
+export default typeDefs;

@@ -24,13 +24,13 @@
 		"moment": "^2.20.1",
 		"prop-types": "^15.6.0",
 		"randomcolor": "^0.5.3",
-		"react": "^16.3.0-alpha.1",
+		"react": "16.4.1",
 		"react-apollo": "^2.0.4",
-		"react-native": "0.54.2",
+		"react-native": "0.56.0",
 		"react-native-alpha-listview": "^0.2.1",
-		"react-native-vector-icons": "^4.5.0",
+		"react-native-vector-icons": "^4.6.0",
 		"react-navigation": "^1.0.3",
-		"react-navigation-redux-helpers": "^1.0.1",
+		"react-navigation-redux-helpers": "^1.1.2",
 		"react-redux": "^5.0.5",
 		"redux": "^3.7.2",
 		"redux-devtools-extension": "^2.13.2",
@@ -40,10 +40,10 @@
 		"subscriptions-transport-ws": "^0.9.5"
 	},
 	"devDependencies": {
-		"babel-jest": "22.4.1",
-		"babel-preset-react-native": "4.0.0",
-		"jest": "22.4.2",
-		"react-test-renderer": "16.2.0"
+		"babel-jest": "23.4.0",
+		"babel-preset-react-native": "^5",
+		"jest": "23.4.1",
+		"react-test-renderer": "16.4.1"
 	},
 	"jest": {
 		"preset": "react-native"

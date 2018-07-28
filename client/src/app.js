@@ -58,7 +58,7 @@ const cache = new ReduxCache({ store });
 
 const reduxLink = new ReduxLink(store);
 
-const httpLink = createHttpLink({ uri: `http://${URL}/graphql` });
+const httpLink = createHttpLink({ uri: `http://${URL}` });
 
 // middleware for requests
 const middlewareLink = setContext((req, previousContext) => {
@@ -101,7 +101,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 // Create WebSocket client
-export const wsClient = new SubscriptionClient(`ws://${URL}/subscriptions`, {
+export const wsClient = new SubscriptionClient(`ws://${URL}/graphql`, {
   lazy: true,
   reconnect: true,
   connectionParams() {

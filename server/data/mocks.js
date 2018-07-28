@@ -1,6 +1,6 @@
 import faker from 'faker';
 
-export const Mocks = {
+export const mocks = {
   Date: () => new Date(),
   Int: () => parseInt(Math.random() * 100, 10),
   String: () => 'It works!',
@@ -26,4 +26,4 @@ export const Mocks = {
   }),
 };
 
-export default Mocks;
+export default mocks;

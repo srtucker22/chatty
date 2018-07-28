@@ -1,10 +1,11 @@
+import { ApolloError, AuthenticationError, ForbiddenError } from 'apollo-server';
 import { Group, Message, User } from './connectors';
 
 // reusable function to check for a user with context
 function getAuthenticatedUser(ctx) {
   return ctx.user.then((user) => {
     if (!user) {
-      return Promise.reject('Unauthorized');
+      throw new AuthenticationError('Unauthenticated');
     }
     return user;
   });
@@ -30,7 +31,7 @@ export const messageLogic = {
               groupId,
             });
           }
-          return Promise.reject('Unauthorized');
+          throw new ForbiddenError('Unauthorized');
         }));
   },
 };
@@ -140,10 +141,6 @@ export const groupLogic = {
   },
   leaveGroup(_, { id }, ctx) {
     return getAuthenticatedUser(ctx).then((user) => {
-      if (!user) {
-        return Promise.reject('Unauthorized');
-      }
-
       return Group.findOne({
         where: { id },
         include: [{
@@ -152,7 +149,7 @@ export const groupLogic = {
         }],
       }).then((group) => {
         if (!group) {
-          Promise.reject('No group found');
+          throw new ApolloError('No group found', 404);
         }
 
         return group.removeUser(user.id)
@@ -189,13 +186,13 @@ export const userLogic = {
         return currentUser.email;
       }
 
-      return Promise.reject('Unauthorized');
+      throw new ForbiddenError('Unauthorized');
     });
   },
   friends(user, args, ctx) {
     return getAuthenticatedUser(ctx).then((currentUser) => {
       if (currentUser.id !== user.id) {
-        return Promise.reject('Unauthorized');
+        throw new ForbiddenError('Unauthorized');
       }
 
       return user.getFriends({ attributes: ['id', 'username'] });
@@ -204,7 +201,7 @@ export const userLogic = {
   groups(user, args, ctx) {
     return getAuthenticatedUser(ctx).then((currentUser) => {
       if (currentUser.id !== user.id) {
-        return Promise.reject('Unauthorized');
+        throw new ForbiddenError('Unauthorized');
       }
 
       return user.getGroups();
@@ -216,7 +213,7 @@ export const userLogic = {
   messages(user, args, ctx) {
     return getAuthenticatedUser(ctx).then((currentUser) => {
       if (currentUser.id !== user.id) {
-        return Promise.reject('Unauthorized');
+        throw new ForbiddenError('Unauthorized');
       }
 
       return Message.findAll({
@@ -231,34 +228,32 @@ export const userLogic = {
         return user;
       }
 
-      return Promise.reject('Unauthorized');
+      throw new ForbiddenError('Unauthorized');
     });
   },
 };
 
 export const subscriptionLogic = {
-  groupAdded(baseParams, args, ctx) {
+  groupAdded(params, args, ctx) {
     return getAuthenticatedUser(ctx)
       .then((user) => {
         if (user.id !== args.userId) {
-          return Promise.reject('Unauthorized');
+          throw new ForbiddenError('Unauthorized');
         }
 
-        baseParams.context = ctx;
-        return baseParams;
+        return Promise.resolve();
       });
   },
-  messageAdded(baseParams, args, ctx) {
+  messageAdded(params, args, ctx) {
     return getAuthenticatedUser(ctx)
       .then(user => user.getGroups({ where: { id: { $in: args.groupIds } }, attributes: ['id'] })
-      .then((groups) => {
-        // user attempted to subscribe to some groups without access
-        if (args.groupIds.length > groups.length) {
-          return Promise.reject('Unauthorized');
-        }
+        .then((groups) => {
+          // user attempted to subscribe to some groups without access
+          if (args.groupIds.length > groups.length) {
+            throw new ForbiddenError('Unauthorized');
+          }
 
-        baseParams.context = ctx;
-        return baseParams;
-      }));
+          return Promise.resolve();
+        }));
   },
 };

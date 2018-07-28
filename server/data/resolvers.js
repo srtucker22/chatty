@@ -1,5 +1,5 @@
 import GraphQLDate from 'graphql-date';
-import { withFilter } from 'graphql-subscriptions';
+import { withFilter } from 'apollo-server';
 import { map } from 'lodash';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -7,12 +7,12 @@ import jwt from 'jsonwebtoken';
 import { Group, Message, User } from './connectors';
 import { pubsub } from '../subscriptions';
 import { JWT_SECRET } from '../config';
-import { groupLogic, messageLogic, userLogic } from './logic';
+import { groupLogic, messageLogic, userLogic, subscriptionLogic } from './logic';
 
 const MESSAGE_ADDED_TOPIC = 'messageAdded';
 const GROUP_ADDED_TOPIC = 'groupAdded';
 
-export const Resolvers = {
+export const resolvers = {
   Date: GraphQLDate,
   PageInfo: {
     // we will have each connection supply its own hasNextPage/hasPreviousPage functions!
@@ -110,7 +110,10 @@ export const Resolvers = {
   Subscription: {
     messageAdded: {
       subscribe: withFilter(
-        () => pubsub.asyncIterator(MESSAGE_ADDED_TOPIC),
+        (payload, args, ctx) => pubsub.asyncAuthIterator(
+          MESSAGE_ADDED_TOPIC,
+          subscriptionLogic.messageAdded(payload, args, ctx),
+        ),
         (payload, args, ctx) => {
           return ctx.user.then((user) => {
             return Boolean(
@@ -124,7 +127,10 @@ export const Resolvers = {
     },
     groupAdded: {
       subscribe: withFilter(
-        () => pubsub.asyncIterator(GROUP_ADDED_TOPIC),
+        (payload, args, ctx) => pubsub.asyncAuthIterator(
+          GROUP_ADDED_TOPIC,
+          subscriptionLogic.groupAdded(payload, args, ctx),
+        ),
         (payload, args, ctx) => {
           return ctx.user.then((user) => {
             return Boolean(
@@ -172,4 +178,4 @@ export const Resolvers = {
   },
 };
 
-export default Resolvers;
+export default resolvers;
