@@ -17,7 +17,6 @@ import { Buffer } from 'buffer';
 import _ from 'lodash';
 import moment from 'moment';
 import { connect } from 'react-redux';
-import gql from 'graphql-tag';
 
 import { wsClient } from '../app';
 import Message from '../components/message.component';
@@ -26,7 +25,6 @@ import GROUP_QUERY from '../graphql/group.query';
 import CREATE_MESSAGE_MUTATION from '../graphql/create-message.mutation';
 import USER_QUERY from '../graphql/user.query';
 import MESSAGE_ADDED_SUBSCRIPTION from '../graphql/message-added.subscription';
-import UPDATE_GROUP_MUTATION from '../graphql/update-group.mutation';
 
 const styles = StyleSheet.create({
   container: {
@@ -74,7 +72,7 @@ class Messages extends Component {
           <View style={styles.title}>
             <Image
               style={styles.titleImage}
-              source={{ uri: state.params.icon || 'https://facebook.github.io/react/img/logo_og.png' }}
+              source={{ uri: 'https://reactjs.org/logo-og.png' }}
             />
             <Text>{state.params.title}</Text>
           </View>
@@ -105,17 +103,6 @@ class Messages extends Component {
     const usernameColors = {};
     // check for new messages
     if (nextProps.group) {
-      if (!this.props.group &&
-        (this.props.navigation.state.params.icon !== nextProps.group.icon)) {
-        this.refreshNavigation(nextProps);
-      }
-
-      if (nextProps.group.messages && nextProps.group.messages.length && nextProps.group.messages[0].id >= 0 &&
-        (!nextProps.group.lastRead || nextProps.group.lastRead.id !== nextProps.group.messages[0].id)) {
-        const { group } = nextProps;
-        nextProps.updateGroup({ id: group.id, name: group.name, lastRead: group.messages[0].id });
-      }
-
       if (nextProps.group.users) {
         // apply a color to each user
         nextProps.group.users.forEach((user) => {
@@ -189,14 +176,7 @@ class Messages extends Component {
     });
   }
 
-  keyExtractor = item => item.node.id;
-
-  refreshNavigation(props) {
-    const { navigation, group } = props;
-    navigation.setParams({
-      icon: group.icon,
-    });
-  }
+  keyExtractor = item => item.node.id.toString();
 
   renderItem = ({ item: edge }) => {
     const message = edge.node;
@@ -256,7 +236,6 @@ Messages.propTypes = {
     state: PropTypes.shape({
       params: PropTypes.shape({
         groupId: PropTypes.number,
-        icon: PropTypes.string,
       }),
     }),
   }),
@@ -271,17 +250,12 @@ Messages.propTypes = {
         hasPreviousPage: PropTypes.bool,
       }),
     }),
-    icon: PropTypes.string,
-    lastRead: PropTypes.shape({
-      id: PropTypes.number,
-    }),
     users: PropTypes.array,
   }),
   loading: PropTypes.bool,
   loadMoreEntries: PropTypes.func,
   refetch: PropTypes.func,
   subscribeToMore: PropTypes.func,
-  updateGroup: PropTypes.func,
 };
 
 const ITEMS_PER_PAGE = 10;
@@ -411,30 +385,6 @@ const createMessageMutation = graphql(CREATE_MESSAGE_MUTATION, {
   }),
 });
 
-const updateGroupMutation = graphql(UPDATE_GROUP_MUTATION, {
-  props: ({ mutate }) => ({
-    updateGroup: group =>
-      mutate({
-        variables: { group },
-        update: (store, { data: { updateGroup } }) => {
-          // Read the data from our cache for this query.
-          store.writeFragment({
-            id: `Group:${updateGroup.id}`,
-            fragment: gql`
-              fragment group on Group {
-                unreadCount
-              }
-            `,
-            data: {
-              __typename: 'Group',
-              unreadCount: 0,
-            },
-          });
-        },
-      }),
-  }),
-});
-
 const mapStateToProps = ({ auth }) => ({
   auth,
 });
@@ -443,5 +393,4 @@ export default compose(
   connect(mapStateToProps),
   groupQuery,
   createMessageMutation,
-  updateGroupMutation,
 )(Messages);

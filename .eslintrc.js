@@ -1,10 +1,6 @@
 module.exports = {
     "parser": "babel-eslint",
     "extends": "airbnb",
-    "globals": {
-        "fetch": true,
-        "FormData": true
-    },
     "plugins": [
         "react",
         "jsx-a11y",

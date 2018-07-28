@@ -7,14 +7,6 @@ export const Schema = [`
   # declare custom scalars
   scalar Date
 
-  # input for file types
-  input File {
-    name: String!
-    type: String!
-    size: Int!
-    path: String!
-  }
-
   # input for creating messages
   input CreateMessageInput {
     groupId: Int!
@@ -25,16 +17,13 @@ export const Schema = [`
   input CreateGroupInput {
     name: String!
     userIds: [Int!]
-    icon: File # group icon image
   }
 
   # input for updating groups
   input UpdateGroupInput {
     id: Int!
-    lastRead: Int
     name: String
     userIds: [Int!]
-    icon: File # group icom image
   }
 
   # input for signing in users
@@ -46,10 +35,7 @@ export const Schema = [`
 
   # input for updating users
   input UpdateUserInput {
-    avatar: File
-    badgeCount: Int
     username: String
-    registrationId: String
   }
 
   # input for relay cursor connections
@@ -81,23 +67,17 @@ export const Schema = [`
     name: String # name of the group
     users: [User]! # users in the group
     messages(messageConnection: ConnectionInput): MessageConnection # messages sent to the group
-    lastRead: Message # message last read by user
-    unreadCount: Int # number of unread messages by user
-    icon: String # url for icon image
   }
 
   # a user -- keep type really simple for now
   type User {
     id: Int! # unique id for the user
-    badgeCount: Int # number of unread notifications
     email: String! # we will also require a unique email per user
     username: String # this is the name we'll show other users
     messages: [Message] # messages sent by user
     groups: [Group] # groups the user belongs to
     friends: [User] # user's friends/contacts
     jwt: String # json web token for access
-    registrationId: String
-    avatar: String # url for avatar image
   }
 
   # a message sent from a user to a group
@@ -129,7 +109,6 @@ export const Schema = [`
     deleteGroup(id: Int!): Group
     leaveGroup(id: Int!): Group # let user leave group
     updateGroup(group: UpdateGroupInput!): Group
-    updateUser(user: UpdateUserInput!): User # update registration for user
     login(user: SigninUserInput!): User
     signup(user: SigninUserInput!): User
   }

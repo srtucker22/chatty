@@ -15,8 +15,6 @@ import { graphql, compose } from 'react-apollo';
 import { NavigationActions } from 'react-navigation';
 import update from 'immutability-helper';
 import { connect } from 'react-redux';
-import ImagePicker from 'react-native-image-crop-picker';
-import { ReactNativeFile } from 'apollo-upload-client';
 
 import { USER_QUERY } from '../graphql/user.query';
 import CREATE_GROUP_MUTATION from '../graphql/create-group.mutation';
@@ -26,7 +24,7 @@ const goToNewGroup = group => NavigationActions.reset({
   index: 1,
   actions: [
     NavigationActions.navigate({ routeName: 'Main' }),
-    NavigationActions.navigate({ routeName: 'Messages', params: { groupId: group.id, title: group.name, icon: group.icon } }),
+    NavigationActions.navigate({ routeName: 'Messages', params: { groupId: group.id, title: group.name } }),
   ],
 });
 
@@ -114,7 +112,6 @@ class FinalizeGroup extends Component {
     this.create = this.create.bind(this);
     this.pop = this.pop.bind(this);
     this.remove = this.remove.bind(this);
-    this.getIcon = this.getIcon.bind(this);
   }
 
   componentDidMount() {
@@ -126,26 +123,6 @@ class FinalizeGroup extends Component {
       (this.state.selected.length && this.state.name)) {
       this.refreshNavigation(nextState.selected.length && nextState.name);
     }
-  }
-
-  getIcon() {
-    const self = this;
-    ImagePicker.openPicker({
-      width: 100,
-      height: 100,
-      cropping: true,
-      cropperCircleOverlay: true,
-    }).then(file => {
-      console.log(file);
-      const icon = new ReactNativeFile({
-        name: 'avatar',
-        type: file.mime,
-        size: file.size,
-        path: file.path,
-        uri: file.path,
-      });
-      self.setState({ icon });
-    });
   }
 
   pop() {
@@ -168,7 +145,6 @@ class FinalizeGroup extends Component {
     createGroup({
       name: this.state.name,
       userIds: _.map(this.state.selected, 'id'),
-      icon: this.state.icon,
     }).then((res) => {
       this.props.navigation.dispatch(goToNewGroup(res.data.createGroup));
     }).catch((error) => {
@@ -192,18 +168,14 @@ class FinalizeGroup extends Component {
 
   render() {
     const { friendCount } = this.props.navigation.state.params;
-    const { icon } = this.state;
 
     return (
       <View style={styles.container}>
         <View style={styles.detailsContainer}>
-          <TouchableOpacity
-            onPress={this.getIcon}
-            style={styles.imageContainer}
-          >
+          <TouchableOpacity style={styles.imageContainer}>
             <Image
               style={styles.groupImage}
-              source={icon || { uri: 'https://facebook.github.io/react/img/logo_og.png' }}
+              source={{ uri: 'https://reactjs.org/logo-og.png' }}
             />
             <Text>edit</Text>
           </TouchableOpacity>

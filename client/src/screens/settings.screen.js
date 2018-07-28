@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import {
   ActivityIndicator,
   Button,
@@ -11,13 +12,9 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import { graphql, compose } from 'react-apollo';
-import ImagePicker from 'react-native-image-crop-picker';
-import Spinner from 'react-native-loading-spinner-overlay';
-import { ReactNativeFile } from 'apollo-upload-client';
 
 import USER_QUERY from '../graphql/user.query';
-import UPDATE_USER_MUTATION from '../graphql/update-user.mutation';
-import { logout, setCurrentUser } from '../actions/auth.actions';
+import { logout } from '../actions/auth.actions';
 
 const styles = StyleSheet.create({
   container: {
@@ -80,24 +77,8 @@ const styles = StyleSheet.create({
 });
 
 class Settings extends Component {
-  static navigationOptions = ({ navigation }) => {
-    const { state } = navigation;
-    const isReady = state.params && state.params.mode === 'ready';
-    return {
-      title: 'Settings',
-      headerLeft: (
-        isReady ? <Button
-          title="Cancel"
-          onPress={state.params.cancel}
-        /> : undefined
-      ),
-      headerRight: (
-        isReady ? <Button
-          title="Done"
-          onPress={state.params.updateUser}
-        /> : undefined
-      ),
-    };
+  static navigationOptions = {
+    title: 'Settings',
   };
 
   constructor(props) {
@@ -105,71 +86,17 @@ class Settings extends Component {
 
     this.state = {};
 
-    this.cancel = this.cancel.bind(this);
-    this.getAvatar = this.getAvatar.bind(this);
     this.logout = this.logout.bind(this);
-    this.refreshNavigation = this.refreshNavigation.bind(this);
-    this.updateUser = this.updateUser.bind(this);
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    if (!!this.state.username !== !!nextState.username || !!this.state.avatar !== !!nextState.avatar) {
-      this.refreshNavigation(nextProps, nextState);
-    }
-  }
-
-  getAvatar() {
-    const self = this;
-    ImagePicker.openPicker({
-      width: 100,
-      height: 100,
-      cropping: true,
-      cropperCircleOverlay: true,
-    }).then((file) => {
-      const avatar = new ReactNativeFile({
-        name: 'avatar',
-        type: file.mime,
-        size: file.size,
-        path: file.path,
-        uri: file.path,
-      });
-      self.setState({ avatar });
-    });
-  }
-
-  cancel() {
-    this.setState({
-      avatar: null,
-      username: null,
-      updating: false,
-    });
   }
 
   logout() {
-    // clear the registrationId for notifications before logout
-    this.props.updateUser({ registrationId: null }).then(() => {
-      // log out the user
-      this.props.dispatch(logout());
-    });
+    this.props.dispatch(logout());
   }
 
-  updateUser() {
-    const { username, avatar } = this.state;
-    this.setState({ updating: true });
-    this.props.updateUser({ username, avatar }).then(({ data: { updateUser } }) => {
-      this.props.dispatch(setCurrentUser(updateUser));
-      this.cancel();
-    });
-  }
-
-  refreshNavigation(props, state) {
-    const { navigation, user } = props;
-    navigation.setParams({
-      mode: (state.username && user.username !== state.username) ||
-        state.avatar ? 'ready' : undefined,
-      updateUser: this.updateUser,
-      cancel: this.cancel,
-    });
+  // eslint-disable-next-line
+  updateUsername(username) {
+    // eslint-disable-next-line
+    console.log('TODO: update username');
   }
 
   render() {
@@ -186,14 +113,12 @@ class Settings extends Component {
 
     return (
       <View style={styles.container}>
-        <Spinner visible={this.state.updating} />
         <View style={styles.userContainer}>
           <View style={styles.userInner}>
-            <TouchableOpacity style={styles.imageContainer} onPress={this.getAvatar}>
+            <TouchableOpacity style={styles.imageContainer}>
               <Image
                 style={styles.userImage}
-                source={this.state.avatar || { uri: user.avatar || 'https://facebook.github.io/react/img/logo_og.png' }}
-                cache={'force-cache'}
+                source={{ uri: 'https://reactjs.org/logo-og.png' }}
               />
               <Text>edit</Text>
             </TouchableOpacity>
@@ -210,9 +135,9 @@ class Settings extends Component {
             />
           </View>
         </View>
-        <Text style={styles.emailHeader}>{'EMAIL'}</Text>
+        <Text style={styles.emailHeader}>EMAIL</Text>
         <Text style={styles.email}>{user.email}</Text>
-        <Button title={'Logout'} onPress={this.logout} />
+        <Button title="Logout" onPress={this.logout} />
       </View>
     );
   }
@@ -228,7 +153,6 @@ Settings.propTypes = {
   navigation: PropTypes.shape({
     navigate: PropTypes.func,
   }),
-  updateUser: PropTypes.func,
   user: PropTypes.shape({
     username: PropTypes.string,
   }),
@@ -242,21 +166,11 @@ const userQuery = graphql(USER_QUERY, {
   }),
 });
 
-const updateUserMutation = graphql(UPDATE_USER_MUTATION, {
-  props: ({ mutate }) => ({
-    updateUser: user =>
-      mutate({
-        variables: { user },
-      }),
-  }),
-});
-
 const mapStateToProps = ({ auth }) => ({
   auth,
 });
 
 export default compose(
   connect(mapStateToProps),
-  updateUserMutation,
   userQuery,
 )(Settings);

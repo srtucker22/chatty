@@ -60,12 +60,12 @@ export class SelectedUserListItem extends Component {
         <View>
           <Image
             style={styles.itemImage}
-            source={{ uri: 'https://facebook.github.io/react/img/logo_og.png' }}
+            source={{ uri: 'https://reactjs.org/logo-og.png' }}
           />
           <TouchableOpacity onPress={this.remove} style={styles.itemIcon}>
             <Icon
-              color={'white'}
-              name={'times'}
+              color="white"
+              name="times"
               size={12}
             />
           </TouchableOpacity>
@@ -90,7 +90,7 @@ class SelectedUserList extends Component {
     this.renderItem = this.renderItem.bind(this);
   }
 
-  keyExtractor = item => item.id;
+  keyExtractor = item => item.id.toString();
 
   renderItem({ item: user }) {
     return (

@@ -55,9 +55,6 @@ export const Resolvers = {
     updateGroup(_, args, ctx) {
       return groupLogic.updateGroup(_, args, ctx);
     },
-    updateUser(_, args, ctx) {
-      return userLogic.updateUser(_, args, ctx);
-    },
     login(_, signinUserInput, ctx) {
       // find user by email
       const { email, password } = signinUserInput.user;
@@ -147,15 +144,6 @@ export const Resolvers = {
     messages(group, args, ctx) {
       return groupLogic.messages(group, args, ctx);
     },
-    lastRead(group, args, ctx) {
-      return groupLogic.lastRead(group, args, ctx);
-    },
-    unreadCount(group, args, ctx) {
-      return groupLogic.unreadCount(group, args, ctx);
-    },
-    icon(user, args, ctx) {
-      return groupLogic.icon(user, args, ctx);
-    },
   },
   Message: {
     to(message, args, ctx) {
@@ -166,9 +154,6 @@ export const Resolvers = {
     },
   },
   User: {
-    avatar(user, args, ctx) {
-      return userLogic.avatar(user, args, ctx);
-    },
     email(user, args, ctx) {
       return userLogic.email(user, args, ctx);
     },
@@ -183,9 +168,6 @@ export const Resolvers = {
     },
     messages(user, args, ctx) {
       return userLogic.messages(user, args, ctx);
-    },
-    registrationId(user, args, ctx) {
-      return userLogic.registrationId(user, args, ctx);
     },
   },
 };

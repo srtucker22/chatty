@@ -1,20 +1,17 @@
 import express from 'express';
-import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
+import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import bodyParser from 'body-parser';
 import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
 import jwt from 'express-jwt';
 import jsonwebtoken from 'jsonwebtoken';
-import OpticsAgent from 'optics-agent';
-import { apolloUploadExpress } from 'apollo-upload-server';
 
 import { JWT_SECRET } from './config';
 import { User } from './data/connectors';
 import { getSubscriptionDetails } from './subscriptions'; // make sure this imports before executableSchema!
 import { executableSchema } from './data/schema';
 import { subscriptionLogic } from './data/logic';
-import { groupLoader, userLoader } from './data/batch';
 
 const GRAPHQL_PORT = 8080;
 const GRAPHQL_PATH = '/graphql';
@@ -23,25 +20,15 @@ const SUBSCRIPTIONS_PATH = '/subscriptions';
 const app = express();
 
 // `context` must be an object and can't be undefined when using connectors
-app.use('/graphql',
-  OpticsAgent.middleware(),
-  bodyParser.json(),
-  apolloUploadExpress({
-    uploadDir: '/tmp/uploads',
-  }),
-  jwt({
-    secret: JWT_SECRET,
-    credentialsRequired: false,
-  },
-), graphqlExpress(req => ({
-  schema: OpticsAgent.instrumentSchema(executableSchema),
+app.use('/graphql', bodyParser.json(), jwt({
+  secret: JWT_SECRET,
+  credentialsRequired: false,
+}), graphqlExpress(req => ({
+  schema: executableSchema,
   context: {
     user: req.user ?
       User.findOne({ where: { id: req.user.id, version: req.user.version } }) :
       Promise.resolve(null),
-    userLoader: userLoader(), // create a new dataloader for each request
-    groupLoader: groupLoader(), // create a new dataloader for each request
-    opticsContext: OpticsAgent.context(req), // for Apollo optics
   },
 })));
 

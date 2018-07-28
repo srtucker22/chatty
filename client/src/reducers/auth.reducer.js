@@ -1,4 +1,4 @@
-import { REHYDRATE } from 'redux-persist/constants';
+import { REHYDRATE } from 'redux-persist';
 import Immutable from 'seamless-immutable';
 
 import { LOGOUT, SET_CURRENT_USER } from '../constants/constants';
@@ -11,7 +11,8 @@ const auth = (state = initialState, action) => {
   switch (action.type) {
     case REHYDRATE:
       // convert persisted data to Immutable and confirm rehydration
-      return Immutable(action.payload.auth || state)
+      const { payload = {} } = action;
+      return Immutable(payload.auth || state)
         .set('loading', false);
     case SET_CURRENT_USER:
       return state.merge(action.user);

@@ -1,14 +1,17 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { addNavigationHelpers, StackNavigator, TabNavigator, NavigationActions } from 'react-navigation';
+import { NavigationActions, addNavigationHelpers, StackNavigator, TabNavigator } from 'react-navigation';
+import {
+  createReduxBoundAddListener,
+  createReactNavigationReduxMiddleware,
+} from 'react-navigation-redux-helpers';
+import { Text, View, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import { graphql, compose } from 'react-apollo';
 import update from 'immutability-helper';
 import { map } from 'lodash';
 import { Buffer } from 'buffer';
-import { REHYDRATE } from 'redux-persist/constants';
-import { AppState } from 'react-native';
-import FCM from 'react-native-fcm';
+import { REHYDRATE } from 'redux-persist';
 
 import Groups from './screens/groups.screen';
 import Messages from './screens/messages.screen';
@@ -21,14 +24,17 @@ import Settings from './screens/settings.screen';
 import { USER_QUERY } from './graphql/user.query';
 import MESSAGE_ADDED_SUBSCRIPTION from './graphql/message-added.subscription';
 import GROUP_ADDED_SUBSCRIPTION from './graphql/group-added.subscription';
-import UPDATE_USER_MUTATION from './graphql/update-user.mutation';
 
-import { firebaseClient, wsClient } from './app';
+import { wsClient } from './app';
+
+import { LOGOUT } from './constants/constants';
 
 // tabs in main screen
 const MainScreenNavigator = TabNavigator({
   Chats: { screen: Groups },
   Settings: { screen: Settings },
+}, {
+  initialRouteName: 'Chats',
 });
 
 const AppNavigator = StackNavigator({
@@ -43,15 +49,18 @@ const AppNavigator = StackNavigator({
 });
 
 // reducer initialization code
-const firstAction = AppNavigator.router.getActionForPathAndParams('Main');
-const tempNavState = AppNavigator.router.getStateForAction(firstAction);
-const initialNavState = AppNavigator.router.getStateForAction(
-  tempNavState,
-);
+const initialState=AppNavigator.router.getStateForAction(NavigationActions.reset({
+	index: 0,
+	actions: [
+	  NavigationActions.navigate({
+		  routeName: 'Main',
+	  }),
+	],
+}));
 
 // reducer code
-export const navigationReducer = (state = initialNavState, action) => {
-  let nextState;
+export const navigationReducer = (state = initialState, action) => {
+  let nextState = AppNavigator.router.getStateForAction(action, state);
   switch (action.type) {
     case REHYDRATE:
       // convert persisted data to Immutable and confirm rehydration
@@ -65,7 +74,7 @@ export const navigationReducer = (state = initialNavState, action) => {
         }
       }
       break;
-    case 'LOGOUT':
+    case LOGOUT:
       const { routes, index } = state;
       if (routes[index].routeName !== 'Signin') {
         nextState = AppNavigator.router.getStateForAction(
@@ -83,32 +92,16 @@ export const navigationReducer = (state = initialNavState, action) => {
   return nextState || state;
 };
 
+// Note: createReactNavigationReduxMiddleware must be run before createReduxBoundAddListener
+export const navigationMiddleware = createReactNavigationReduxMiddleware(
+  "root",
+  state => state.nav,
+);
+const addListener = createReduxBoundAddListener("root");
+
 class AppWithNavigationState extends Component {
-  state = {
-    appState: AppState.currentState,
-  }
-
-  componentWillMount() {
-    AppState.addEventListener('change', this.handleAppStateChange);
-  }
-
   componentWillReceiveProps(nextProps) {
-    // when we get the user, start listening for notifications
-    if (nextProps.user && !this.props.user) {
-      firebaseClient.init().then((registrationId) => {
-        if (registrationId !== nextProps.user.registrationId) {
-          // update notification registration token on server
-          nextProps.updateUser({ registrationId });
-        }
-      });
-    }
-
     if (!nextProps.user) {
-      // unsubscribe from all notifications
-      if (firebaseClient.token) {
-        firebaseClient.clear();
-      }
-
       if (this.groupSubscription) {
         this.groupSubscription();
       }
@@ -127,7 +120,7 @@ class AppWithNavigationState extends Component {
       }, this);
     }
 
-    if (nextProps.user &&
+    if (nextProps.user && nextProps.user.id === nextProps.auth.id &&
       (!this.props.user || nextProps.user.groups.length !== this.props.user.groups.length)) {
       // unsubscribe from old
 
@@ -145,42 +138,30 @@ class AppWithNavigationState extends Component {
     }
   }
 
-  componentWillUnmount() {
-    AppState.removeEventListener('change', this.handleAppStateChange);
-  }
-
-  handleAppStateChange = (nextAppState) => {
-    console.log('App has changed state!', nextAppState, this.props.user.badgeCount);
-    if (this.props.user && FCM.getBadgeNumber()) {
-      // clear notifications from center/tray
-      FCM.removeAllDeliveredNotifications();
-
-      FCM.setBadgeNumber(0);
-
-      // update badge count on server
-      this.props.updateUser({ badgeCount: 0 });
-    }
-    this.setState({ appState: nextAppState });
-  }
-
   render() {
-    const { dispatch, nav } = this.props;
-    return <AppNavigator navigation={addNavigationHelpers({ dispatch, state: nav })} />;
+    return (
+      <AppNavigator navigation={addNavigationHelpers({
+        dispatch: this.props.dispatch,
+        state: this.props.nav,
+        addListener,
+      })} />
+    );
   }
 }
 
 AppWithNavigationState.propTypes = {
+  auth: PropTypes.shape({
+    id: PropTypes.number,
+    jwt: PropTypes.string,
+  }),
   dispatch: PropTypes.func.isRequired,
   nav: PropTypes.object.isRequired,
   refetch: PropTypes.func,
   subscribeToGroups: PropTypes.func,
   subscribeToMessages: PropTypes.func,
-  updateUser: PropTypes.func,
   user: PropTypes.shape({
     id: PropTypes.number.isRequired,
-    badgeCount: PropTypes.number,
     email: PropTypes.string.isRequired,
-    registrationId: PropTypes.string,
     groups: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
@@ -198,7 +179,7 @@ const mapStateToProps = ({ auth, nav }) => ({
 const userQuery = graphql(USER_QUERY, {
   skip: ownProps => !ownProps.auth || !ownProps.auth.jwt,
   options: ownProps => ({ variables: { id: ownProps.auth.id } }),
-  props: ({ data: { loading, user, refetch, subscribeToMore }, ownProps: { nav } }) => ({
+  props: ({ data: { loading, user, refetch, subscribeToMore } }) => ({
     loading,
     user,
     refetch,
@@ -214,12 +195,6 @@ const userQuery = graphql(USER_QUERY, {
 
           const groupIndex = map(previousGroups, 'id').indexOf(newMessage.to.id);
 
-          const { index, routes } = nav;
-          let unreadCount = previousGroups[groupIndex].unreadCount;
-          if (routes[index].routeName !== 'Messages' || routes[index].params.groupId !== groupIndex) {
-            unreadCount += 1;
-          }
-
           return update(previousResult, {
             user: {
               groups: {
@@ -233,7 +208,6 @@ const userQuery = graphql(USER_QUERY, {
                       }],
                     },
                   },
-                  unreadCount: { $set: unreadCount },
                 },
               },
             },
@@ -259,17 +233,7 @@ const userQuery = graphql(USER_QUERY, {
   }),
 });
 
-const updateUserMutation = graphql(UPDATE_USER_MUTATION, {
-  props: ({ mutate }) => ({
-    updateUser: user =>
-      mutate({
-        variables: { user },
-      }),
-  }),
-});
-
 export default compose(
   connect(mapStateToProps),
-  updateUserMutation,
   userQuery,
 )(AppWithNavigationState);

@@ -6,15 +6,8 @@ const GROUP_FRAGMENT = gql`
   fragment GroupFragment on Group {
     id
     name
-    icon
-    unreadCount
-    lastRead {
-      id
-      createdAt
-    }
     users {
       id
-      avatar
       username
     }
     messages(messageConnection: $messageConnection) {

@@ -8,22 +8,17 @@ import {
   FlatList,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { graphql, compose } from 'react-apollo';
 import { NavigationActions } from 'react-navigation';
 import { connect } from 'react-redux';
-import ImagePicker from 'react-native-image-crop-picker';
-import Spinner from 'react-native-loading-spinner-overlay';
-import { ReactNativeFile } from 'apollo-upload-client';
 
 import GROUP_QUERY from '../graphql/group.query';
 import USER_QUERY from '../graphql/user.query';
 import DELETE_GROUP_MUTATION from '../graphql/delete-group.mutation';
 import LEAVE_GROUP_MUTATION from '../graphql/leave-group.mutation';
-import UPDATE_GROUP_MUTATION from '../graphql/update-group.mutation';
 
 const resetAction = NavigationActions.reset({
   index: 0,
@@ -53,7 +48,6 @@ const styles = StyleSheet.create({
   },
   groupName: {
     color: 'black',
-    height: 32,
   },
   groupNameBorder: {
     borderBottomWidth: 1,
@@ -92,81 +86,16 @@ const styles = StyleSheet.create({
 });
 
 class GroupDetails extends Component {
-  static navigationOptions = ({ navigation }) => {
-    const { state } = navigation;
-    const isReady = state.params && state.params.mode === 'ready';
-    return {
-      title: `${navigation.state.params.title}`,
-      headerRight: (
-        isReady ? <Button
-          title="Done"
-          onPress={state.params.updateGroup}
-        /> : undefined
-      ),
-    };
-  };
+  static navigationOptions = ({ navigation }) => ({
+    title: `${navigation.state.params.title}`,
+  });
 
   constructor(props) {
     super(props);
 
-    this.state = {};
-
-    this.cancel = this.cancel.bind(this);
     this.deleteGroup = this.deleteGroup.bind(this);
-    this.getIcon = this.getIcon.bind(this);
-    this.headerComponent = this.headerComponent.bind(this);
     this.leaveGroup = this.leaveGroup.bind(this);
-    this.onChangeText = this.onChangeText.bind(this);
-    this.refreshNavigation = this.refreshNavigation.bind(this);
     this.renderItem = this.renderItem.bind(this);
-    this.updateGroup = this.updateGroup.bind(this);
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    if (!!this.state.name !== !!nextState.name || !!this.state.icon !== !!nextState.icon) {
-      this.refreshNavigation(nextProps, nextState);
-    }
-  }
-
-  getIcon() {
-    const self = this;
-    ImagePicker.openPicker({
-      width: 100,
-      height: 100,
-      cropping: true,
-      cropperCircleOverlay: true,
-    }).then((file) => {
-      const icon = new ReactNativeFile({
-        name: 'avatar',
-        type: file.mime,
-        size: file.size,
-        path: file.path,
-        uri: file.path,
-      });
-      self.setState({ icon });
-    });
-  }
-
-  onChangeText(name) {
-    this.setState({ name });
-  }
-
-  refreshNavigation(props, state) {
-    const { navigation, group } = props;
-    navigation.setParams({
-      mode: (state.name && group.name !== state.name) ||
-        state.icon ? 'ready' : undefined,
-      updateGroup: this.updateGroup,
-      cancel: this.cancel,
-    });
-  }
-
-  cancel() {
-    this.setState({
-      icon: null,
-      name: null,
-      updating: false,
-    });
   }
 
   deleteGroup() {
@@ -175,7 +104,7 @@ class GroupDetails extends Component {
         this.props.navigation.dispatch(resetAction);
       })
       .catch((e) => {
-        console.log(e);   // eslint-disable-line no-console
+        console.log(e); // eslint-disable-line no-console
       });
   }
 
@@ -187,55 +116,17 @@ class GroupDetails extends Component {
         this.props.navigation.dispatch(resetAction);
       })
       .catch((e) => {
-        console.log(e);   // eslint-disable-line no-console
+        console.log(e); // eslint-disable-line no-console
       });
   }
 
-  updateGroup() {
-    const { id } = this.props.group;
-    const { name, icon } = this.state;
-    this.setState({ updating: true });
-    this.props.updateGroup({ id, name, icon }).then(this.cancel);
-  }
-
-  keyExtractor = item => item.id;
-
-  headerComponent() {
-    const { group } = this.props;
-
-    return (
-      <View>
-        <View style={styles.detailsContainer}>
-          <TouchableOpacity style={styles.groupImageContainer} onPress={this.getIcon}>
-            <Image
-              style={styles.groupImage}
-              source={this.state.icon || { uri: group.icon || 'https://facebook.github.io/react/img/logo_og.png' }}
-              cache={'force-cache'}
-            />
-            <Text>edit</Text>
-          </TouchableOpacity>
-          <View style={styles.groupNameBorder}>
-            <TextInput
-              onChangeText={this.onChangeText}
-              placeholder={group.name}
-              style={styles.groupName}
-              defaultValue={group.name}
-            />
-          </View>
-        </View>
-        <Text style={styles.participants}>
-          {`participants: ${group.users.length}`.toUpperCase()}
-        </Text>
-      </View>
-    );
-  }
+  keyExtractor = item => item.id.toString();
 
   renderItem = ({ item: user }) => (
     <View style={styles.user}>
       <Image
         style={styles.avatar}
-        source={{ uri: user.avatar || 'https://facebook.github.io/react/img/logo_og.png' }}
-        cache={'force-cache'}
+        source={{ uri: 'https://reactjs.org/logo-og.png' }}
       />
       <Text style={styles.username}>{user.username}</Text>
     </View>
@@ -255,16 +146,33 @@ class GroupDetails extends Component {
 
     return (
       <View style={styles.container}>
-        <Spinner visible={this.state.updating} />
         <FlatList
           data={group.users}
           keyExtractor={this.keyExtractor}
           renderItem={this.renderItem}
-          ListHeaderComponent={this.headerComponent}
+          ListHeaderComponent={() => (
+            <View>
+              <View style={styles.detailsContainer}>
+                <TouchableOpacity style={styles.groupImageContainer} onPress={this.pickGroupImage}>
+                  <Image
+                    style={styles.groupImage}
+                    source={{ uri: 'https://reactjs.org/logo-og.png' }}
+                  />
+                  <Text>edit</Text>
+                </TouchableOpacity>
+                <View style={styles.groupNameBorder}>
+                  <Text style={styles.groupName}>{group.name}</Text>
+                </View>
+              </View>
+              <Text style={styles.participants}>
+                {`participants: ${group.users.length}`.toUpperCase()}
+              </Text>
+            </View>
+          )}
           ListFooterComponent={() => (
             <View>
-              <Button title={'Leave Group'} onPress={this.leaveGroup} />
-              <Button title={'Delete Group'} onPress={this.deleteGroup} />
+              <Button title="Leave Group" onPress={this.leaveGroup} />
+              <Button title="Delete Group" onPress={this.deleteGroup} />
             </View>
           )}
         />
@@ -294,7 +202,6 @@ GroupDetails.propTypes = {
   }),
   deleteGroup: PropTypes.func.isRequired,
   leaveGroup: PropTypes.func.isRequired,
-  updateGroup: PropTypes.func,
 };
 
 const groupQuery = graphql(GROUP_QUERY, {
@@ -351,15 +258,6 @@ const leaveGroupMutation = graphql(LEAVE_GROUP_MUTATION, {
   }),
 });
 
-const updateGroupMutation = graphql(UPDATE_GROUP_MUTATION, {
-  props: ({ mutate }) => ({
-    updateGroup: group =>
-      mutate({
-        variables: { group },
-      }),
-  }),
-});
-
 const mapStateToProps = ({ auth }) => ({
   auth,
 });
@@ -369,5 +267,4 @@ export default compose(
   groupQuery,
   deleteGroupMutation,
   leaveGroupMutation,
-  updateGroupMutation,
 )(GroupDetails);

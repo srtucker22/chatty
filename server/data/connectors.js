@@ -13,7 +13,6 @@ const db = new Sequelize('chatty', null, null, {
 // define groups
 const GroupModel = db.define('group', {
   name: { type: Sequelize.STRING },
-  icon: { type: Sequelize.STRING }, // url for group icon
 });
 
 // define messages
@@ -23,13 +22,10 @@ const MessageModel = db.define('message', {
 
 // define users
 const UserModel = db.define('user', {
-  badgeCount: { type: Sequelize.INTEGER },
   email: { type: Sequelize.STRING },
   username: { type: Sequelize.STRING },
   password: { type: Sequelize.STRING },
-  registrationId: { type: Sequelize.STRING }, // device registration for push notifications
   version: { type: Sequelize.INTEGER }, // version the password
-  avatar: { type: Sequelize.STRING }, // url for avatar image
 });
 
 // users belong to multiple groups
@@ -40,10 +36,6 @@ UserModel.belongsToMany(UserModel, { through: 'Friends', as: 'friends' });
 
 // messages are sent from users
 MessageModel.belongsTo(UserModel);
-
-// track last read message in a group for a given user
-MessageModel.belongsToMany(UserModel, { through: 'MessageUser', as: 'lastRead' });
-UserModel.belongsToMany(MessageModel, { through: 'MessageUser', as: 'lastRead' });
 
 // messages are sent to groups
 MessageModel.belongsTo(GroupModel);
@@ -64,7 +56,6 @@ db.sync({ force: true }).then(() => _.times(GROUPS, () => GroupModel.create({
 }).then(group => _.times(USERS_PER_GROUP, () => {
   const password = faker.internet.password();
   return bcrypt.hash(password, 10).then(hash => group.createUser({
-    badgeCount: 0,
     email: faker.internet.email(),
     username: faker.internet.userName(),
     password: hash,

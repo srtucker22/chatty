@@ -73,6 +73,11 @@ class Signin extends Component {
 
   constructor(props) {
     super(props);
+
+    if (props.auth && props.auth.jwt) {
+      props.navigation.goBack();
+    }
+
     this.state = {
       view: 'login',
     };

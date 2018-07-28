@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 import { graphql, compose } from 'react-apollo';
-import AlphabetListView from 'react-native-alphabetlistview';
+import AlphabetListView from 'react-native-alpha-listview';
 import update from 'immutability-helper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
@@ -126,7 +126,7 @@ class Cell extends Component {
       <View style={styles.cellContainer}>
         <Image
           style={styles.cellImage}
-          source={{ uri: 'https://facebook.github.io/react/img/logo_og.png' }}
+          source={{ uri: 'https://reactjs.org/logo-og.png' }}
         />
         <Text style={styles.cellLabel}>{this.props.item.username}</Text>
         <View style={styles.checkButtonContainer}>
